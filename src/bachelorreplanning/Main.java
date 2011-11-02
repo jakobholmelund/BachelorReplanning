@@ -38,6 +38,7 @@ public class Main {
         world.addObject(new MapAgent(9,9));
         MainWindow mainWindow = new MainWindow();
         mainWindow.drawWorld(world);
+        
         /*
         FSPlanner agent = new FSPlanner();
         agent.run();
