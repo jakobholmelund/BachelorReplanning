@@ -39,6 +39,7 @@ public class Main {
         MainWindow mainWindow = new MainWindow();
         mainWindow.drawWorld(world);
         
+        
         /*
         FSPlanner agent = new FSPlanner();
         agent.run();
