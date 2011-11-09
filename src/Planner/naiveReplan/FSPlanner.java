@@ -86,10 +86,10 @@ public class FSPlanner { //  implements Runnable
 
                 // If it is, do the next action
                 Action next = plan.pop();
-                System.out.println("Take Next Action: " + next.toString());
+                System.out.println("Take Next Action: " + next.name);
                 
                 // Apply next - act() ?
-                
+                world.agentActionParse(next.name);
             }else{
                 if(this.plan != null) {
                     System.out.println("Replan: " + !valid);
