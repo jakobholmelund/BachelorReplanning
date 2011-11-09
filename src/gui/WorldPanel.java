@@ -7,6 +7,7 @@ package gui;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import worldmodel.MapObject;
@@ -21,6 +22,9 @@ public class WorldPanel extends JPanel {
         private int tileSize = 10;
         private int cols = 10;
         private int rows = 10;
+        private boolean init = true;
+        private ArrayList<MapObject> fields = new ArrayList<MapObject>();
+        
         
     WorldPanel(int width, int height) {
         GridLayout boardlayout = new GridLayout(cols, rows, 0, 0);
@@ -31,7 +35,24 @@ public class WorldPanel extends JPanel {
     }
 
     public void draw(World world){
-        this.removeAll();
+        if(!init){
+            System.out.println("AFTER INITIATE");
+            for(MapObject mo:fields){
+                MapObject worldobject = world.getMap().get(mo.getPosition());
+                if(worldobject != null){
+                    mo.add(worldobject);
+                    mo.repaint();
+                }else{
+                    if(mo.getComponentCount()>0){
+                        mo.removeAll();
+                        mo.repaint();
+                    }
+                }
+            }
+        }else{
+            init = false;
+            
+        //this.removeAll();
         for(int i = 0; i < cols; i++) {
             for(int j = 0; j < rows; j++) {
                 Tile tile = new Tile(i,j);
@@ -44,7 +65,9 @@ public class WorldPanel extends JPanel {
                 if(worldobject != null){
                     tile.add(worldobject);
                 }
+                fields.add(tile);
             }
+        }
         }
     }
 }

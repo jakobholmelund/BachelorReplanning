@@ -69,10 +69,10 @@ public class World {
     }
 
     public void draw(JPanel parent){
-        parent.removeAll();
-        for(MapObject mo:objects){
-            parent.add(mo);
-        }
+        //parent.updateUI();
+        //for(MapObject mo:objects){
+        //    parent.add(mo);
+        //}
     }
     
         

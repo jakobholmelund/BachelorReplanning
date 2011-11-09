@@ -35,9 +35,9 @@ public class MainWindow extends JFrame {
     }
     
     public void drawWorld(World w){
-        this.worldPanel.setVisible(false);
+        //this.worldPanel.setVisible(false);
         this.worldPanel.draw(w);
-        this.worldPanel.setVisible(true);
-        this.worldPanel.repaint();
+        //this.worldPanel.setVisible(true);
+        //this.worldPanel.repaint();
     }
 }
