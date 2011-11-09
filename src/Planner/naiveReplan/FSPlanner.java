@@ -31,13 +31,13 @@ public class FSPlanner { //  implements Runnable
             if(o instanceof MapAgent) {
                 //System.err.println("Agent found");
                 MapAgent agent = (MapAgent) o;
-                domain += "agentAt(" + agent.getNumber() + ",[" + agent.x + "," + agent.y + "]). ";
+                domain += "agentAt(" + agent.getNumber() + ",[" + agent.y + "," + agent.x + "]). ";
             }
             
             if(o instanceof Box) {
                 //System.err.println("Box found");
                 Box obs = (Box) o;
-                domain += "boxAt(" + obs.getName() + ",[" + obs.x + "," + obs.y + "]). "; 
+                domain += "boxAt(" + obs.getName() + ",[" + obs.y + "," + obs.x + "]). "; 
             }
         }
         

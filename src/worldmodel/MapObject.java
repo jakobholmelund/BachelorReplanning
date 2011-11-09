@@ -29,6 +29,12 @@ public class MapObject extends JPanel {
         this.position = position;
     }
     
+    public void setPosition(Long key, int x, int y){
+        this.position = key;
+        this.x = x;
+        this.y = y;
+    }
+    
     public Long getPosition(){
         return position;
     }
@@ -38,4 +44,11 @@ public class MapObject extends JPanel {
         int ky = y + 1000000000;
         return (long)kx | (long)ky << 32;
     }
+    // extract the x and y from the keys
+    static private int[] coordsFor(long k) {
+        int x = (int)(k & 0xFFFFFFFF) - 1000000000;
+        int y = (int)((k >>> 32) & 0xFFFFFFFF) - 1000000000;
+        return new int[]{x,y};
+    }
+    
 }

@@ -72,7 +72,7 @@ public class Main {
         world.addObject(new Wall(8,9));
         world.addObject(new Wall(9,9));
         
-        world.addObject(new Box("a", 1,2));
+        world.addObject(new Box("a", 2,1));
         
         MainWindow mainWindow = new MainWindow();
         
