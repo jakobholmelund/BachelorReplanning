@@ -107,31 +107,47 @@ public class World {
             }
                 if("Push".equals(command)){
                     if("n".equals(bmovedir)){
-                        this.moveObject(mapagent, mapagent.getX(), mapagent.getY()+1);
+                        int boxoldx = box.getX();
+                        int boxoldy = box.getY();
                         this.moveObject(box, box.getX()-1, box.getY());
+                        this.moveObject(mapagent, boxoldx, boxoldy);
                     }else if("s".equals(bmovedir)){
-                        this.moveObject(mapagent, mapagent.getX(), mapagent.getY()+1);
+                        int boxoldx = box.getX();
+                        int boxoldy = box.getY();
                         this.moveObject(box, box.getX()-1, box.getY());
+                        this.moveObject(mapagent, boxoldx, boxoldy);
                     }else if("e".equals(bmovedir)){
-                        this.moveObject(mapagent, mapagent.getX(), mapagent.getY()+1);
+                        int boxoldx = box.getX();
+                        int boxoldy = box.getY();
                         this.moveObject(box, box.getX()-1, box.getY());
+                        this.moveObject(mapagent, boxoldx, boxoldy);
                     }else if("w".equals(bmovedir)){
-                        this.moveObject(mapagent, mapagent.getX(), mapagent.getY()+1);
+                        int boxoldx = box.getX();
+                        int boxoldy = box.getY();                        
                         this.moveObject(box, box.getX()-1, box.getY());
+                        this.moveObject(mapagent, boxoldx, boxoldy);
                     }
                 }else if("Pull".equals(command)){
                     if("n".equals(bmovedir)){
-                        this.moveObject(mapagent, mapagent.getX(), mapagent.getY()+1);
-                        this.moveObject(box, box.getX()-1, box.getY());
+                        int agentoldx = box.getX();
+                        int agentoldy = box.getY();
+                        this.moveObject(mapagent, mapagent.getX()+1, mapagent.getY());
+                        this.moveObject(box, agentoldx, agentoldy);
                     }else if("s".equals(bmovedir)){
-                        this.moveObject(mapagent, mapagent.getX(), mapagent.getY()+1);
-                        this.moveObject(box, box.getX()-1, box.getY());
+                        int agentoldx = box.getX();
+                        int agentoldy = box.getY();
+                        this.moveObject(mapagent, mapagent.getX()-1, mapagent.getY());
+                        this.moveObject(box, agentoldx, agentoldy);
                     }else if("e".equals(bmovedir)){
+                         int agentoldx = box.getX();
+                        int agentoldy = box.getY();
                         this.moveObject(mapagent, mapagent.getX(), mapagent.getY()+1);
-                        this.moveObject(box, box.getX()-1, box.getY());
+                        this.moveObject(box, agentoldx, agentoldy);
                     }else if("w".equals(bmovedir)){
-                       this.moveObject(mapagent, mapagent.getX(), mapagent.getY()+1);
-                       this.moveObject(box, box.getX()-1, box.getY());
+                        int agentoldx = box.getX();
+                        int agentoldy = box.getY();
+                        this.moveObject(mapagent, mapagent.getX(), mapagent.getY()-1);
+                        this.moveObject(box, agentoldx, agentoldy);
                     }
                 }
         }
