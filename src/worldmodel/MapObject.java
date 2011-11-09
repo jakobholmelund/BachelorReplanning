@@ -12,6 +12,8 @@ import javax.swing.JPanel;
  */
 public class MapObject extends JPanel {
     private Long position;
+    public int x;
+    public int y;
     
     public MapObject(long position){
         this.position = position;
@@ -19,6 +21,8 @@ public class MapObject extends JPanel {
     
     public MapObject(int x, int y){
         this.position = keyFor(x,y);
+        this.x = x;
+        this.y = y;
     }
     
     public void setPosition(long position){

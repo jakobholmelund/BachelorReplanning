@@ -22,3 +22,4 @@ public class MapAgent extends MapObject {
         setBackground(Color.RED);
     }
 }
+

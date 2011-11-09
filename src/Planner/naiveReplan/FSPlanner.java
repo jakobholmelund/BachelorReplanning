@@ -4,96 +4,95 @@ import jTrolog.errors.PrologException;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import worldmodel.World;
+import worldmodel.*;
 
 public class FSPlanner { //  implements Runnable
     State state;
     Plan plan;
     public int iteration;
     World world;
+    String statics;
+    boolean done;
     
     public FSPlanner(World world) {
         iteration = 0;
         this.plan = null;
         this.world = world;
+        statics = createStatics();
+        done = false;
     }
 
     public void getPercepts() {
-        
-        /*
-        String largeDomain = "";
-        largeDomain += "w([0,0]). w([1,0]).  w([2,0]).  w([3,0]).  w([4,0]). w([5,0]). w([6,0]). w([7,0]). w([8,0]). w([9,0]). w([10,0]). w([11,0]). w([12,0]). ";
-        largeDomain += "w([0,1]).  w([0,2]).  w([0,3]).  w([0,4]).  w([0,5]).  w([0,6]).  w([0,7]).  w([0,8]).  w([0,9]).  w([0,10]). ";
-        largeDomain += "w([12,1]).  w([12,2]).  w([12,3]).  w([12,4]).  w([12,5]).  w([12,6]).  w([12,7]).  w([12,8]).  w([12,9]).  w([12,10]). ";
-        largeDomain += "w([0,10]).  w([1,10]).  w([2,10]).  w([3,10]). w([4,10]). w([5,10]). w([6,10]). w([7,10]). w([8,10]). w([9,10]). w([10,10]). w([11,10]). ";
-        largeDomain += "boxAt(a,[1,2]). goalAt(a, [9,9]). ";
-        largeDomain += "agentAt(0,[1,1]). agent(0). box(a). ";
-
-        if(iteration > 3) {
-            System.out.println("A box appears in [1,8]. ");
-            largeDomain += "boxAt(b, [1,8]). ";
-        }
-        
-        String initial = largeDomain;
-        */
+       long time1 = System.currentTimeMillis();
         String domain = "";
         
+        for(Object o : world.getObjects()) {
+            // add to percepts            
+            if(o instanceof MapAgent) {
+                //System.err.println("Agent found");
+                MapAgent agent = (MapAgent) o;
+                domain += "agentAt(" + agent.getNumber() + ",[" + agent.x + "," + agent.y + "]). ";
+            }
+            
+            if(o instanceof Box) {
+                //System.err.println("Box found");
+                Box obs = (Box) o;
+                domain += "boxAt(" + obs.getName() + ",[" + obs.x + "," + obs.y + "]). "; 
+            }
+        }
+        
         String theory = getStatics() + domain;
-
-
-
+        //System.out.println("statics:\n " + statics);
+        //System.out.println("objects:\n " + world.getObjects().toString());
+        //System.out.println("Num objects: " + world.getObjects().size() + "\n Theory:");
+        //System.out.println(theory);
+        
         try {
             this.state = new State(theory);
             //String goal = "boxAt(a, [9,9]). ";
         } catch (PrologException ex) {
             Logger.getLogger(FSPlanner.class.getName()).log(Level.SEVERE, null, ex);
         }
+       long time2 = System.currentTimeMillis();
+                
+       System.out.println("Percepts gotten in: " + (time2 - time1) + " ms");
     }
 
     public String getStatics() {
-        String boxpos = "agentAtBox(Agent, Box) :- agentAt(Agent, C0), boxAt(Box, C1), neighbour(C0, C1, MoveDirAgent). ";
-        String move = "move(Agent, MoveDirAgent, C0, C1) :- agentAt(Agent, C0), neighbour(C0, C1, MoveDirAgent), f(C1). ";
-        String push = "push(Agent, MoveDirAgent, MoveDirBox, C0, C1, C2, Box) :- agentAt(Agent, C0), neighbour(C0, C1, MoveDirAgent), boxAt(Box, C1), neighbour(C1, C2, MoveDirBox), f(C2). ";
-        String pull = "pull(Agent, MoveDirAgent, CurrDirBox, C0, C1, C2, Box) :- agentAt(Agent, C0), neighbour(C0, C1, MoveDirAgent), boxAt(Box, C2), neighbour(C0, C2, CurrDirBox), f(C1). ";
-        //String goal = "goalsSatisfied(A) :- findall(X,notAtGoal(X),L), L == []. ";
-        //       goal += "notAtGoal(A) :- box(A), goalAt(A, B), boxAt(A, C), B \\== C. ";
-        String goal = "";
-        //String findAll = "findall(B,L,M) :- p(A),q(A,B),s(B), not(member(A,L)), !, findall(B,[A|L],M). findall(_,M,M). ";
-        String findAll = "";
-        String free = "f(C0) :- \\+ w(C0), \\+ agentAt(Agent, C0), \\+ boxAt(Box, C0). ";
-        
-        String neighbours = "";
-            neighbours += "neighbour([X1,Y1], [X2,Y2], n) :- B is Y1 - 1, Y2 = B, X1 = X2. ";
-            neighbours += "neighbour([X1,Y1], [X2,Y2], s) :- B is Y1 + 1, Y2 = B, X2 = X1. ";
-            neighbours += "neighbour([X1,Y1], [X2,Y2], e) :- B is X1 + 1, X2 = B, Y1 = Y2. ";
-            neighbours += "neighbour([X1,Y1], [X2,Y2], w) :- B is X1 - 1, X2 = B, Y1 = Y2. ";
-        String statics = move + push + pull + goal + findAll + neighbours + boxpos + free;
-
         return statics;
     }
 
     public void run() {
+        System.out.println("New iteration");
         iteration++;
-        String goal = "boxAt(a,[9,9]). ";
+        String goal = "boxAt(a,[8,8]). ";
         try {
             // get percepts and update current state description
             getPercepts();
 
             // check if plan is still valid
             boolean valid = false;
+            if(this.plan != null && this.plan.list.size() == 0) {
+                this.done = true;
+                System.err.println("DONE! ");
+                return; 
+            }
             if(this.plan != null) {
                 valid = this.plan.valid(state);
             }
+            
             //System.err.println("Free: " + state.state.solveboolean("f([1,3])"));
             if(this.plan != null && !this.plan.isEmpty() && valid) {
 
                 // If it is, do the next action
                 Action next = plan.pop();
                 System.out.println("Take Next Action: " + next.toString());
+                
                 // Apply next - act() ?
+                
             }else{
                 if(this.plan != null) {
-                    System.out.println("Replan: " + this.plan.isEmpty() + " " + valid);
+                    System.out.println("Replan: " + !valid);
                 }
                 // Else, make a new plan ( and perform the first action ? )
 
@@ -181,6 +180,40 @@ public class FSPlanner { //  implements Runnable
             node = node.parent;
         }
         return s;
+    }
+
+    private String createStatics() {
+        String staticsMk = getRules();
+        for(Object o : world.getObjects()) {
+            if(o instanceof Wall) {
+                //System.err.println("Wall found");
+                Wall wall = (Wall) o;
+                staticsMk += "w([" + wall.x + "," + wall.y + "]). ";
+            }
+        }
+        return staticsMk;
+    }
+
+    private String getRules() {
+        String move = "move(Agent, MoveDirAgent, C0, C1) :- agentAt(Agent, C0), neighbour(C0, C1, MoveDirAgent), f(C1). ";
+        String push = "push(Agent, MoveDirAgent, MoveDirBox, C0, C1, C2, Box) :- agentAt(Agent, C0), neighbour(C0, C1, MoveDirAgent), boxAt(Box, C1), neighbour(C1, C2, MoveDirBox), f(C2). ";
+        String pull = "pull(Agent, MoveDirAgent, CurrDirBox, C0, C1, C2, Box) :- agentAt(Agent, C0), neighbour(C0, C1, MoveDirAgent), boxAt(Box, C2), neighbour(C0, C2, CurrDirBox), f(C1). ";
+        
+        String goal = "goalAt(a, [8,8]). ";
+        String free = "f(C0) :- \\+ w(C0), \\+ agentAt(Agent, C0), \\+ boxAt(Box, C0). ";
+        
+        String neighbours = "";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], n) :- B is Y1 - 1, Y2 = B, X1 = X2. ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], s) :- B is Y1 + 1, Y2 = B, X2 = X1. ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], e) :- B is X1 + 1, X2 = B, Y1 = Y2. ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], w) :- B is X1 - 1, X2 = B, Y1 = Y2. ";
+        String rules = move + push + pull + goal + neighbours + free;
+
+        return rules;
+    }
+
+    public boolean done() {
+        return done;
     }
     
 }
