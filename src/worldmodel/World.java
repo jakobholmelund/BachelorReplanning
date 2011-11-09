@@ -129,23 +129,23 @@ public class World {
                     }
                 }else if("Pull".equals(command)){
                     if("n".equals(bmovedir)){
-                        int agentoldx = box.getX();
-                        int agentoldy = box.getY();
+                        int agentoldx = mapagent.getX();
+                        int agentoldy = mapagent.getY();
                         this.moveObject(mapagent, mapagent.getX()+1, mapagent.getY());
                         this.moveObject(box, agentoldx, agentoldy);
                     }else if("s".equals(bmovedir)){
-                        int agentoldx = box.getX();
-                        int agentoldy = box.getY();
+                        int agentoldx = mapagent.getX();
+                        int agentoldy = mapagent.getY();
                         this.moveObject(mapagent, mapagent.getX()-1, mapagent.getY());
                         this.moveObject(box, agentoldx, agentoldy);
                     }else if("e".equals(bmovedir)){
-                         int agentoldx = box.getX();
-                        int agentoldy = box.getY();
+                         int agentoldx = mapagent.getX();
+                        int agentoldy = mapagent.getY();
                         this.moveObject(mapagent, mapagent.getX(), mapagent.getY()+1);
                         this.moveObject(box, agentoldx, agentoldy);
                     }else if("w".equals(bmovedir)){
-                        int agentoldx = box.getX();
-                        int agentoldy = box.getY();
+                        int agentoldx = mapagent.getX();
+                        int agentoldy = mapagent.getY();
                         this.moveObject(mapagent, mapagent.getX(), mapagent.getY()-1);
                         this.moveObject(box, agentoldx, agentoldy);
                     }
@@ -153,9 +153,4 @@ public class World {
         }
         
     }
-    
-    private void moveAgentDirection(){
-    
-    }
-
 }
