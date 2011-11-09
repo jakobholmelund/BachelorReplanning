@@ -19,6 +19,8 @@ public class FSPlanner { //  implements Runnable
     }
 
     public void getPercepts() {
+        
+        /*
         String largeDomain = "";
         largeDomain += "w([0,0]). w([1,0]).  w([2,0]).  w([3,0]).  w([4,0]). w([5,0]). w([6,0]). w([7,0]). w([8,0]). w([9,0]). w([10,0]). w([11,0]). w([12,0]). ";
         largeDomain += "w([0,1]).  w([0,2]).  w([0,3]).  w([0,4]).  w([0,5]).  w([0,6]).  w([0,7]).  w([0,8]).  w([0,9]).  w([0,10]). ";
@@ -33,8 +35,10 @@ public class FSPlanner { //  implements Runnable
         }
         
         String initial = largeDomain;
-
-        String theory = getStatics() + initial;
+        */
+        String domain = "";
+        
+        String theory = getStatics() + domain;
 
 
 
