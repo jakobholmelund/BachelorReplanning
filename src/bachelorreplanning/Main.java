@@ -82,7 +82,9 @@ public class Main {
             mainWindow.drawWorld(world);
             agent.run();
             Thread.sleep(1000);
-            
+            if(agent.iteration == 3) {
+                world.addObject(new Box("a", 1,8));
+            }
         }
         
         /*

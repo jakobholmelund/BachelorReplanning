@@ -25,10 +25,6 @@ public class FSPlanner { //  implements Runnable
     public void getPercepts() {
        long time1 = System.currentTimeMillis();
         String domain = "";
-        if(iteration > 3) {
-            System.out.println("A box appears in [1,8]. ");
-            domain += "boxAt(b, [1,8]). ";
-        }
         
         for(Object o : world.getObjects()) {
             // add to percepts            
