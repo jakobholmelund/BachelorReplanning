@@ -111,8 +111,6 @@ public class World {
             }
         }else{ 
             Box box = null;
-            
-            
                 if("Push".equals(command)){
                     System.out.println("BOX");
                     System.out.println(map.coords2value.get(map.keyFor(mapagent.x+1, mapagent.y)));
@@ -129,8 +127,6 @@ public class World {
                         System.out.println("w");
                         box = (Box)map.get(mapagent.x-1, mapagent.y);
                     }
-                    System.out.println("x " + box.x + " y " + box.y);
-                    System.out.println("x " + mapagent.x + " y " + mapagent.y);
                     if("n".equals(boxcurdir)){
                         int boxoldx = box.x;
                         int boxoldy = box.y;
@@ -152,10 +148,6 @@ public class World {
                         this.moveObject(box, box.x-1, box.y);
                         this.moveObject(mapagent, boxoldx, boxoldy);
                     }
-                    
-                    System.out.println("x " + box.x + " y " + box.y);
-                    System.out.println("x " + mapagent.x + " y " + mapagent.y);
-                    
                 }else if("Pull".equals(command)){
                     if("n".equals(boxcurdir)){
                         System.out.println("n");

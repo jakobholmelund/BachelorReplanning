@@ -6,13 +6,16 @@
 package gui;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import worldmodel.MapObject;
 import worldmodel.Tile;
+import worldmodel.Wall;
 import worldmodel.World;
+import worldmodel.Box;
 
 /**
  *
@@ -39,9 +42,18 @@ public class WorldPanel extends JPanel {
             System.out.println("AFTER INITIATE");
             for(MapObject mo:fields){
                 MapObject worldobject = world.getMap().get(mo.getPosition());
+               
                 if(worldobject != null){
-                    mo.add(worldobject);
-                    mo.repaint();
+                    if(!(worldobject instanceof Wall)){
+                        mo.removeAll();
+                        mo.add(worldobject);
+                        mo.repaint();
+                        if(worldobject instanceof Box){
+                            mo.updateUI();
+                        }
+                        
+                        
+                    }
                 }else{
                     if(mo.getComponentCount()>0){
                         mo.removeAll();

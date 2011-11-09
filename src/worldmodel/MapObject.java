@@ -4,6 +4,9 @@
  */
 package worldmodel;
 
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 /**
@@ -17,12 +20,19 @@ public class MapObject extends JPanel {
     
     public MapObject(long position){
         this.position = position;
+        int[] coords = coordsFor(position);
+        this.x = coords[0];
+        this.y = coords[1];
+        this.setLayout(new FlowLayout(1,1,1));
+        this.setPreferredSize(new Dimension(50,50));
     }
     
     public MapObject(int x, int y){
         this.position = keyFor(x,y);
         this.x = x;
         this.y = y;
+        this.setLayout(new FlowLayout(1,1,1));
+        this.setPreferredSize(new Dimension(50,50));
     }
     
     public void setPosition(long position){

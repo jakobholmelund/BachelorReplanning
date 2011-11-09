@@ -15,6 +15,7 @@ import jTrolog.parser.Parser;
 import jTrolog.engine.*;
 import jTrolog.terms.*;
 import worldmodel.Box;
+import worldmodel.Goal;
 import worldmodel.MapAgent;
 import worldmodel.Wall;
 import worldmodel.World;
@@ -73,18 +74,19 @@ public class Main {
         world.addObject(new Wall(9,9));
         
         world.addObject(new Box("a", 2,1));
+        world.addObject(new Goal("a",8,8));
         
         MainWindow mainWindow = new MainWindow();
         
         FSPlanner agent = new FSPlanner(world);
         
         while(!agent.done()) {
-            mainWindow.drawWorld(world);
-            agent.run();
-            Thread.sleep(1000);
             if(agent.iteration == 3) {
-                world.addObject(new Box("a", 1,8));
+                //world.addObject(new Box("h", 5,8));
             }
+            mainWindow.drawWorld(world);
+            Thread.sleep(1000);
+            agent.run();
         }
         
         /*

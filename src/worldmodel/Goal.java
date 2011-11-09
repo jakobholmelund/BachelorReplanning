@@ -12,20 +12,21 @@ import java.awt.Graphics;
  *
  * @author jakobenvy
  */
-public class MapAgent extends MapObject {
-    protected int id;
-    public MapAgent(int id, long position){
+public class Goal extends MapObject {
+    String name;
+    public Goal(long position){
         super(position);
-        //setBackground(Color.RED);
-        this.id = id;
+        setBackground(Color.BLUE);
     }
-    public MapAgent(int id, int x, int y){
+
+    public Goal(String name, int x, int y){
         super(x,y);
-        //setBackground(Color.RED);
-        this.id = id;
+        setBackground(Color.BLUE);
+        this.name = name;
     }
-    public int getNumber(){
-        return id;
+    
+    public String getName() {
+        return this.name;
     }
     
     @Override public void paintComponent(Graphics g) {
@@ -34,10 +35,8 @@ public class MapAgent extends MapObject {
     int w = getWidth();     // get width of panel.
     int h = getHeight();    // get its height.
     g.drawOval(0, 0, w-1, h-1); // upper left to lower right.
-    char[] charA = String.valueOf(this.id).toCharArray();
+    char[] charA = this.name.toCharArray();
     g.setFont(new Font("Arial", Font.PLAIN, 50));
     g.drawChars(charA, 0, 1, 10, 42);
+    }
 }
-    
-}
-
