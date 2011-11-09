@@ -4,10 +4,13 @@
  */
 package worldmodel;
 
+import Planner.forward.Action;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.JPanel;
-
+import java.util.regex.*;
 /**
  *
  * @author jakobenvy
@@ -15,6 +18,7 @@ import javax.swing.JPanel;
 public class World {
     private CoordinateMap<MapObject> map = new CoordinateMap<MapObject>();
     private Collection<MapObject> objects = new ArrayList<MapObject>();
+    private Map<String,MapObject> objectMap = new HashMap<String,MapObject>();
     private boolean hasChanged = false;
     
     public World(){
@@ -29,6 +33,9 @@ public class World {
         this.objects.add(mo);
         this.map.put(mo.getPosition(), mo);
         this.hasChanged = true;
+        if(mo instanceof MapAgent){
+            objectMap.put(""+((MapAgent)mo).id, mo);
+        }
     }
     
     public void moveObject(MapObject mo, int x, int y){
@@ -58,4 +65,40 @@ public class World {
             parent.add(mo);
         }
     }
+    
+        
+    public void agentActionParse(String action){
+        Pattern typeP = Pattern.compile("(^\\w+)\\((\\w*)\\,(\\w+)(\\,(\\w+))?");
+        Matcher m = typeP.matcher("Move(1,b)");
+        m.find();
+        String command = m.group(1);
+        System.out.println(command);
+        //Pattern agentP = Pattern.compile("\\((\\w*)");
+        //m = agentP.matcher("Move(1,b)");
+        //m.find();
+        String agent = m.group(2);
+        System.out.println(agent);
+        
+        String amovedir = m.group(3);
+        System.out.println(amovedir);
+        
+        String bmovedir = m.group(4);
+        System.out.println(bmovedir);
+        
+        MapAgent mapagent = (MapAgent)objectMap.get(agent);
+        
+        if("Move".equals(command)){
+            if("n".equals(amovedir)){
+                this.moveObject(mapagent, mapagent.getX(), mapagent.getY()+1);
+            }else if("s".equals(amovedir)){
+                this.moveObject(mapagent, mapagent.getX(), mapagent.getY()-1);
+            }else if("e".equals(amovedir)){
+                this.moveObject(mapagent, mapagent.getX()+1, mapagent.getY());
+            }else if("w".equals(amovedir)){
+                this.moveObject(mapagent, mapagent.getX()-1, mapagent.getY());
+            }
+            
+        }
+    }
+
 }

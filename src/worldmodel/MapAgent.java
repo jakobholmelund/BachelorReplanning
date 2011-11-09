@@ -11,9 +11,11 @@ import java.awt.Color;
  * @author jakobenvy
  */
 public class MapAgent extends MapObject {
-    public MapAgent(long position){
+    protected int id;
+    public MapAgent(int id, long position){
         super(position);
         setBackground(Color.RED);
+        this.id = id;
     }
     public MapAgent(int x, int y){
         super(x,y);
