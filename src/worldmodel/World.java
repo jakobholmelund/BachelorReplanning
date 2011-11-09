@@ -37,7 +37,7 @@ public class World {
         mo.setPosition(key);
         this.hasChanged = true;
     }
-    
+    //test
     public void removeObject(MapObject mo){
         map.remove(mo.getPosition(), mo);
         this.hasChanged = true;
