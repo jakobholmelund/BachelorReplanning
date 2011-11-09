@@ -71,7 +71,7 @@ public class World {
         
     public void agentActionParse(String action){
         Pattern typeP = Pattern.compile("(^\\w+)\\((\\w*)\\,(\\w+)(\\,(\\w+))?");
-        Matcher m = typeP.matcher("Move(1,b)");
+        Matcher m = typeP.matcher(action);
         m.find();
         String command = m.group(1);
         System.out.println(command);
@@ -80,7 +80,7 @@ public class World {
         //m.find();
         String agent = m.group(2);
         String amovedir = m.group(3);    
-        String bmovedir = m.group(4);
+        String bmovedir = m.group(5);
         
         MapAgent mapagent = (MapAgent)objectMap.get(agent);
         
@@ -152,5 +152,6 @@ public class World {
                 }
         }
         
+        System.out.println();
     }
 }
