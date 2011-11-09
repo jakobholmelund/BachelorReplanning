@@ -40,7 +40,7 @@ public class WorldPanel extends JPanel {
                 tile.setMinimumSize(tile.getPreferredSize());
                 tile.setBorder(BorderFactory.createLineBorder(Color.RED, 1));
                 this.add(tile);
-                MapObject worldobject = world.getMap().get(i, j);
+                MapObject worldobject = world.getMap().get(j, i);
                 if(worldobject != null){
                     tile.add(worldobject);
                 }
