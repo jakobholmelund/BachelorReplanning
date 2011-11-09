@@ -35,6 +35,8 @@ public class World {
         this.hasChanged = true;
         if(mo instanceof MapAgent){
             objectMap.put(""+((MapAgent)mo).id, mo);
+        }else if(mo instanceof Box){
+            objectMap.put(""+((Box)mo).name, mo);
         }
     }
     
@@ -77,13 +79,8 @@ public class World {
         //m = agentP.matcher("Move(1,b)");
         //m.find();
         String agent = m.group(2);
-        System.out.println(agent);
-        
-        String amovedir = m.group(3);
-        System.out.println(amovedir);
-        
+        String amovedir = m.group(3);    
         String bmovedir = m.group(4);
-        System.out.println(bmovedir);
         
         MapAgent mapagent = (MapAgent)objectMap.get(agent);
         
@@ -97,8 +94,52 @@ public class World {
             }else if("w".equals(amovedir)){
                 this.moveObject(mapagent, mapagent.getX()-1, mapagent.getY());
             }
-            
+        }else{ 
+            Box box = null;
+            if("n".equals(amovedir)){
+                box = (Box)map.get(mapagent.getX()+1, mapagent.getX());
+            }else if("s".equals(amovedir)){
+                box = (Box)map.get(mapagent.getX()+1, mapagent.getX());
+            }else if("e".equals(amovedir)){
+                box = (Box)map.get(mapagent.getX(), mapagent.getX()+1);
+            }else if("w".equals(amovedir)){
+                box = (Box)map.get(mapagent.getX(), mapagent.getX()-1);
+            }
+                if("Push".equals(command)){
+                    if("n".equals(bmovedir)){
+                        this.moveObject(mapagent, mapagent.getX(), mapagent.getY()+1);
+                        this.moveObject(box, box.getX()-1, box.getY());
+                    }else if("s".equals(bmovedir)){
+                        this.moveObject(mapagent, mapagent.getX(), mapagent.getY()+1);
+                        this.moveObject(box, box.getX()-1, box.getY());
+                    }else if("e".equals(bmovedir)){
+                        this.moveObject(mapagent, mapagent.getX(), mapagent.getY()+1);
+                        this.moveObject(box, box.getX()-1, box.getY());
+                    }else if("w".equals(bmovedir)){
+                        this.moveObject(mapagent, mapagent.getX(), mapagent.getY()+1);
+                        this.moveObject(box, box.getX()-1, box.getY());
+                    }
+                }else if("Pull".equals(command)){
+                    if("n".equals(bmovedir)){
+                        this.moveObject(mapagent, mapagent.getX(), mapagent.getY()+1);
+                        this.moveObject(box, box.getX()-1, box.getY());
+                    }else if("s".equals(bmovedir)){
+                        this.moveObject(mapagent, mapagent.getX(), mapagent.getY()+1);
+                        this.moveObject(box, box.getX()-1, box.getY());
+                    }else if("e".equals(bmovedir)){
+                        this.moveObject(mapagent, mapagent.getX(), mapagent.getY()+1);
+                        this.moveObject(box, box.getX()-1, box.getY());
+                    }else if("w".equals(bmovedir)){
+                       this.moveObject(mapagent, mapagent.getX(), mapagent.getY()+1);
+                       this.moveObject(box, box.getX()-1, box.getY());
+                    }
+                }
         }
+        
+    }
+    
+    private void moveAgentDirection(){
+    
     }
 
 }

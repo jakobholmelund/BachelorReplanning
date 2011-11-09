@@ -17,9 +17,13 @@ public class MapAgent extends MapObject {
         setBackground(Color.RED);
         this.id = id;
     }
-    public MapAgent(int x, int y){
+    public MapAgent(int id, int x, int y){
         super(x,y);
         setBackground(Color.RED);
+        this.id = id;
+    }
+    public int getNumber(){
+        return id;
     }
 }
 

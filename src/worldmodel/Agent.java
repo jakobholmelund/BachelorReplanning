@@ -19,5 +19,6 @@ public class Agent extends MapObject {
         super(x,y);
         setBackground(Color.RED);
     }
+    
 
 }
