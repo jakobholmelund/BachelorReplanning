@@ -4,15 +4,18 @@ import jTrolog.errors.PrologException;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import worldmodel.World;
 
 public class FSPlanner { //  implements Runnable
     State state;
     Plan plan;
     public int iteration;
-
-    public FSPlanner() {
+    World world;
+    
+    public FSPlanner(World world) {
         iteration = 0;
         this.plan = null;
+        this.world = world;
     }
 
     public void getPercepts() {
