@@ -4,13 +4,16 @@
  */
 package worldmodel;
 
+import controllers.AddItemController;
 import java.awt.Color;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 /**
  *
  * @author jakobenvy
  */
-public class Tile extends MapObject {
+public class Tile extends MapObject{
     public Tile(long position){
         super(position);
         setBackground(Color.WHITE);
@@ -19,4 +22,5 @@ public class Tile extends MapObject {
         super(x,y);
         setBackground(Color.WHITE);
     }
+
 }
