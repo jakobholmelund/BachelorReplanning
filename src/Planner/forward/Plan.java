@@ -49,12 +49,12 @@ public class Plan {
 
     boolean valid(State state) {
         boolean valid = true;
-        System.err.println(state);
+        //System.err.println("state: " + state);
         for (Action a : list) {
             for (String st : a.requirements) {
-                System.out.println("Solving: " + st);
+                
                 boolean res = state.state.solveboolean(st);
-                System.out.println(res);
+                //System.out.println("Solving: " + st + " res: " + res);
                 if (!res) {
                     valid = false;
                     break;

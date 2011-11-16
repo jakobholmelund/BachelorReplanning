@@ -141,7 +141,7 @@ public class Problem {
                 //System.out.println("C0: " + C0);
                 String C1 = "" + si.getBinding("C1");
                 //System.out.println("C1: " + C1);
-                Action act = new Action("Move(" + MoveDirAgent + ")");
+                Action act = new Action("Move(" + agent + "," + MoveDirAgent + ")");
                 act.addEffect("agentAt(" + agent + "," + C1 + ")");
                 act.addEffect("!agentAt(" + agent + "," + C0 + ")");
 
@@ -176,7 +176,7 @@ public class Problem {
                 //System.err.println("C2: " + C2);
                 String B = "" + si1.getBinding("B");
                 //System.err.println("B: " + B);
-                Action act = new Action("Push(" + MoveDirAgent + "," + CurrDirBox + ") ");
+                Action act = new Action("Push(" + agent + "," + MoveDirAgent + "," + CurrDirBox + ") ");
                 act.addEffect("agentAt(" + agent + "," + C1 + ")");
                 act.addEffect("!agentAt(" + agent + "," + C0 + ")");
                 act.addEffect("boxAt(" + B + "," + C2 + ")");
@@ -208,7 +208,7 @@ public class Problem {
                 String C2 = "" + si2.getBinding("C2");
                 String B = "" + si2.getBinding("B");
 
-                Action act = new Action("Pull(" + MoveDirAgent + "," + CurrDirBox + ")");
+                Action act = new Action("Pull(" + agent + "," + MoveDirAgent + "," + CurrDirBox + ")");
                 act.addEffect("agentAt(" + agent + "," + C1 + ")");
                 act.addEffect("!agentAt(" + agent + "," + C0 + ")");
                 act.addEffect("boxAt(" + B + "," + C0 + ")");

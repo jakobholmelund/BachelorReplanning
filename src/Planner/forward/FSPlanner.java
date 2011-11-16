@@ -1,4 +1,4 @@
-package Planner.naiveReplan;
+package Planner.forward;
 
 import jTrolog.errors.PrologException;
 import java.util.TreeSet;
@@ -72,7 +72,7 @@ public class FSPlanner { //  implements Runnable
 
             // check if plan is still valid
             boolean valid = false;
-            if(this.plan != null && this.plan.list.size() == 0) {
+            if(this.plan != null && this.plan.list.isEmpty()) {
                 this.done = true;
                 System.err.println("DONE! ");
                 return; 
@@ -95,7 +95,7 @@ public class FSPlanner { //  implements Runnable
                     System.out.println("Replan: " + !valid);
                 }
                 // Else, make a new plan ( and perform the first action ? )
-
+                
                 Problem p = new Problem();
                 p.setInitial(this.state);
                 //System.out.println(this.state);
@@ -127,40 +127,21 @@ public class FSPlanner { //  implements Runnable
             if (frontier.isEmpty()) {
                 return null;
             }
-            // System.out.println("FRONTER 1: " + frontier.toString());
-            Node n = frontier.pollFirst();
-            frontier.clear();
             
-            //if(n.a != null) {
-            //    explored.add(n.s.shortState); //n.a.effect.toString());
-            //}
-            //System.out.println("FRONTER 2: " + frontier.toString());
-            //System.out.println("Exploring at step: " + n.g);
+            Node n = frontier.pollFirst();
+            //frontier.clear();
+            
             if (p.goalTest(n.s)) {
                 //System.out.println("State Space Size: " + states);
                 return makeSolution(n, p);
             }
-            //System.out.println("EXPLORING : " + n.toString());
-            //System.out.println("ACTIONS: " + p.actions(n.s));
-
+            
             for (Action a : p.actions(n.s)) {
                 //System.err.println("ACTION!!!!: " + a.name);
                 State s1 = p.result(n.s, a);
                 frontier.add(new Node(s1, n, a, n.g + p.cost(s1, a), p.heuristik(s1, a, n)));
                 states++;
-                /*if(!explored.contains(s1.shortState)) { //a.effect.toString())){
-                    frontier.add(new Node(s1, n, a, n.g + p.cost(s1, a), p.heuristik(s1, a, n)));
-                    states++;
-                }else{
-                    removedstates++;
-                    //System.out.println("STATE PRUNED: " + a.toString() + " num removed: " + removedstates);
-                }
-                /*if(frontier.size() > 50) {
-                    frontier.pollLast();
-                }*/
             }
-            //System.err.println("Frontier size: " + frontier.size());
-            //System.err.println("");
         }
     }
 

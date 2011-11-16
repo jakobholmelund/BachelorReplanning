@@ -5,10 +5,10 @@
 package bachelorreplanning;
 
 import Planner.Logic;
-import Planner.naiveReplan.FSPlanner;
-import Planner.naiveReplan.Plan;
-import Planner.naiveReplan.Problem;
-import Planner.naiveReplan.State;
+import Planner.forward.FSPlanner;
+import Planner.forward.Plan;
+import Planner.forward.Problem;
+import Planner.forward.State;
 import gui.MainWindow;
 import jTrolog.errors.PrologException;
 import jTrolog.parser.Parser;
@@ -82,20 +82,11 @@ public class Main {
         
         while(!agent.done()) {
             if(agent.iteration == 3) {
-                //world.addObject(new Box("h", 5,8));
+                world.addObject(new Box("a", 5,8));
             }
             mainWindow.drawWorld(world);
             Thread.sleep(1000);
             agent.run();
-        }
-        
-        /*
-        agent.run();
-        agent.run();
-        agent.run();
-        agent.run();
-        agent.run();
-        */
-         
+        } 
     }
 }
