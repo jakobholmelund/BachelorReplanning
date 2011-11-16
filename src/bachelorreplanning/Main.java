@@ -9,6 +9,7 @@ import Planner.forward.FSPlanner;
 import Planner.forward.Plan;
 import Planner.forward.Problem;
 import Planner.forward.State;
+import controllers.AddItemController;
 import gui.MainWindow;
 import jTrolog.errors.PrologException;
 import jTrolog.parser.Parser;
@@ -29,7 +30,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws PrologException, Throwable {
-        World world = new World();
+        World world = new World(10,10);
         world.addObject(new MapAgent(0, 1 ,1));
         world.addObject(new Wall(0,0));
         world.addObject(new Wall(1,0));
@@ -76,15 +77,20 @@ public class Main {
         world.addObject(new Box("a", 2,1));
         world.addObject(new Goal("a",8,8));
         
-        MainWindow mainWindow = new MainWindow();
         
+        Box test = new Box("a",0,0);
+        AddItemController addItemController = new AddItemController(world);
+        addItemController.setActive(test);
+        MainWindow mainWindow = new MainWindow(addItemController);
+        mainWindow.loadNewWorld(world);
+        mainWindow.drawWorld();
         FSPlanner agent = new FSPlanner(world);
         
         while(!agent.done()) {
             if(agent.iteration == 3) {
                 world.addObject(new Box("a", 5,8));
             }
-            mainWindow.drawWorld(world);
+            mainWindow.drawWorld();
             Thread.sleep(1000);
             agent.run();
         } 

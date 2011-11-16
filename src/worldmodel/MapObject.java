@@ -18,6 +18,11 @@ public class MapObject extends JPanel {
     public int x;
     public int y;
     
+    public MapObject(){
+        this.setLayout(new FlowLayout(1,1,1));
+        this.setPreferredSize(new Dimension(50,50));
+    }
+    
     public MapObject(long position){
         this.position = position;
         int[] coords = coordsFor(position);
@@ -37,10 +42,19 @@ public class MapObject extends JPanel {
     
     public void setPosition(long position){
         this.position = position;
+        int[] coords = coordsFor(position);
+        this.x = coords[0];
+        this.y = coords[1];
     }
     
     public void setPosition(Long key, int x, int y){
         this.position = key;
+        this.x = x;
+        this.y = y;
+    }
+    
+    public void setPosition(int x, int y){
+        this.position = keyFor(x,y);
         this.x = x;
         this.y = y;
     }

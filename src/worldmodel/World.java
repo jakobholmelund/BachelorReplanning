@@ -20,9 +20,20 @@ public class World {
     private Collection<MapObject> objects = new ArrayList<MapObject>();
     private Map<String,MapObject> objectMap = new HashMap<String,MapObject>();
     private boolean hasChanged = false;
+    private int cols;
+    private int rows;
     
-    public World(){
     
+    public World(int rows, int cols){
+        this.rows = rows;
+        this.cols = cols;
+    }
+    
+    public int getX(){
+        return this.cols;
+    }
+    public int getY(){
+        return this.rows;
     }
     
     public CoordinateMap<MapObject> getMap(){
