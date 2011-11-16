@@ -129,7 +129,7 @@ public class FSPlanner { //  implements Runnable
             }
             
             Node n = frontier.pollFirst();
-            frontier.clear();
+            //frontier.clear();
             
             if (p.goalTest(n.s)) {
                 //System.out.println("State Space Size: " + states);
