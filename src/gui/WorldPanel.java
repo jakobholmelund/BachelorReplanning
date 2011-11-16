@@ -78,7 +78,6 @@ public class WorldPanel extends JPanel {
                     tile.add(worldobject);
                 }
                 fields.add(tile);
-                tile.updateUI();
             }
         }
         }

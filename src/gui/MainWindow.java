@@ -38,6 +38,6 @@ public class MainWindow extends JFrame {
         //this.worldPanel.setVisible(false);
         this.worldPanel.draw(w);
         //this.worldPanel.setVisible(true);
-        //this.worldPanel.repaint();
+        this.worldPanel.updateUI();
     }
 }
