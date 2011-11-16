@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import worldmodel.*;
 
-public class FSPlanner { //  implements Runnable
+public class FSPlanner implements Runnable{ //  implements Runnable
     State state;
     Plan plan;
     public int iteration;
@@ -63,6 +63,11 @@ public class FSPlanner { //  implements Runnable
     }
 
     public void run() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
         System.out.println("New iteration");
         iteration++;
         String goal = "boxAt(a,[8,8]). ";

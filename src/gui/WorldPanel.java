@@ -51,14 +51,6 @@ public class WorldPanel extends JPanel {
                         mo.removeAll();
                         mo.add(worldobject);
                         mo.repaint();
-                        if(worldobject instanceof Box){
-                            //mo.updateUI();
-                        }
-                    }
-                }else{
-                    if(mo.getComponentCount()>0){
-                        mo.removeAll();
-                        mo.repaint();
                     }
                 }
             }

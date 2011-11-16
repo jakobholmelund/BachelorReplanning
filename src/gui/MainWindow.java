@@ -43,12 +43,13 @@ public class MainWindow extends JFrame {
     public void loadNewWorld(World w){
         this.world = w;
         this.drawWorld();
+        this.worldPanel.updateUI();
     }
     
     public void drawWorld(){
         //this.worldPanel.setVisible(false);
         this.worldPanel.draw(this.world);
         //this.worldPanel.setVisible(true);
-        this.worldPanel.updateUI();
+        
     }
 }

@@ -85,14 +85,14 @@ public class Main {
         mainWindow.loadNewWorld(world);
         mainWindow.drawWorld();
         FSPlanner agent = new FSPlanner(world);
-        
+        Thread init = new Thread(agent);
         while(!agent.done()) {
             if(agent.iteration == 3) {
                 world.addObject(new Box("b", 5,8));
             }
             mainWindow.drawWorld();
-            Thread.sleep(1000);
-            agent.run();
-        } 
+            init.run();
+        }
+        init.join();
     }
 }
