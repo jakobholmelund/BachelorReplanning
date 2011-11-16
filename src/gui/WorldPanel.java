@@ -23,14 +23,12 @@ import worldmodel.Box;
  */
 public class WorldPanel extends JPanel {
         private int tileSize = 10;
-        private int cols = 10;
-        private int rows = 10;
         private boolean init = true;
         private ArrayList<MapObject> fields = new ArrayList<MapObject>();
         
         
     WorldPanel(int width, int height) {
-        GridLayout boardlayout = new GridLayout(cols, rows, 0, 0);
+        GridLayout boardlayout = new GridLayout(1, 1, 0, 0);
         this.setLayout(boardlayout);
         this.setPreferredSize(new Dimension(width, height));
         this.setMaximumSize( this.getPreferredSize() );
@@ -38,11 +36,12 @@ public class WorldPanel extends JPanel {
     }
 
     public void draw(World world){
+        GridLayout boardlayout = new GridLayout(world.getY(), world.getX(), 0, 0);
+        this.setLayout(boardlayout);
         if(!init){
             System.out.println("AFTER INITIATE");
             for(MapObject mo:fields){
                 MapObject worldobject = world.getMap().get(mo.getPosition());
-               
                 if(worldobject != null){
                     if(!(worldobject instanceof Wall)){
                         mo.removeAll();
@@ -51,8 +50,6 @@ public class WorldPanel extends JPanel {
                         if(worldobject instanceof Box){
                             mo.updateUI();
                         }
-                        
-                        
                     }
                 }else{
                     if(mo.getComponentCount()>0){
@@ -65,8 +62,8 @@ public class WorldPanel extends JPanel {
             init = false;
             
         //this.removeAll();
-        for(int i = 0; i < cols; i++) {
-            for(int j = 0; j < rows; j++) {
+        for(int i = 0; i < world.getX(); i++) {
+            for(int j = 0; j < world.getY(); j++) {
                 Tile tile = new Tile(i,j);
                 tile.setPreferredSize(new Dimension(tileSize, tileSize));
                 tile.setMaximumSize(tile.getPreferredSize());
@@ -81,5 +78,6 @@ public class WorldPanel extends JPanel {
             }
         }
         }
+        this.updateUI();
     }
 }

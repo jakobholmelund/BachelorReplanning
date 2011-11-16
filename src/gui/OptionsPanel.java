@@ -20,4 +20,9 @@ public class OptionsPanel extends JPanel {
         this.setMaximumSize( this.getPreferredSize() );
         this.setBackground(Color.blue);
     }
+    
+    public void draw(){
+        JPanel box = new JPanel();
+        this.add(box);
+    }
 }

@@ -29,7 +29,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws PrologException, Throwable {
-        World world = new World();
+        World world = new World(10,10);
         world.addObject(new MapAgent(0, 1 ,1));
         world.addObject(new Wall(0,0));
         world.addObject(new Wall(1,0));
