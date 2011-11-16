@@ -63,11 +63,6 @@ public class FSPlanner implements Runnable{ //  implements Runnable
     }
 
     public void run() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
-        }
         System.out.println("New iteration");
         iteration++;
         String goal = "boxAt(a,[8,8]). ";
@@ -120,6 +115,11 @@ public class FSPlanner implements Runnable{ //  implements Runnable
             Logger.getLogger(FSPlanner.class.getName()).log(Level.SEVERE, null, ex);
         } catch (PrologException ex) {
             Logger.getLogger(FSPlanner.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
         }
     }
 
