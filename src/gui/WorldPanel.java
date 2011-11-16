@@ -26,7 +26,7 @@ public class WorldPanel extends JPanel {
         private int cols = 10;
         private int rows = 10;
         private boolean init = true;
-        private ArrayList<MapObject> fields = new ArrayList<>();
+        private ArrayList<MapObject> fields = new ArrayList<MapObject>();
         
         
     WorldPanel(int width, int height) {
