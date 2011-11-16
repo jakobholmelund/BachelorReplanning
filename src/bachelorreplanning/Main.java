@@ -88,7 +88,7 @@ public class Main {
         
         while(!agent.done()) {
             if(agent.iteration == 3) {
-                world.addObject(new Box("a", 5,8));
+                world.addObject(new Box("b", 5,8));
             }
             mainWindow.drawWorld();
             Thread.sleep(1000);
