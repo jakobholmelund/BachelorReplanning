@@ -26,7 +26,7 @@ public class WorldPanel extends JPanel {
         private int cols = 10;
         private int rows = 10;
         private boolean init = true;
-        private ArrayList<MapObject> fields = new ArrayList<MapObject>();
+        private ArrayList<MapObject> fields = new ArrayList<>();
         
         
     WorldPanel(int width, int height) {
@@ -78,6 +78,7 @@ public class WorldPanel extends JPanel {
                     tile.add(worldobject);
                 }
                 fields.add(tile);
+                tile.updateUI();
             }
         }
         }
