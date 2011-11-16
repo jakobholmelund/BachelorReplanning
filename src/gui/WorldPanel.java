@@ -85,7 +85,6 @@ public class WorldPanel extends JPanel {
                          {
                             if(addItemController.getActive() != null && tile.getComponent(0).equals(addItemController.getActive())){
                                 addItemController.persist(tile.x,tile.y);
-                                addItemController.removeActive();
                                 setBackground(Color.WHITE);
                                 tile.updateUI();
                             }

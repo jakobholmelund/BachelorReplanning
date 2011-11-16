@@ -22,6 +22,7 @@ public class AddItemController {
     public void persist(int x,int y){
         activeObject.setPosition(x,y);
         this.world.addObject(activeObject);
+        this.removeActive();
     }
     
     public void setActive(MapObject mo){
