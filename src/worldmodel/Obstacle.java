@@ -4,11 +4,13 @@
  */
 package worldmodel;
 
+import java.io.Serializable;
+
 /**
  *
  * @author jakobenvy
  */
-public class Obstacle extends MapObject {
+public class Obstacle extends MapObject implements Serializable {
     public Obstacle(long position){
         super(position);
     }

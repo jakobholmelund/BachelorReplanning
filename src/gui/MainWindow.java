@@ -44,12 +44,12 @@ public class MainWindow extends JFrame {
     }
     
     public void drawOptions(){
-        this.optionsPanel.draw(this.world);
+        this.optionsPanel.draw(this.world,this);
     }
     
     public void drawWorld(){
         //this.worldPanel.setVisible(false);
         this.worldPanel.draw(this.world);
-        //this.worldPanel.setVisible(true);
+        //this.worldPanel.updateUI();
     }
 }

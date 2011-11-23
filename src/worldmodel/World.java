@@ -4,6 +4,7 @@
  */
 package worldmodel;
 
+import gui.WorldPanel;
 import java.awt.FileDialog;
 import java.awt.Frame;
 import java.io.File;
@@ -133,9 +134,12 @@ public class World {
       filePath = fd.getDirectory() + fd.getFile().toString();
       FileOutputStream fos = new FileOutputStream( filePath );
       ObjectOutputStream outStream = new ObjectOutputStream( fos );
+      for(MapObject mo:objects){
+          System.out.println(mo);
+      }
+      
       outStream.writeObject( objects );
       outStream.flush();
-      
     }
     
     public World load() throws FileNotFoundException, IOException, ClassNotFoundException{
@@ -153,7 +157,7 @@ public class World {
       // Retrieve the Serializable object.
       objects = ( Collection<MapObject> )inStream.readObject();
       
-      this.loadFromObjects(objects);
+      //this.loadFromObjects(objects);
       World new_world = new World(this.cols,this.rows);
       new_world.loadFromObjects(objects);
       return new_world;
@@ -166,6 +170,7 @@ public class World {
         hasChanged = false;
         activeObject = null;
         for(MapObject mo:array){
+            System.out.println(mo.getPosition());
             this.addObject(mo);
         }
         

@@ -21,7 +21,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws PrologException, Throwable {
-        World world = new LargeWorld();
+        World world = new World(30,30);
         
         MainWindow mainWindow = new MainWindow();
         mainWindow.loadNewWorld(world);
@@ -30,6 +30,7 @@ public class Main {
         FSPlanner agent = new FSPlanner(world);
         Thread init = new Thread(agent);
         
+        /*
         while(!agent.done()) {
             if(agent.iteration == 3) {
                 world.addObject(new MapBox("b", 5,8));
@@ -38,5 +39,7 @@ public class Main {
             init.run();
         }
         init.join();
+         * 
+         */
     }
 }

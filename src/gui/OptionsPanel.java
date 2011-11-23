@@ -28,9 +28,9 @@ public class OptionsPanel extends JPanel {
         this.setBackground(Color.blue);
     }
     
-    public void draw(final World world){
+    public void draw(final World world,MainWindow parent){
         this.removeAll();
-        this.add(new AddItemsPanel(world));
+        this.add(new AddItemsPanel(world,parent));
         
         
         
