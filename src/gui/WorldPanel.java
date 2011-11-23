@@ -55,13 +55,13 @@ public class WorldPanel extends JPanel {
         //this.removeAll();
         for(int i = 0; i < world.getX(); i++) {
             for(int j = 0; j < world.getY(); j++) {
-                final Tile tile = new Tile(i,j);
+                final Tile tile = new Tile(j,i);
                 tile.setPreferredSize(new Dimension(tileSize, tileSize));
                 tile.setMaximumSize(tile.getPreferredSize());
                 tile.setMinimumSize(tile.getPreferredSize());
                 tile.setBorder(BorderFactory.createLineBorder(Color.RED, 1));
                 this.add(tile);
-                MapObject worldobject = world.getMap().get(i, j);
+                MapObject worldobject = world.getMap().get(j, i);
                 if(worldobject != null){
                     tile.add(worldobject);
                 }
