@@ -15,7 +15,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import worldmodel.MapObject;
 import worldmodel.Tile;
-import worldmodel.Wall;
 import worldmodel.World;
 
 /**

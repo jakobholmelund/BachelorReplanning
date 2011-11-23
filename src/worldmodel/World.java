@@ -8,7 +8,6 @@ import Planner.forward.FSPlanner;
 import gui.WorldPanel;
 import java.awt.FileDialog;
 import java.awt.Frame;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -64,10 +63,16 @@ public class World {
         for(MapObject mo:objects){
             if(mo instanceof MapAgent){
                 System.out.println("Starting agent");
-                FSPlanner agent = new FSPlanner(this);
+                FSPlanner agent = null;
+                if(((MapAgent)mo).getNumber()==1){
+                    agent = new FSPlanner(this,((MapAgent)mo).getNumber(),"boxAt(a,[13,18]). ","a");
+                }else if(((MapAgent)mo).getNumber()==2){
+                    agent = new FSPlanner(this,((MapAgent)mo).getNumber(),"boxAt(b,[13,1]). ","b");
+                }
                 Thread init = new Thread(agent);
-                init.start();
-                runningAgents.add(init);
+                    init.start();
+                    runningAgents.add(init);
+                
             }
         }
         
@@ -103,16 +108,20 @@ public class World {
     }
     
     public void moveObject(MapObject mo, int x, int y){
-        long key = map.keyFor(x, y);
-        map.update(mo.getPosition(), key, mo);
-        mo.setPosition(key,x,y);
-        this.hasChanged = true;
+        synchronized(this){
+            long key = map.keyFor(x, y);
+            map.update(mo.getPosition(), key, mo);
+            mo.setPosition(key,x,y);
+            this.hasChanged = true;
+        }
     }
     
     public void moveObject(MapObject mo, long key){
-        map.update(mo.getPosition(), key, mo);
-        mo.setPosition(key);
-        this.hasChanged = true;
+        synchronized(this){
+            map.update(mo.getPosition(), key, mo);
+            mo.setPosition(key);
+            this.hasChanged = true;
+        }
     }
     
     //test
@@ -163,13 +172,6 @@ public class World {
     
     public void removeMovableObject(){
         this.activeObject = null;
-    }
-
-    public void draw(JPanel parent){
-        //parent.updateUI();
-        //for(MapObject mo:objects){
-        //    parent.add(mo);
-        //}
     }
     
     public void save() throws FileNotFoundException, IOException{
@@ -230,9 +232,6 @@ public class World {
         m.find();
         String command = m.group(1);
         System.out.println(command);
-        //Pattern agentP = Pattern.compile("\\((\\w*)");
-        //m = agentP.matcher("Move(1,b)");
-        //m.find();
         String agent = m.group(2);
         String amovedir = m.group(3);    
         String boxcurdir = m.group(5);

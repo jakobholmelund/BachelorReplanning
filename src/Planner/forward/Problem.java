@@ -25,8 +25,11 @@ public class Problem {
     String currentBox;
     String currentBoxGoalPos;
 
-    public Problem() throws PrologException {
+    public Problem(int aid,String missionId) throws PrologException {
         this.logic = new Logic();
+        agent=aid;
+        currentBox = missionId;
+        currentBoxGoalPos = missionId;
     }
 
     @Override
@@ -64,9 +67,9 @@ public class Problem {
             double agentToBox;
             double boxToGoal;
 
-            Solution n = logic.solve("agentAt(1, N).");
-            Solution g = logic.solve("goalAt(a, G).");
-            Solution b = logic.solve("boxAt(a, B).");
+            Solution n = logic.solve("agentAt(" + agent + ", N).");
+            Solution g = logic.solve("goalAt("+currentBoxGoalPos+", G).");
+            Solution b = logic.solve("boxAt("+currentBoxGoalPos+", B).");
             String N = "" + n.getBinding("N"); //[1,3]
             String G = "" + g.getBinding("G"); //[1,3]
             String B = "" + b.getBinding("B"); //[1,3]

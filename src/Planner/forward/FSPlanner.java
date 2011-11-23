@@ -13,13 +13,19 @@ public class FSPlanner implements Runnable{ //  implements Runnable
     World world;
     String statics;
     boolean done;
+    int agentId;
+    String goal;
+    String missionId;
     
-    public FSPlanner(World world) {
+    public FSPlanner(World world,int aid,String goal,String mid) {
         iteration = 0;
         this.plan = null;
         this.world = world;
         statics = createStatics();
         done = false;
+        this.agentId = aid;
+        this.missionId = mid;
+        this.goal = goal;
     }
 
     public void getPercepts() {
@@ -71,7 +77,6 @@ public class FSPlanner implements Runnable{ //  implements Runnable
 
     @Override
     public void run() {
-        String goal = "boxAt(a,[5,5]). ";
         while(!this.done){
         System.out.println("New iteration");
         iteration++;
@@ -110,7 +115,7 @@ public class FSPlanner implements Runnable{ //  implements Runnable
                 }
                 // Else, make a new plan ( and perform the first action ? )
                 
-                Problem p = new Problem();
+                Problem p = new Problem(agentId,missionId);
                 p.setInitial(this.state);
                 //System.out.println(this.state);
                 p.setGoal(goal);
@@ -153,12 +158,12 @@ public class FSPlanner implements Runnable{ //  implements Runnable
             //frontier.clear();
             
             if (p.goalTest(n.s)) {
-                System.out.println("State Space Size: " + states);
+                //System.out.println("State Space Size: " + states);
                 return makeSolution(n, p);
             }
             
             for (Action a : p.actions(n.s)) {
-                System.err.println("ACTION!!!!: " + a.name);
+                //System.err.println("ACTION!!!!: " + a.name);
                 State s1 = p.result(n.s, a);
                 frontier.add(new Node(s1, n, a, n.g + p.cost(s1, a), p.heuristik(s1, a, n)));
                 states++;
