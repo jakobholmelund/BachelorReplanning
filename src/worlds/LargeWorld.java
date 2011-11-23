@@ -163,7 +163,7 @@ public class LargeWorld extends World{
         this.addObject(new Wall(7,6));
         
         // Boxes
-        this.addObject(new Box("a", 2,1));
+        this.addObject(new MapBox("a", 2,1));
         
         // Goals
         this.addObject(new Goal("a",8,8));

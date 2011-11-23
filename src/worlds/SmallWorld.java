@@ -57,7 +57,7 @@ public class SmallWorld extends World{
         this.addObject(new Wall(8,9));
         this.addObject(new Wall(9,9));
         
-        this.addObject(new Box("a", 2,1));
+        this.addObject(new MapBox("a", 2,1));
         this.addObject(new Goal("a",8,8));
     }
 }
