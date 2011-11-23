@@ -32,9 +32,9 @@ public class Main {
         
         /*
         while(!agent.done()) {
-            if(agent.iteration == 3) {
-                world.addObject(new MapBox("b", 5,8));
-            }
+            //if(agent.iteration == 3) {
+            //    world.addObject(new MapBox("b", 5,8));
+            //}
             mainWindow.drawWorld();
             init.run();
         }
