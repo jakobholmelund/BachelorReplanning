@@ -145,28 +145,160 @@ public class LargeWorld extends World{
         this.addObject(new Wall(3,4));
         this.addObject(new Wall(3,5));
         this.addObject(new Wall(3,6));
+        this.addObject(new Wall(3,7));
         this.addObject(new Wall(4,2));
         this.addObject(new Wall(4,3));
         this.addObject(new Wall(4,4));
         this.addObject(new Wall(4,5));
         this.addObject(new Wall(4,6));
+        this.addObject(new Wall(4,7));
         
         this.addObject(new Wall(6,2));
         this.addObject(new Wall(6,3));
         this.addObject(new Wall(6,4));
         this.addObject(new Wall(6,5));
         this.addObject(new Wall(6,6));
+        this.addObject(new Wall(6,7));
         this.addObject(new Wall(7,2));
         this.addObject(new Wall(7,3));
         this.addObject(new Wall(7,4));
         this.addObject(new Wall(7,5));
         this.addObject(new Wall(7,6));
+        this.addObject(new Wall(7,7));
+        
+        this.addObject(new Wall(9,1));
+        this.addObject(new Wall(10,1));
+        this.addObject(new Wall(11,1));
+        this.addObject(new Wall(12,1));
+        this.addObject(new Wall(13,1));
+        this.addObject(new Wall(14,1));
+        this.addObject(new Wall(15,1));
+        this.addObject(new Wall(16,1));
+        this.addObject(new Wall(17,1));
+        this.addObject(new Wall(18,1));
+        this.addObject(new Wall(19,1));
+        this.addObject(new Wall(20,1));
+        
+        this.addObject(new Wall(9,2));
+        this.addObject(new Wall(10,2));
+        this.addObject(new Wall(11,2));
+        this.addObject(new Wall(12,2));
+        this.addObject(new Wall(13,2));
+        this.addObject(new Wall(14,2));
+        this.addObject(new Wall(15,2));
+        this.addObject(new Wall(16,2));
+        this.addObject(new Wall(17,2));
+        this.addObject(new Wall(18,2));
+        this.addObject(new Wall(19,2));
+        this.addObject(new Wall(20,2));
+        
+        this.addObject(new Wall(9,3));
+        this.addObject(new Wall(10,3));
+        this.addObject(new Wall(11,3));
+        this.addObject(new Wall(12,3));
+        
+        this.addObject(new Wall(9,4));
+        this.addObject(new Wall(10,4));
+        this.addObject(new Wall(11,4));
+        this.addObject(new Wall(12,4));
+        
+        this.addObject(new Wall(9,6));
+        this.addObject(new Wall(10,6));
+        this.addObject(new Wall(11,6));
+        this.addObject(new Wall(12,6));
+        
+        this.addObject(new Wall(9,7));
+        this.addObject(new Wall(10,7));
+        this.addObject(new Wall(11,7));
+        this.addObject(new Wall(12,7));
+        
+        this.addObject(new Wall(9,8));
+        this.addObject(new Wall(10,8));
+        this.addObject(new Wall(11,8));
+        this.addObject(new Wall(12,8));
+        this.addObject(new Wall(13,8));
+        this.addObject(new Wall(14,8));
+        this.addObject(new Wall(15,8));
+        this.addObject(new Wall(16,8));
+        
+        this.addObject(new Wall(9,9));
+        this.addObject(new Wall(10,9));
+        this.addObject(new Wall(11,9));
+        this.addObject(new Wall(12,9));
+        this.addObject(new Wall(13,9));
+        this.addObject(new Wall(14,9));
+        this.addObject(new Wall(15,9));
+        this.addObject(new Wall(16,9));
+        
+        this.addObject(new Wall(18,1));
+        this.addObject(new Wall(18,2));
+        this.addObject(new Wall(18,3));
+        this.addObject(new Wall(18,4));
+        this.addObject(new Wall(18,6));
+        this.addObject(new Wall(18,7));
+        this.addObject(new Wall(18,8));
+        this.addObject(new Wall(18,9));
+        this.addObject(new Wall(18,10));
+        this.addObject(new Wall(18,11));
+        
+        this.addObject(new Wall(19,3));
+        this.addObject(new Wall(19,4));
+        this.addObject(new Wall(19,6));
+        this.addObject(new Wall(19,7));
+        
+        this.addObject(new Wall(20,3));
+        this.addObject(new Wall(20,4));
+        this.addObject(new Wall(20,6));
+        this.addObject(new Wall(20,7));
+        
+        this.addObject(new Wall(9,11));
+        this.addObject(new Wall(10,11));
+        this.addObject(new Wall(11,11));
+        this.addObject(new Wall(12,11));
+        this.addObject(new Wall(13,11));
+        this.addObject(new Wall(14,11));
+        this.addObject(new Wall(15,11));
+        this.addObject(new Wall(16,11));
+        
+        this.addObject(new Wall(1,10));
+        this.addObject(new Wall(1,11));
+        //this.addObject(new Wall(2,10));
+        this.addObject(new Wall(3,10));
+        this.addObject(new Wall(3,11));
+        this.addObject(new Wall(4,10));
+        this.addObject(new Wall(5,10));
+        this.addObject(new Wall(5,11));
+        this.addObject(new Wall(6,10));
+        this.addObject(new Wall(7,10));
+        this.addObject(new Wall(7,11));
+        this.addObject(new Wall(7,12));
+        this.addObject(new Wall(7,13));
+        this.addObject(new Wall(6,13));
+        this.addObject(new Wall(6,14));
+        this.addObject(new Wall(6,15));
+        this.addObject(new Wall(6,16));
+        this.addObject(new Wall(6,17));
+        
+        this.addObject(new Wall(2,16));
+        this.addObject(new Wall(2,17));
+        this.addObject(new Wall(2,18));
+        this.addObject(new Wall(2,19));
+        this.addObject(new Wall(3,16));
+        this.addObject(new Wall(3,17));
+        this.addObject(new Wall(3,18));
+        this.addObject(new Wall(3,19));
+        this.addObject(new Wall(4,19));
+        this.addObject(new Wall(5,19));
+        this.addObject(new Wall(6,19));
+        this.addObject(new Wall(7,19));
+        this.addObject(new Wall(8,19));
+        this.addObject(new Wall(9,19));
         
         // Boxes
-        this.addObject(new MapBox("a", 2,1));
+        this.addObject(new MapBox("a", 6,12));
         
         // Goals
-        this.addObject(new Goal("a",8,8));
+        this.addObject(new Goal("a",6,11));
         
     }
 }
