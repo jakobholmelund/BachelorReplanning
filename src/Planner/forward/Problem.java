@@ -20,7 +20,7 @@ public class Problem {
     State initial;
     String goal;
     Logic logic;
-    int agent = 0;
+    int agent = 1;
     LinkedList<State> futureGoals = new LinkedList<State>();
     String currentBox;
     String currentBoxGoalPos;
@@ -64,7 +64,7 @@ public class Problem {
             double agentToBox;
             double boxToGoal;
 
-            Solution n = logic.solve("agentAt(0, N).");
+            Solution n = logic.solve("agentAt(1, N).");
             Solution g = logic.solve("goalAt(a, G).");
             Solution b = logic.solve("boxAt(a, B).");
             String N = "" + n.getBinding("N"); //[1,3]

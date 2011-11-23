@@ -35,10 +35,21 @@ public class World {
     private int rows;
     private String filePath;
     private ArrayList<Thread> runningAgents = new ArrayList<Thread>();
+    private WorldPanel wp;
+    
     
     public World(int rows, int cols){
         this.rows = rows;
         this.cols = cols;
+        
+    }
+    
+    public void setPanel(WorldPanel panel){
+        this.wp = panel;
+    }
+    
+    public void draw(){
+        this.wp.update(this);
     }
     
     public int getX(){
@@ -51,7 +62,6 @@ public class World {
     public void startAgents() throws InterruptedException{
         System.out.println("WTF !");
         for(MapObject mo:objects){
-             System.out.println(mo);
             if(mo instanceof MapAgent){
                 System.out.println("Starting agent");
                 FSPlanner agent = new FSPlanner(this);
@@ -62,7 +72,7 @@ public class World {
         }
         
         for(Thread t:runningAgents){
-            t.join();
+            //t.join();
         }
         /*
         while(!agent.done()) {
@@ -135,7 +145,12 @@ public class World {
     public void persistMoveableObject(int x,int y){
         activeObject.setPosition(x,y);
         this.addObject(activeObject);
-        this.removeMovableObject();
+        if(activeObject instanceof Wall){
+            this.setMoveAbleObject(new Wall(0));
+        }else{
+            this.removeMovableObject();
+        }
+        
     }
     
     public void setMoveAbleObject(MapObject mo){
@@ -164,10 +179,6 @@ public class World {
       filePath = fd.getDirectory() + fd.getFile().toString();
       FileOutputStream fos = new FileOutputStream( filePath );
       ObjectOutputStream outStream = new ObjectOutputStream( fos );
-      for(MapObject mo:objects){
-          System.out.println(mo);
-      }
-      
       outStream.writeObject( objects );
       outStream.flush();
     }
@@ -200,7 +211,6 @@ public class World {
         hasChanged = false;
         activeObject = null;
         for(MapObject mo:array){
-            System.out.println(mo.getPosition());
             this.addObject(mo);
         }
         
@@ -308,6 +318,5 @@ public class World {
                 }
         }
         
-        System.out.println();
     }
 }

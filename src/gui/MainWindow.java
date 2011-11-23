@@ -39,6 +39,7 @@ public class MainWindow extends JFrame {
     
     public void loadNewWorld(World w){
         this.world = w;
+        this.world.setPanel(this.worldPanel);
         this.worldPanel.removeAll();
         this.worldPanel.draw(w);
         this.worldPanel.updateUI();

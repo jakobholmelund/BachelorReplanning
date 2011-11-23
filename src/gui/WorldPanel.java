@@ -40,11 +40,13 @@ public class WorldPanel extends JPanel {
             for(MapObject mo:fields){
                 MapObject worldobject = world.getMap().get(mo.getPosition());
                 if(worldobject != null){
-                    if(!(worldobject instanceof Wall)){
+                    //if(!(worldobject instanceof Wall)){
                         mo.removeAll();
                         mo.add(worldobject);
                         mo.repaint();
-                    }
+                    //}
+                }else{
+                    mo.repaint();
                 }
             }
     }

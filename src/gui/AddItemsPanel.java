@@ -37,7 +37,11 @@ public class AddItemsPanel extends JPanel{
         newBut3.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                world.startAgents();
+                try {
+                    world.startAgents();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(AddItemsPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         newBut.addActionListener(new ActionListener() {

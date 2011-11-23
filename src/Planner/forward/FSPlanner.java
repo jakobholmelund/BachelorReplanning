@@ -32,12 +32,18 @@ public class FSPlanner implements Runnable{ //  implements Runnable
                 //System.err.println("Agent found");
                 MapAgent agent = (MapAgent) o;
                 domain += "agentAt(" + agent.getNumber() + ",[" + agent.x + "," + agent.y + "]). ";
-            }
-            
-            if(o instanceof MapBox) {
+            }else if(o instanceof MapBox) {
                 //System.err.println("Box found");
                 MapBox obs = (MapBox) o;
                 domain += "boxAt(" + obs.getName() + ",[" + obs.x + "," + obs.y + "]). "; 
+            }else if(o instanceof Goal) {
+                //System.err.println("goal found");
+                Goal obs = (Goal) o;
+                domain += "goalAt(" + obs.getName() + ",[" + obs.x + "," + obs.y + "]). "; 
+            }else if(o instanceof Wall) {
+                //System.err.println("wall found");
+                Wall w = (Wall) o;
+                domain += "w([" + w.x + "," + w.y + "]). "; 
             }
         }
         
@@ -55,7 +61,7 @@ public class FSPlanner implements Runnable{ //  implements Runnable
         }
        long time2 = System.currentTimeMillis();
                 
-       //System.out.println("Percepts gotten in: " + (time2 - time1) + " ms");
+       System.out.println("Percepts gotten in: " + (time2 - time1) + " ms");
     }
 
     public String getStatics() {
@@ -63,11 +69,12 @@ public class FSPlanner implements Runnable{ //  implements Runnable
         return statics;
     }
 
+    @Override
     public void run() {
-        //System.out.println("New iteration");
+        String goal = "boxAt(a,[5,5]). ";
+        while(!this.done){
+        System.out.println("New iteration");
         iteration++;
-        String goal = "boxAt(a,[6,11]). ";
-        
         try {
             // get percepts and update current state description
             getPercepts();
@@ -79,6 +86,7 @@ public class FSPlanner implements Runnable{ //  implements Runnable
             if(this.plan != null && this.plan.list.isEmpty()) {
                 this.done = true;
                 System.err.println("DONE! ");
+                Thread.currentThread().join();
                 return; 
             }
             if(this.plan != null) {
@@ -97,6 +105,8 @@ public class FSPlanner implements Runnable{ //  implements Runnable
             }else{
                 if(this.plan != null) {
                     System.out.println("Replan: " + !valid);
+                }else{
+                    System.out.println("Started planning: ");
                 }
                 // Else, make a new plan ( and perform the first action ? )
                 
@@ -121,9 +131,11 @@ public class FSPlanner implements Runnable{ //  implements Runnable
             Logger.getLogger(FSPlanner.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
+            world.draw();
             Thread.sleep(500);
         } catch (InterruptedException ex) {
             ex.printStackTrace();
+        }
         }
     }
     
@@ -141,12 +153,12 @@ public class FSPlanner implements Runnable{ //  implements Runnable
             //frontier.clear();
             
             if (p.goalTest(n.s)) {
-                //System.out.println("State Space Size: " + states);
+                System.out.println("State Space Size: " + states);
                 return makeSolution(n, p);
             }
             
             for (Action a : p.actions(n.s)) {
-                //System.err.println("ACTION!!!!: " + a.name);
+                System.err.println("ACTION!!!!: " + a.name);
                 State s1 = p.result(n.s, a);
                 frontier.add(new Node(s1, n, a, n.g + p.cost(s1, a), p.heuristik(s1, a, n)));
                 states++;
@@ -190,7 +202,7 @@ public class FSPlanner implements Runnable{ //  implements Runnable
         String push = "push(Agent, MoveDirAgent, MoveDirBox, C0, C1, C2, Box) :- agentAt(Agent, C0), neighbour(C0, C1, MoveDirAgent), boxAt(Box, C1), neighbour(C1, C2, MoveDirBox), f(C2). ";
         String pull = "pull(Agent, MoveDirAgent, CurrDirBox, C0, C1, C2, Box) :- agentAt(Agent, C0), neighbour(C0, C1, MoveDirAgent), boxAt(Box, C2), neighbour(C0, C2, CurrDirBox), f(C1). ";
 
-        String goal = "goalAt(a, [6,11]). ";
+        //String goal = "goalAt(a, [6,11]). ";
         String free = "f(C0) :- \\+w(C0), \\+agentAt(Agent, C0), \\+boxAt(Box, C0). ";
         
         String neighbours = "";
@@ -198,7 +210,7 @@ public class FSPlanner implements Runnable{ //  implements Runnable
             neighbours += "neighbour([X1,Y1], [X2,Y2], s) :- B is Y1 + 1, Y2 = B, X2 = X1. ";
             neighbours += "neighbour([X1,Y1], [X2,Y2], e) :- B is X1 + 1, X2 = B, Y1 = Y2. ";
             neighbours += "neighbour([X1,Y1], [X2,Y2], w) :- B is X1 - 1, X2 = B, Y1 = Y2. ";
-        String rules = move + push + pull + goal + neighbours + free;
+        String rules = move + push + pull + neighbours + free;
 
         return rules;
     }
