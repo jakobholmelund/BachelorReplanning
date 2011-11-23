@@ -6,6 +6,7 @@
 package gui;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -27,7 +28,7 @@ public class WorldPanel extends JPanel {
         private ArrayList<MapObject> fields = new ArrayList<MapObject>();
         
     WorldPanel(int width, int height) {
-        GridLayout boardlayout = new GridLayout(1, 1, 0, 0);
+        FlowLayout boardlayout = new FlowLayout();//new GridLayout(1, 1, 0, 0);
         this.setLayout(boardlayout);
         this.setPreferredSize(new Dimension(width, height));
         this.setMaximumSize( this.getPreferredSize() );
