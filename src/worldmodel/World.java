@@ -142,9 +142,9 @@ public class World {
         
         if("Move".equals(command)){
             if("n".equals(amovedir)){
-                this.moveObject(mapagent, mapagent.x, mapagent.y+1);
-            }else if("s".equals(amovedir)){
                 this.moveObject(mapagent, mapagent.x, mapagent.y-1);
+            }else if("s".equals(amovedir)){
+                this.moveObject(mapagent, mapagent.x, mapagent.y+1);
             }else if("e".equals(amovedir)){
                 this.moveObject(mapagent, mapagent.x+1, mapagent.y);
             }else if("w".equals(amovedir)){
@@ -159,13 +159,10 @@ public class World {
                     if("n".equals(amovedir)){
                         box = (MapBox)map.get(mapagent.x, mapagent.y-1);
                     }else if("s".equals(amovedir)){
-                        
                         box = (MapBox)map.get(mapagent.x, mapagent.y+1);
                     }else if("e".equals(amovedir)){
-                        System.out.println("e");
                         box = (MapBox)map.get(mapagent.x+1, mapagent.y);
                     }else if("w".equals(amovedir)){
-                        System.out.println("w");
                         box = (MapBox)map.get(mapagent.x-1, mapagent.y);
                     }
                     if("n".equals(boxcurdir)){
@@ -192,10 +189,10 @@ public class World {
                 }else if("Pull".equals(command)){
                     if("n".equals(boxcurdir)){
                         System.out.println("n");
-                        box = (MapBox)map.get(mapagent.x, mapagent.y+1);
+                        box = (MapBox)map.get(mapagent.x, mapagent.y-1);
                     }else if("s".equals(boxcurdir)){
                         System.out.println("s");
-                        box = (MapBox)map.get(mapagent.x, mapagent.y-1);
+                        box = (MapBox)map.get(mapagent.x, mapagent.y+1);
                     }else if("e".equals(boxcurdir)){
                         System.out.println("e");
                         box = (MapBox)map.get(mapagent.x+1, mapagent.y);
