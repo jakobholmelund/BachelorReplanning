@@ -46,7 +46,7 @@ public class FSPlanner implements Runnable{ //  implements Runnable
         //System.out.println("objects:\n " + world.getObjects().toString());
         //System.out.println("Num objects: " + world.getObjects().size() + "\n Theory:");
         //System.out.println(theory);
-        
+        //System.err.println(theory);
         try {
             this.state = new State(theory);
             //String goal = "boxAt(a, [9,9]). ";
@@ -55,7 +55,7 @@ public class FSPlanner implements Runnable{ //  implements Runnable
         }
        long time2 = System.currentTimeMillis();
                 
-       System.out.println("Percepts gotten in: " + (time2 - time1) + " ms");
+       //System.out.println("Percepts gotten in: " + (time2 - time1) + " ms");
     }
 
     public String getStatics() {
@@ -63,13 +63,16 @@ public class FSPlanner implements Runnable{ //  implements Runnable
     }
 
     public void run() {
-        System.out.println("New iteration");
+        //System.out.println("New iteration");
         iteration++;
         String goal = "boxAt(a,[8,8]). ";
+        
         try {
             // get percepts and update current state description
             getPercepts();
-
+            //System.err.println("f(3,3): " + state.state.solveboolean("f([3,3]). "));
+            //System.err.println("f(10, 10): " + state.state.solveboolean("f([10,10]). "));
+            
             // check if plan is still valid
             boolean valid = false;
             if(this.plan != null && this.plan.list.isEmpty()) {
@@ -107,8 +110,8 @@ public class FSPlanner implements Runnable{ //  implements Runnable
                 this.plan = this.findPlan(p);
                 long time2 = System.currentTimeMillis();
                 
-                System.out.println("Plan found in: " + (time2 - time1) + " ms");
-                System.out.println("Plan: \n" + this.plan.toString());
+                //System.out.println("Plan found in: " + (time2 - time1) + " ms");
+                //System.out.println("Plan: \n" + this.plan.toString());
                 //System.out.println("Done...");
             }
         } catch (InterruptedException ex) {
@@ -177,6 +180,7 @@ public class FSPlanner implements Runnable{ //  implements Runnable
                 staticsMk += "w([" + wall.x + "," + wall.y + "]). ";
             }
         }
+
         return staticsMk;
     }
 
@@ -186,7 +190,7 @@ public class FSPlanner implements Runnable{ //  implements Runnable
         String pull = "pull(Agent, MoveDirAgent, CurrDirBox, C0, C1, C2, Box) :- agentAt(Agent, C0), neighbour(C0, C1, MoveDirAgent), boxAt(Box, C2), neighbour(C0, C2, CurrDirBox), f(C1). ";
         
         String goal = "goalAt(a, [8,8]). ";
-        String free = "f(C0) :- \\+ w(C0), \\+ agentAt(Agent, C0), \\+ boxAt(Box, C0). ";
+        String free = "f(C0) :- \\+w(C0), \\+agentAt(Agent, C0), \\+boxAt(Box, C0). ";
         
         String neighbours = "";
             neighbours += "neighbour([X1,Y1], [X2,Y2], n) :- B is Y1 - 1, Y2 = B, X1 = X2. ";
