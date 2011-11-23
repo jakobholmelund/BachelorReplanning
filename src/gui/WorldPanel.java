@@ -4,10 +4,8 @@
  */
 
 package gui;
-import controllers.AddItemController;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -18,7 +16,6 @@ import worldmodel.MapObject;
 import worldmodel.Tile;
 import worldmodel.Wall;
 import worldmodel.World;
-import worldmodel.Box;
 
 /**
  *
@@ -28,18 +25,16 @@ public class WorldPanel extends JPanel {
         private int tileSize = 10;
         private boolean init = true;
         private ArrayList<MapObject> fields = new ArrayList<MapObject>();
-        public AddItemController addItemController;
         
-    WorldPanel(int width, int height,AddItemController aic) {
+    WorldPanel(int width, int height) {
         GridLayout boardlayout = new GridLayout(1, 1, 0, 0);
         this.setLayout(boardlayout);
         this.setPreferredSize(new Dimension(width, height));
         this.setMaximumSize( this.getPreferredSize() );
         this.setBackground(Color.black);
-        this.addItemController = aic;
     }
 
-    public void draw(World world){
+    public void draw(final World world){
         GridLayout boardlayout = new GridLayout(world.getY(), world.getX(), 0, 0);
         this.setLayout(boardlayout);
         if(!init){
@@ -73,27 +68,30 @@ public class WorldPanel extends JPanel {
                 fields.add(tile);
                 tile.addMouseListener(new MouseAdapter()
                       {
+                        @Override
                        public void mouseClicked(MouseEvent me)
                          {
-                            if(addItemController.getActive() != null && tile.getComponent(0).equals(addItemController.getActive())){
-                                addItemController.persist(tile.x,tile.y);
+                            if(world.getMoveableObject() != null && tile.getComponent(0).equals(world.getMoveableObject())){
+                                world.persistMoveableObject(tile.x,tile.y);
                                 setBackground(Color.WHITE);
                                 tile.updateUI();
                             }
                            }
+                        @Override
                        public void mouseEntered(MouseEvent me) {
-                            if(tile.getComponentCount()<1 && addItemController.getActive() != null){
-                                tile.add(addItemController.getActive());
+                            if(tile.getComponentCount()<1 && world.getMoveableObject() != null){
+                                tile.add(world.getMoveableObject());
                                 //tile.setBackground(Color.GREEN);
                                 updateUI();
-                            }else if(addItemController.getActive() != null){
+                            }else if(world.getMoveableObject() != null){
                                 tile.setBackground(Color.RED);
                                 tile.updateUI();
                             }
                         }
+                        @Override
                        public void mouseExited(MouseEvent e) {
-                            if(tile.getComponentCount()>0 && addItemController.getActive() != null){
-                                tile.remove(addItemController.getActive());
+                            if(tile.getComponentCount()>0 && world.getMoveableObject() != null){
+                                tile.remove(world.getMoveableObject());
                                 tile.setBackground(Color.WHITE);
                                 tile.updateUI();
                             }

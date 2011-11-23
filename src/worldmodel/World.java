@@ -20,6 +20,7 @@ public class World {
     private Collection<MapObject> objects = new ArrayList<MapObject>();
     private Map<String,MapObject> objectMap = new HashMap<String,MapObject>();
     private boolean hasChanged = false;
+    private MapObject activeObject;
     private int cols;
     private int rows;
     
@@ -77,6 +78,24 @@ public class World {
     
      public Collection<MapObject> getObjects(){
         return this.objects;
+    }
+     
+     public void persistMoveableObject(int x,int y){
+        activeObject.setPosition(x,y);
+        this.addObject(activeObject);
+        this.removeMovableObject();
+    }
+    
+    public void setMoveAbleObject(MapObject mo){
+        this.activeObject = mo;
+    }
+    
+    public MapObject getMoveableObject(){
+        return this.activeObject;
+    }
+    
+    public void removeMovableObject(){
+        this.activeObject = null;
     }
 
     public void draw(JPanel parent){

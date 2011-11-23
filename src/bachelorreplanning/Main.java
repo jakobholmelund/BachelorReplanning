@@ -4,17 +4,9 @@
  */
 package bachelorreplanning;
 
-import Planner.Logic;
 import Planner.forward.FSPlanner;
-import Planner.forward.Plan;
-import Planner.forward.Problem;
-import Planner.forward.State;
-import controllers.AddItemController;
 import gui.MainWindow;
 import jTrolog.errors.PrologException;
-import jTrolog.parser.Parser;
-import jTrolog.engine.*;
-import jTrolog.terms.*;
 import worldmodel.Box;
 import worldmodel.Goal;
 import worldmodel.MapAgent;
@@ -77,15 +69,12 @@ public class Main {
         world.addObject(new Box("a", 2,1));
         world.addObject(new Goal("a",8,8));
         
-        
-        Box test = new Box("a",0,0);
-        AddItemController addItemController = new AddItemController(world);
-        addItemController.setActive(test);
-        MainWindow mainWindow = new MainWindow(addItemController);
+        MainWindow mainWindow = new MainWindow();
         mainWindow.loadNewWorld(world);
         mainWindow.drawWorld();
         FSPlanner agent = new FSPlanner(world);
         Thread init = new Thread(agent);
+        
         while(!agent.done()) {
             if(agent.iteration == 3) {
                 world.addObject(new Box("b", 5,8));
