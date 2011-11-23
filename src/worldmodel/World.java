@@ -153,9 +153,6 @@ public class World {
         }else{ 
             MapBox box = null;
                 if("Push".equals(command)){
-                    System.out.println("BOX");
-                    System.out.println(map.coords2value.get(map.keyFor(mapagent.x+1, mapagent.y)));
-                    
                     if("n".equals(amovedir)){
                         box = (MapBox)map.get(mapagent.x, mapagent.y-1);
                     }else if("s".equals(amovedir)){
