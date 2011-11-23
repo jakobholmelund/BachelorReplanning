@@ -20,6 +20,7 @@ import java.beans.*; //property change stuff
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.JFrame;
+import worldmodel.Goal;
 import worldmodel.Wall;
 /**
  *
@@ -59,8 +60,27 @@ public class AddItemsPanel extends JPanel{
                                 JOptionPane.PLAIN_MESSAGE,
                                 null,
                                 null,
-                                "a");
+                                "q");
                             world.setMoveAbleObject(new MapBox(s,0,0));
+                         }
+                      });
+        Goal goal = new Goal("Q",0,0);
+        this.add(goal);
+        goal.addMouseListener(new MouseAdapter()
+                      {
+                        @Override
+                       public void mouseClicked(MouseEvent me)
+                         {
+                            world.removeMovableObject();
+                            String s = (String)JOptionPane.showInputDialog(
+                                parent,
+                                "Select letter for box\n",
+                                "Customized Dialog",
+                                JOptionPane.PLAIN_MESSAGE,
+                                null,
+                                null,
+                                "q");
+                            world.setMoveAbleObject(new Goal(s,0,0));
                          }
                       });
         Wall wall = new Wall(0);
