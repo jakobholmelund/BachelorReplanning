@@ -5,7 +5,6 @@
 
 package gui;
 
-import controllers.AddItemController;
 import javax.swing.*;
 import worldmodel.World;
 
@@ -17,11 +16,9 @@ public class MainWindow extends JFrame {
     private WorldPanel worldPanel;
     private OptionsPanel optionsPanel;
     private World world;
-    private AddItemController addItemController;
     
     
-    public MainWindow(AddItemController aic) {
-        this.addItemController = aic;
+    public MainWindow() {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(1000, 700);
         this.setupPanels();
@@ -34,8 +31,8 @@ public class MainWindow extends JFrame {
         this.getContentPane().setLayout(
             new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS)
         );
-        worldPanel = new WorldPanel(1000, 600,this.addItemController);
-        optionsPanel = new OptionsPanel(this.addItemController);
+        worldPanel = new WorldPanel(1000, 600);
+        optionsPanel = new OptionsPanel();
         this.getContentPane().add(worldPanel);
         this.getContentPane().add(optionsPanel);
     }
@@ -46,10 +43,13 @@ public class MainWindow extends JFrame {
         this.worldPanel.updateUI();
     }
     
+    public void drawOptions(){
+        this.optionsPanel.draw(this.world);
+    }
+    
     public void drawWorld(){
         //this.worldPanel.setVisible(false);
         this.worldPanel.draw(this.world);
         //this.worldPanel.setVisible(true);
-        
     }
 }

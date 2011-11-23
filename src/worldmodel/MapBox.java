@@ -12,14 +12,14 @@ import java.awt.Graphics;
  *
  * @author jakobenvy
  */
-public class Box extends MapObject {
+public class MapBox extends MapObject {
     String name;
-    public Box(long position){
+    public MapBox(long position){
         super(position);
         setBackground(Color.GREEN);
     }
 
-    public Box(String name, int x, int y){
+    public MapBox(String name, int x, int y){
         super(x,y);
         setBackground(Color.GREEN);
         this.name = name;
