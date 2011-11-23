@@ -32,6 +32,14 @@ public class AddItemsPanel extends JPanel{
         this.add(newBut);
         JButton newBut2 = new JButton(" LOAD ");
         this.add(newBut2);
+        JButton newBut3 = new JButton(" start ");
+        this.add(newBut3);
+        newBut3.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                world.startAgents();
+            }
+        });
         newBut.addActionListener(new ActionListener() {
  
             public void actionPerformed(ActionEvent e)
@@ -53,6 +61,7 @@ public class AddItemsPanel extends JPanel{
             {
                 try {
                     World newWorld = world.load();
+                    //parent.drawWorld();
                     parent.loadNewWorld(newWorld);
                 } catch (FileNotFoundException ex) {
                     Logger.getLogger(AddItemsPanel.class.getName()).log(Level.SEVERE, null, ex);

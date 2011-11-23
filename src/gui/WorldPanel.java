@@ -35,11 +35,8 @@ public class WorldPanel extends JPanel {
         this.setBackground(Color.black);
     }
 
-    public void draw(final World world){
-        GridLayout boardlayout = new GridLayout(world.getY(), world.getX(), 0, 0);
-        this.setLayout(boardlayout);
-        if(!init){
-            System.out.println("AFTER INITIATE");
+    public void update(final World world){
+     System.out.println("AFTER INITIATE");
             for(MapObject mo:fields){
                 MapObject worldobject = world.getMap().get(mo.getPosition());
                 if(worldobject != null){
@@ -50,9 +47,11 @@ public class WorldPanel extends JPanel {
                     }
                 }
             }
-        }else{
-            init = false;
-            
+    }
+    
+    public void draw(final World world){
+        GridLayout boardlayout = new GridLayout(world.getY(), world.getX(), 0, 0);
+        this.setLayout(boardlayout);
         //this.removeAll();
         for(int i = 0; i < world.getX(); i++) {
             for(int j = 0; j < world.getY(); j++) {
@@ -100,7 +99,6 @@ public class WorldPanel extends JPanel {
                        
                         });
             }
-        }
         }
         this.updateUI();
     }

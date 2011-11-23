@@ -4,6 +4,7 @@
  */
 package worldmodel;
 
+import Planner.forward.FSPlanner;
 import gui.WorldPanel;
 import java.awt.FileDialog;
 import java.awt.Frame;
@@ -33,7 +34,7 @@ public class World {
     private int cols;
     private int rows;
     private String filePath;
-    
+    private ArrayList<Thread> runningAgents = new ArrayList<Thread>();
     
     public World(int rows, int cols){
         this.rows = rows;
@@ -45,6 +46,35 @@ public class World {
     }
     public int getY(){
         return this.rows;
+    }
+    
+    public void startAgents() throws InterruptedException{
+        System.out.println("WTF !");
+        for(MapObject mo:objects){
+             System.out.println(mo);
+            if(mo instanceof MapAgent){
+                System.out.println("Starting agent");
+                FSPlanner agent = new FSPlanner(this);
+                Thread init = new Thread(agent);
+                init.start();
+                runningAgents.add(init);
+            }
+        }
+        
+        for(Thread t:runningAgents){
+            t.join();
+        }
+        /*
+        while(!agent.done()) {
+            //if(agent.iteration == 3) {
+            //    world.addObject(new MapBox("b", 5,8));
+            //}
+            mainWindow.drawWorld();
+            init.run();
+        }
+        init.join();
+         * 
+         */
     }
     
     public CoordinateMap<MapObject> getMap(){
@@ -155,11 +185,11 @@ public class World {
       ObjectInputStream inStream = new ObjectInputStream( fis );
 
       // Retrieve the Serializable object.
-      objects = ( Collection<MapObject> )inStream.readObject();
+      Collection<MapObject> loadedObjects = ( Collection<MapObject> )inStream.readObject();
       
       //this.loadFromObjects(objects);
       World new_world = new World(this.cols,this.rows);
-      new_world.loadFromObjects(objects);
+      new_world.loadFromObjects(loadedObjects);
       return new_world;
     }
     

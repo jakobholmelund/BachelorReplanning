@@ -25,10 +25,10 @@ public class Main {
         
         MainWindow mainWindow = new MainWindow();
         mainWindow.loadNewWorld(world);
-        mainWindow.drawWorld();
+        //mainWindow.drawWorld();
         mainWindow.drawOptions();
-        FSPlanner agent = new FSPlanner(world);
-        Thread init = new Thread(agent);
+        //FSPlanner agent = new FSPlanner(world);
+        //Thread init = new Thread(agent);
         
         /*
         while(!agent.done()) {
