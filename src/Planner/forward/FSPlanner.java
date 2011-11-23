@@ -34,9 +34,9 @@ public class FSPlanner implements Runnable{ //  implements Runnable
                 domain += "agentAt(" + agent.getNumber() + ",[" + agent.x + "," + agent.y + "]). ";
             }
             
-            if(o instanceof Box) {
+            if(o instanceof MapBox) {
                 //System.err.println("Box found");
-                Box obs = (Box) o;
+                MapBox obs = (MapBox) o;
                 domain += "boxAt(" + obs.getName() + ",[" + obs.x + "," + obs.y + "]). "; 
             }
         }

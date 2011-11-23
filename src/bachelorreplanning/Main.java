@@ -7,7 +7,7 @@ package bachelorreplanning;
 import Planner.forward.FSPlanner;
 import gui.MainWindow;
 import jTrolog.errors.PrologException;
-import worldmodel.Box;
+import worldmodel.MapBox;
 import worldmodel.Goal;
 import worldmodel.MapAgent;
 import worldmodel.Wall;
@@ -66,18 +66,19 @@ public class Main {
         world.addObject(new Wall(8,9));
         world.addObject(new Wall(9,9));
         
-        world.addObject(new Box("a", 2,1));
+        world.addObject(new MapBox("a", 2,1));
         world.addObject(new Goal("a",8,8));
         
         MainWindow mainWindow = new MainWindow();
         mainWindow.loadNewWorld(world);
         mainWindow.drawWorld();
+        mainWindow.drawOptions();
         FSPlanner agent = new FSPlanner(world);
         Thread init = new Thread(agent);
         
         while(!agent.done()) {
             if(agent.iteration == 3) {
-                world.addObject(new Box("b", 5,8));
+                world.addObject(new MapBox("b", 5,8));
             }
             mainWindow.drawWorld();
             init.run();

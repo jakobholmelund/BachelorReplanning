@@ -8,6 +8,7 @@ package gui;
 import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.JPanel;
+import worldmodel.World;
 
 /**
  *
@@ -20,6 +21,8 @@ public class OptionsPanel extends JPanel {
         this.setBackground(Color.blue);
     }
     
-    public void draw(){
+    public void draw(World world){
+        this.removeAll();
+        this.add(new AddItemsPanel(world));
     }
 }

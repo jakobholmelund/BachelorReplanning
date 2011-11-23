@@ -4,7 +4,6 @@
  */
 package worldmodel;
 
-import Planner.forward.Action;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -47,8 +46,8 @@ public class World {
         this.hasChanged = true;
         if(mo instanceof MapAgent){
             objectMap.put(""+((MapAgent)mo).id, mo);
-        }else if(mo instanceof Box){
-            objectMap.put(""+((Box)mo).name, mo);
+        }else if(mo instanceof MapBox){
+            objectMap.put(""+((MapBox)mo).name, mo);
         }
     }
     
@@ -80,7 +79,19 @@ public class World {
         return this.objects;
     }
      
-     public void persistMoveableObject(int x,int y){
+    public MapAgent createNewAgent(){
+        
+        int highestnum = 0;
+        for(MapObject mo:objects){
+            if(mo instanceof MapAgent && ((MapAgent)mo).getNumber() > highestnum){
+                highestnum = ((MapAgent)mo).getNumber();
+            }
+        }
+        
+        return new MapAgent(highestnum+1,0);
+    }
+     
+    public void persistMoveableObject(int x,int y){
         activeObject.setPosition(x,y);
         this.addObject(activeObject);
         this.removeMovableObject();
@@ -140,22 +151,22 @@ public class World {
                 this.moveObject(mapagent, mapagent.x-1, mapagent.y);
             }
         }else{ 
-            Box box = null;
+            MapBox box = null;
                 if("Push".equals(command)){
                     System.out.println("BOX");
                     System.out.println(map.coords2value.get(map.keyFor(mapagent.x+1, mapagent.y)));
                     
                     if("n".equals(amovedir)){
-                        box = (Box)map.get(mapagent.x, mapagent.y-1);
+                        box = (MapBox)map.get(mapagent.x, mapagent.y-1);
                     }else if("s".equals(amovedir)){
                         
-                        box = (Box)map.get(mapagent.x, mapagent.y+1);
+                        box = (MapBox)map.get(mapagent.x, mapagent.y+1);
                     }else if("e".equals(amovedir)){
                         System.out.println("e");
-                        box = (Box)map.get(mapagent.x+1, mapagent.y);
+                        box = (MapBox)map.get(mapagent.x+1, mapagent.y);
                     }else if("w".equals(amovedir)){
                         System.out.println("w");
-                        box = (Box)map.get(mapagent.x-1, mapagent.y);
+                        box = (MapBox)map.get(mapagent.x-1, mapagent.y);
                     }
                     if("n".equals(boxcurdir)){
                         int boxoldx = box.x;
@@ -181,16 +192,16 @@ public class World {
                 }else if("Pull".equals(command)){
                     if("n".equals(boxcurdir)){
                         System.out.println("n");
-                        box = (Box)map.get(mapagent.x, mapagent.y+1);
+                        box = (MapBox)map.get(mapagent.x, mapagent.y+1);
                     }else if("s".equals(boxcurdir)){
                         System.out.println("s");
-                        box = (Box)map.get(mapagent.x, mapagent.y-1);
+                        box = (MapBox)map.get(mapagent.x, mapagent.y-1);
                     }else if("e".equals(boxcurdir)){
                         System.out.println("e");
-                        box = (Box)map.get(mapagent.x+1, mapagent.y);
+                        box = (MapBox)map.get(mapagent.x+1, mapagent.y);
                     }else if("w".equals(boxcurdir)){
                         System.out.println("w");
-                        box = (Box)map.get(mapagent.x-1, mapagent.y);
+                        box = (MapBox)map.get(mapagent.x-1, mapagent.y);
                     }
                     
                     
