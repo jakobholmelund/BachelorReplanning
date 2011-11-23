@@ -188,16 +188,12 @@ public class World {
                     }
                 }else if("Pull".equals(command)){
                     if("n".equals(boxcurdir)){
-                        System.out.println("n");
                         box = (MapBox)map.get(mapagent.x, mapagent.y-1);
                     }else if("s".equals(boxcurdir)){
-                        System.out.println("s");
                         box = (MapBox)map.get(mapagent.x, mapagent.y+1);
                     }else if("e".equals(boxcurdir)){
-                        System.out.println("e");
                         box = (MapBox)map.get(mapagent.x+1, mapagent.y);
                     }else if("w".equals(boxcurdir)){
-                        System.out.println("w");
                         box = (MapBox)map.get(mapagent.x-1, mapagent.y);
                     }
                     
@@ -205,12 +201,12 @@ public class World {
                     if("n".equals(amovedir)){
                         int agentoldx = mapagent.x;
                         int agentoldy = mapagent.y;
-                        this.moveObject(mapagent, mapagent.x, mapagent.y+1);
+                        this.moveObject(mapagent, mapagent.x, mapagent.y-1);
                         this.moveObject(box, agentoldx, agentoldy);
                     }else if("s".equals(amovedir)){
                         int agentoldx = mapagent.x;
                         int agentoldy = mapagent.y;
-                        this.moveObject(mapagent, mapagent.x, mapagent.y-1);
+                        this.moveObject(mapagent, mapagent.x, mapagent.y+1);
                         this.moveObject(box, agentoldx, agentoldy);
                     }else if("e".equals(amovedir)){
                          int agentoldx = mapagent.x;
