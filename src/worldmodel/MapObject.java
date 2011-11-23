@@ -6,14 +6,14 @@ package worldmodel;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import javax.swing.BoxLayout;
+import java.io.Serializable;
 import javax.swing.JPanel;
 
 /**
  *
  * @author jakobenvy
  */
-public class MapObject extends JPanel {
+public class MapObject extends JPanel implements Serializable {
     private Long position;
     public int x;
     public int y;

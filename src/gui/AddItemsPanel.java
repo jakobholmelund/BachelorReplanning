@@ -19,6 +19,11 @@ import javax.swing.JTextField;
 import java.beans.*; //property change stuff
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import worldmodel.Goal;
 import worldmodel.Wall;
@@ -31,7 +36,40 @@ public class AddItemsPanel extends JPanel{
         this.setPreferredSize(new Dimension(1000, 100));
         this.setMaximumSize( this.getPreferredSize() );
         this.setBackground(Color.blue);
+        JButton newBut = new JButton(" SAVE ");
+        this.add(newBut);
+        JButton newBut2 = new JButton(" LOAD ");
+        this.add(newBut2);
+        newBut.addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                try {
+                    //Execute when button is pressed
+                    world.save();
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(OptionsPanel.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(OptionsPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
         
+        newBut2.addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                try {
+                    World newWorld = world.load();
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(AddItemsPanel.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(AddItemsPanel.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(AddItemsPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
         MapAgent agent = new MapAgent(1,0);
         this.add(agent);
         agent.addMouseListener(new MouseAdapter()

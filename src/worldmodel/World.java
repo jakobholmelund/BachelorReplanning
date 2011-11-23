@@ -4,6 +4,15 @@
  */
 package worldmodel;
 
+import java.awt.FileDialog;
+import java.awt.Frame;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,6 +31,7 @@ public class World {
     private MapObject activeObject;
     private int cols;
     private int rows;
+    private String filePath;
     
     
     public World(int rows, int cols){
@@ -116,7 +126,51 @@ public class World {
         //}
     }
     
+    public void save() throws FileNotFoundException, IOException{
+        FileDialog fd = new FileDialog( new Frame(), 
+        "Save As...", FileDialog.SAVE );
+      fd.setVisible(true);
+      filePath = fd.getDirectory() + fd.getFile().toString();
+      FileOutputStream fos = new FileOutputStream( filePath );
+      ObjectOutputStream outStream = new ObjectOutputStream( fos );
+      outStream.writeObject( objects );
+      outStream.flush();
+      
+    }
+    
+    public World load() throws FileNotFoundException, IOException, ClassNotFoundException{
+      FileDialog fd = new FileDialog( new Frame(), 
+        "Open...", FileDialog.LOAD );
+      fd.setVisible(true);
+      filePath = fd.getDirectory() + fd.getFile().toString();
+
+      //  Create a stream for reading.
+      FileInputStream fis = new FileInputStream( filePath );
+
+      //  Next, create an object that can read from that file.
+      ObjectInputStream inStream = new ObjectInputStream( fis );
+
+      // Retrieve the Serializable object.
+      objects = ( Collection<MapObject> )inStream.readObject();
+      
+      this.loadFromObjects(objects);
+      World new_world = new World(this.cols,this.rows);
+      new_world.loadFromObjects(objects);
+      return new_world;
+    }
+    
+    public void loadFromObjects(Collection<MapObject> array){
+        map = new CoordinateMap<MapObject>();
+        objects = new ArrayList<MapObject>();
+        objectMap = new HashMap<String,MapObject>();
+        hasChanged = false;
+        activeObject = null;
+        for(MapObject mo:array){
+            this.addObject(mo);
+        }
         
+    }
+    
     public void agentActionParse(String action){
         /*
         for(Long key: map.coords2value.keySet()){

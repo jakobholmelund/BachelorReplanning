@@ -8,9 +8,6 @@ import Planner.forward.FSPlanner;
 import gui.MainWindow;
 import jTrolog.errors.PrologException;
 import worldmodel.MapBox;
-import worldmodel.Goal;
-import worldmodel.MapAgent;
-import worldmodel.Wall;
 import worldmodel.World;
 import worlds.*;
 
