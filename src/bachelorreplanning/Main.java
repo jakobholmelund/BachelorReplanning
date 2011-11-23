@@ -24,7 +24,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws PrologException, Throwable {
-        World world = new LargeWorld();
+        World world = new MiddleWorld();
         
         MainWindow mainWindow = new MainWindow();
         mainWindow.loadNewWorld(world);

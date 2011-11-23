@@ -59,6 +59,7 @@ public class FSPlanner implements Runnable{ //  implements Runnable
     }
 
     public String getStatics() {
+        //if(world)
         return statics;
     }
 
