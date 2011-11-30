@@ -8,9 +8,6 @@ import Planner.forward.FSPlanner;
 import gui.MainWindow;
 import jTrolog.errors.PrologException;
 import worldmodel.MapBox;
-import worldmodel.Goal;
-import worldmodel.MapAgent;
-import worldmodel.Wall;
 import worldmodel.World;
 import worlds.*;
 
@@ -24,15 +21,16 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws PrologException, Throwable {
-        World world = new MiddleWorld();
+        World world = new World(30,30);
         
         MainWindow mainWindow = new MainWindow();
         mainWindow.loadNewWorld(world);
-        mainWindow.drawWorld();
+        //mainWindow.drawWorld();
         mainWindow.drawOptions();
-        FSPlanner agent = new FSPlanner(world);
-        Thread init = new Thread(agent);
+        //FSPlanner agent = new FSPlanner(world);
+        //Thread init = new Thread(agent);
         
+        /*
         while(!agent.done()) {
             //if(agent.iteration == 3) {
             //    world.addObject(new MapBox("b", 5,8));
@@ -41,5 +39,7 @@ public class Main {
             init.run();
         }
         init.join();
+         * 
+         */
     }
 }

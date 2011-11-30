@@ -25,6 +25,7 @@ public class MapBox extends MapObject {
         this.name = name;
     }
     
+    @Override
     public String getName() {
         return this.name;
     }

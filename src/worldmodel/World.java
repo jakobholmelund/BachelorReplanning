@@ -4,6 +4,16 @@
  */
 package worldmodel;
 
+import Planner.forward.FSPlanner;
+import gui.WorldPanel;
+import java.awt.FileDialog;
+import java.awt.Frame;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,11 +32,23 @@ public class World {
     private MapObject activeObject;
     private int cols;
     private int rows;
+    private String filePath;
+    private ArrayList<Thread> runningAgents = new ArrayList<Thread>();
+    private WorldPanel wp;
     
     
     public World(int rows, int cols){
         this.rows = rows;
         this.cols = cols;
+        
+    }
+    
+    public void setPanel(WorldPanel panel){
+        this.wp = panel;
+    }
+    
+    public void draw(){
+        this.wp.update(this);
     }
     
     public int getX(){
@@ -34,6 +56,40 @@ public class World {
     }
     public int getY(){
         return this.rows;
+    }
+    
+    public void startAgents() throws InterruptedException{
+        System.out.println("WTF !");
+        for(MapObject mo:objects){
+            if(mo instanceof MapAgent){
+                System.out.println("Starting agent");
+                FSPlanner agent = null;
+                if(((MapAgent)mo).getNumber()==1){
+                    agent = new FSPlanner(this,((MapAgent)mo).getNumber(),"boxAt(a,[13,18]). ","a");
+                }else if(((MapAgent)mo).getNumber()==2){
+                    agent = new FSPlanner(this,((MapAgent)mo).getNumber(),"boxAt(b,[13,1]). ","b");
+                }
+                Thread init = new Thread(agent);
+                    init.start();
+                    runningAgents.add(init);
+                
+            }
+        }
+        
+        for(Thread t:runningAgents){
+            //t.join();
+        }
+        /*
+        while(!agent.done()) {
+            //if(agent.iteration == 3) {
+            //    world.addObject(new MapBox("b", 5,8));
+            //}
+            mainWindow.drawWorld();
+            init.run();
+        }
+        init.join();
+         * 
+         */
     }
     
     public CoordinateMap<MapObject> getMap(){
@@ -52,16 +108,20 @@ public class World {
     }
     
     public void moveObject(MapObject mo, int x, int y){
-        long key = map.keyFor(x, y);
-        map.update(mo.getPosition(), key, mo);
-        mo.setPosition(key,x,y);
-        this.hasChanged = true;
+        synchronized(this){
+            long key = map.keyFor(x, y);
+            map.update(mo.getPosition(), key, mo);
+            mo.setPosition(key,x,y);
+            this.hasChanged = true;
+        }
     }
     
     public void moveObject(MapObject mo, long key){
-        map.update(mo.getPosition(), key, mo);
-        mo.setPosition(key);
-        this.hasChanged = true;
+        synchronized(this){
+            map.update(mo.getPosition(), key, mo);
+            mo.setPosition(key);
+            this.hasChanged = true;
+        }
     }
     
     //test
@@ -94,7 +154,12 @@ public class World {
     public void persistMoveableObject(int x,int y){
         activeObject.setPosition(x,y);
         this.addObject(activeObject);
-        this.removeMovableObject();
+        if(activeObject instanceof Wall){
+            this.setMoveAbleObject(new Wall(0));
+        }else{
+            this.removeMovableObject();
+        }
+        
     }
     
     public void setMoveAbleObject(MapObject mo){
@@ -108,15 +173,51 @@ public class World {
     public void removeMovableObject(){
         this.activeObject = null;
     }
-
-    public void draw(JPanel parent){
-        //parent.updateUI();
-        //for(MapObject mo:objects){
-        //    parent.add(mo);
-        //}
+    
+    public void save() throws FileNotFoundException, IOException{
+        FileDialog fd = new FileDialog( new Frame(), 
+        "Save As...", FileDialog.SAVE );
+      fd.setVisible(true);
+      filePath = fd.getDirectory() + fd.getFile().toString();
+      FileOutputStream fos = new FileOutputStream( filePath );
+      ObjectOutputStream outStream = new ObjectOutputStream( fos );
+      outStream.writeObject( objects );
+      outStream.flush();
     }
     
+    public World load() throws FileNotFoundException, IOException, ClassNotFoundException{
+      FileDialog fd = new FileDialog( new Frame(), 
+        "Open...", FileDialog.LOAD );
+      fd.setVisible(true);
+      filePath = fd.getDirectory() + fd.getFile().toString();
+
+      //  Create a stream for reading.
+      FileInputStream fis = new FileInputStream( filePath );
+
+      //  Next, create an object that can read from that file.
+      ObjectInputStream inStream = new ObjectInputStream( fis );
+
+      // Retrieve the Serializable object.
+      Collection<MapObject> loadedObjects = ( Collection<MapObject> )inStream.readObject();
+      
+      //this.loadFromObjects(objects);
+      World new_world = new World(this.cols,this.rows);
+      new_world.loadFromObjects(loadedObjects);
+      return new_world;
+    }
+    
+    public void loadFromObjects(Collection<MapObject> array){
+        map = new CoordinateMap<MapObject>();
+        objects = new ArrayList<MapObject>();
+        objectMap = new HashMap<String,MapObject>();
+        hasChanged = false;
+        activeObject = null;
+        for(MapObject mo:array){
+            this.addObject(mo);
+        }
         
+    }
+    
     public void agentActionParse(String action){
         /*
         for(Long key: map.coords2value.keySet()){
@@ -131,9 +232,6 @@ public class World {
         m.find();
         String command = m.group(1);
         System.out.println(command);
-        //Pattern agentP = Pattern.compile("\\((\\w*)");
-        //m = agentP.matcher("Move(1,b)");
-        //m.find();
         String agent = m.group(2);
         String amovedir = m.group(3);    
         String boxcurdir = m.group(5);
@@ -219,6 +317,5 @@ public class World {
                 }
         }
         
-        System.out.println();
     }
 }

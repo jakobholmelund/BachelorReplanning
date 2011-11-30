@@ -7,6 +7,13 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import worldmodel.World;
 
@@ -21,8 +28,11 @@ public class OptionsPanel extends JPanel {
         this.setBackground(Color.blue);
     }
     
-    public void draw(World world){
+    public void draw(final World world,MainWindow parent){
         this.removeAll();
-        this.add(new AddItemsPanel(world));
+        this.add(new AddItemsPanel(world,parent));
+        
+        
+        
     }
 }
