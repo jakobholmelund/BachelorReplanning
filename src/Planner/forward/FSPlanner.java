@@ -137,7 +137,7 @@ public class FSPlanner implements Runnable{ //  implements Runnable
         }
         try {
             world.draw();
-            Thread.sleep(500);
+            Thread.sleep(200);
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
