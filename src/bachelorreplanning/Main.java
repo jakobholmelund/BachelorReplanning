@@ -4,9 +4,11 @@
  */
 package bachelorreplanning;
 
+import Planner.ActionStruct;
 import Planner.backward.FSPlanner;
 import gui.MainWindow;
 import jTrolog.errors.PrologException;
+import java.util.ArrayList;
 import worldmodel.MapBox;
 import worldmodel.World;
 import worlds.*;
