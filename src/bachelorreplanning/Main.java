@@ -4,12 +4,10 @@
  */
 package bachelorreplanning;
 
-import Planner.forward.FSPlanner;
 import gui.MainWindow;
+import gui.RouteFinder.Astar;
 import jTrolog.errors.PrologException;
-import worldmodel.MapBox;
 import worldmodel.World;
-import worlds.*;
 
 /**
  *
@@ -23,23 +21,11 @@ public class Main {
     public static void main(String[] args) throws PrologException, Throwable {
         World world = new World(30,30);
         
+        Astar test = new Astar(world.simpleMap());
+        test.findPlan(4294967301294967297L,4294967421554051613L);
+        
         MainWindow mainWindow = new MainWindow();
         mainWindow.loadNewWorld(world);
-        //mainWindow.drawWorld();
         mainWindow.drawOptions();
-        //FSPlanner agent = new FSPlanner(world);
-        //Thread init = new Thread(agent);
-        
-        /*
-        while(!agent.done()) {
-            //if(agent.iteration == 3) {
-            //    world.addObject(new MapBox("b", 5,8));
-            //}
-            mainWindow.drawWorld();
-            init.run();
-        }
-        init.join();
-         * 
-         */
     }
 }

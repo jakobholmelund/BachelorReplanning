@@ -28,9 +28,9 @@ public class FSPlanner implements Runnable{ //  implements Runnable
         this.goal = goal;
     }
 
-    public void getPercepts() {
+    private void getPercepts() throws PrologException {
        long time1 = System.currentTimeMillis();
-        String domain = "";
+       String domain = "";
         
         for(Object o : world.getObjects()) {
             // add to percepts            
@@ -59,12 +59,8 @@ public class FSPlanner implements Runnable{ //  implements Runnable
         //System.out.println("Num objects: " + world.getObjects().size() + "\n Theory:");
         //System.out.println(theory);
         //System.err.println(theory);
-        try {
-            this.state = new State(theory);
-            //String goal = "boxAt(a, [9,9]). ";
-        } catch (PrologException ex) {
-            Logger.getLogger(FSPlanner.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.state = new State(theory);
+
        long time2 = System.currentTimeMillis();
                 
        System.out.println("Percepts gotten in: " + (time2 - time1) + " ms");
@@ -79,10 +75,10 @@ public class FSPlanner implements Runnable{ //  implements Runnable
     public void run() {
         while(!this.done){
         System.out.println("New iteration");
-        iteration++;
+        this.iteration++;
         try {
             // get percepts and update current state description
-            getPercepts();
+            this.getPercepts();
             //System.err.println("f(3,3): " + state.state.solveboolean("f([3,3]). "));
             //System.err.println("f(10, 10): " + state.state.solveboolean("f([10,10]). "));
             

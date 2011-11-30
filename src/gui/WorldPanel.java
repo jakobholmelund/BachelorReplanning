@@ -15,6 +15,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import worldmodel.MapObject;
 import worldmodel.Tile;
+import worldmodel.Wall;
 import worldmodel.World;
 
 /**
@@ -72,6 +73,9 @@ public class WorldPanel extends JPanel {
                         @Override
                        public void mouseClicked(MouseEvent me)
                          {
+                            if(tile.getComponent(0) != null && tile.getComponent(0) instanceof Wall){
+                                System.out.println(((Wall)tile.getComponent(0)).getPosition());
+                            }
                             if(world.getMoveableObject() != null && tile.getComponent(0).equals(world.getMoveableObject())){
                                 world.persistMoveableObject(tile.x,tile.y);
                                 setBackground(Color.WHITE);

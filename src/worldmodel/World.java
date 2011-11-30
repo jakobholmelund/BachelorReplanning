@@ -217,6 +217,24 @@ public class World {
         }
         
     }
+   
+    public HashMap<Long,Long> simpleMap(){
+        HashMap<Long,Long> coords2value = new HashMap<Long,Long>();
+        for(int i = 0; i < cols; i++) {
+            for(int j = 0; j < rows; j++) {
+                long key = map.keyFor(j, i);
+                if(map.get(key) == null){
+                    coords2value.put(key,key);
+                }
+            }
+        }
+        
+        
+        for(Long l : map.coords2value.keySet()){
+            
+        }
+        return coords2value;
+    }
     
     public void agentActionParse(String action){
         /*

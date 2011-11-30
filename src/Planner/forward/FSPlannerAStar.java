@@ -17,7 +17,7 @@ public class FSPlannerAStar {
             if (frontier.isEmpty()) {
                 return null;
             }
-            // System.out.println("FRONTER 1: " + frontier.toString());
+            //System.out.println("FRONTER 1: " + frontier.toString());
             Node n = frontier.pollFirst();
             //if(n.a != null) {
             //    explored.add(n.s.shortState); //n.a.effect.toString());

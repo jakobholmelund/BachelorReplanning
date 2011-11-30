@@ -4,6 +4,7 @@
  */
 package worldmodel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,5 +63,16 @@ public class CoordinateMap<V> {
         int x = (int)(k & 0xFFFFFFFF) - 1000000000;
         int y = (int)((k >>> 32) & 0xFFFFFFFF) - 1000000000;
         return new int[]{x,y};
+    }
+    
+    private ArrayList<V> neighborsFor(long k){    
+        int x = (int)(k & 0xFFFFFFFF) - 1000000000;
+        int y = (int)((k >>> 32) & 0xFFFFFFFF) - 1000000000;
+        ArrayList<V> newlist = new ArrayList<V>();
+        newlist.add(this.get(keyFor(x-1,y)));
+        newlist.add(this.get(keyFor(x+1,y)));
+        newlist.add(this.get(keyFor(x,y-1)));
+        newlist.add(this.get(keyFor(x,y-1)));
+        return newlist;
     }
 }
