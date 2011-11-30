@@ -4,7 +4,7 @@
  */
 package worldmodel;
 
-import Planner.forward.FSPlanner;
+import Planner.backward.FSPlanner;
 import gui.WorldPanel;
 import java.awt.FileDialog;
 import java.awt.Frame;

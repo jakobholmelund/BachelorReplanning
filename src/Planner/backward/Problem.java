@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package Planner.forward;
+package Planner.backward;
 
 import Planner.Logic;
 import jTrolog.engine.Solution;

@@ -4,7 +4,7 @@
  */
 package bachelorreplanning;
 
-import Planner.forward.FSPlanner;
+import Planner.backward.FSPlanner;
 import gui.MainWindow;
 import jTrolog.errors.PrologException;
 import worldmodel.MapBox;
@@ -21,7 +21,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws PrologException, Throwable {
-        World world = new World(30,30);
+        World world = new World(20,20); //new MiddleWorld();//new World(30,30);
         
         MainWindow mainWindow = new MainWindow();
         mainWindow.loadNewWorld(world);

@@ -15,8 +15,8 @@ public class MiddleWorld extends World{
     public MiddleWorld() {
         super(20,20);
         // Agent
-        this.addObject(new MapAgent(0, 6, 9));
-        this.addObject(new Wall(2,10));
+        this.addObject(new MapAgent(0, 3, 9));
+        //this.addObject(new Wall(2,10));
         
         // Main Walls
         this.addObject(new Wall(0,0));

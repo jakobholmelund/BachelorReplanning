@@ -1,4 +1,4 @@
-package Planner.forward;
+package Planner.backward;
 
 import jTrolog.errors.PrologException;
 import java.util.TreeSet;

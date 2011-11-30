@@ -1,4 +1,4 @@
-package Planner.forward;
+package Planner.backward;
 
 public class Node implements Comparable<Node> {
 
