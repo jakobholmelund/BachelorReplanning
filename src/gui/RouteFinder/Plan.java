@@ -20,11 +20,11 @@ public class Plan {
         return this.list;
     }
 
-    void printSolution() {
+    void printSolution(String agent) {
         System.err.print("THIS: ");
         for (Long a : list) {
             int[] pos = coordsFor(a);
-            System.err.print("(" + pos[0] + " , " + pos[0] + "),");
+            System.err.print("move(" + agent + ",[" + pos[0] + "," + pos[1] + "]). ");
         }
         System.err.println("Is a solution");
     }

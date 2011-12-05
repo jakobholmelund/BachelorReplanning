@@ -6,6 +6,7 @@ package worldmodel;
 
 import Planner.forward.FSPlanner;
 import gui.WorldPanel;
+import jTrolog.terms.Int;
 import java.awt.FileDialog;
 import java.awt.Frame;
 import java.io.FileInputStream;
@@ -228,12 +229,20 @@ public class World {
                 }
             }
         }
-        
-        
-        for(Long l : map.coords2value.keySet()){
-            
-        }
         return coords2value;
+    }
+    
+    public long[] parseAction(String action){
+        Pattern typeP = Pattern.compile("(^\\w+)\\((\\w*)\\,\\[(\\d+\\,\\d+)\\]"); //(\\,(\\w+))?
+        Matcher m = typeP.matcher(action);
+        m.find();
+        System.out.println(m);
+        String command = m.group(1);
+        String agent = m.group(2);
+        String pos = m.group(3);
+        String[] coords = pos.split(",");
+        return new long[]{((MapAgent)objectMap.get(agent)).getPosition(),map.keyFor(Integer.parseInt(coords[0]), Integer.parseInt(coords[1])),Long.parseLong(agent)};
+    
     }
     
     public void agentActionParse(String action){

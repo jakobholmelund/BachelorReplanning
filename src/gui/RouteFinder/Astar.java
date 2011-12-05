@@ -7,6 +7,7 @@ package gui.RouteFinder;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeSet;
+import worldmodel.World;
 
 /**
  *
@@ -14,12 +15,16 @@ import java.util.TreeSet;
  */
 public class Astar {
     private int movecost = 1;
-        Map<Long,Long> map;
-        public Astar(Map<Long,Long> c2v){
-        map = c2v;
-    }
+    private Map<Long,Long> map;
+    private long agent;
     
-    public Plan findPlan(long current,long goal) throws InterruptedException {
+    public Plan findPlan(World w,String action) throws InterruptedException {
+        map = w.simpleMap();
+        
+        long[] startogoal = w.parseAction(action);
+        long current = startogoal[0];//w.getAgentPos(agent);
+        long goal = startogoal[1];//w.getAgentPos(agent);
+        agent = startogoal[2];
         TreeSet<Node> frontier = new TreeSet<Node>();
         Node init = makeInitialNode(current);
         frontier.add(init);
@@ -77,7 +82,7 @@ public class Astar {
             p.add(node.curPosition);
             node = node.parent;
         }
-        p.printSolution();
+        p.printSolution(String.valueOf(agent));
         return p;
     }
     
