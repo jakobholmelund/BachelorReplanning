@@ -1,18 +1,18 @@
-package Planner.forward;
+package Planner;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Plan {
 
-    State s;
-    ArrayList<Actions> list;
+    public State s;
+    public ArrayList<Actions> list;
 
-    Plan() {
+    public Plan() {
         list = new ArrayList<Actions>();
     }
 
-    void add(Actions a) {
+    public void add(Actions a) {
         list.add(0, a);
     }
 
@@ -26,7 +26,7 @@ public class Plan {
         return this.list;
     }
 
-    void printSolution() {
+    public void printSolution() {
         System.err.print("THIS: ");
         for (Actions a : list) {
             System.err.print(a.toString() + " , ");
@@ -47,7 +47,7 @@ public class Plan {
         return this.list.isEmpty();
     }
 
-    boolean valid(State state) {
+    public boolean valid(State state) {
         boolean valid = true;
         //System.err.println("state: " + state);
         for (Actions a : list) {

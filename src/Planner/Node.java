@@ -1,15 +1,15 @@
-package Planner.backward;
+package Planner;
 
 public class Node implements Comparable<Node> {
 
-    State s;
-    Node parent;
-    Actions a; // The action taken to reach this state
-    double g; // The cost of the path that leads to this node, from  the starting node.
-    double h; // The heuristics
-    double f; // h + g
+    public State s;
+    public Node parent;
+    public Actions a; // The action taken to reach this state
+    public double g; // The cost of the path that leads to this node, from  the starting node.
+    public double h; // The heuristics
+    public double f; // h + g
 
-    Node(State s, Node n, Actions a, double g, double h) {
+    public Node(State s, Node n, Actions a, double g, double h) {
         this.s = s;
         this.parent = n;
         this.a = a;

@@ -3,14 +3,16 @@ package gui.RouteFinder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Plan {
+public class OtherPlan {
     ArrayList<Long> list;
 
-    Plan() {
+    OtherPlan() {
         list = new ArrayList<Long>();
     }
 
     void add(long a) {
+        //int[] pos = coordsFor(a);
+        //System.out.println("(" + pos[0] + " , " + pos[0] + ")");
         list.add(0, a);
     }
 
