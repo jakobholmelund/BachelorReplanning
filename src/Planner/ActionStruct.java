@@ -67,6 +67,7 @@ public class ActionStruct {
                     String C1 = "" + si.getBinding("C1");
                     //System.out.println("C1: " + C1);
                     String format = this.format;
+                    
                     ArrayList<String> effectsProp = (ArrayList<String>) this.effects.clone();
                     ArrayList<String> requirementsProp = (ArrayList<String>) this.requirements.clone();
 
@@ -82,12 +83,13 @@ public class ActionStruct {
                             System.err.println(" - in bindings");    
                             replace = si.getBinding(arg).toString();
                         }
-                        format.replaceAll(arg, replace);
+                        System.out.println("In: " + format + " replace: " + arg + " with: " + replace);
+                        format = format.replaceAll(arg, replace);
                         for(int j = 0; j < effectsProp.size(); j++) {
-                            effectsProp.get(j).replaceAll(arg, replace);
+                            effectsProp.set(j, effectsProp.get(j).replaceAll(arg, replace));
                         }
                         for(int j = 0; j < requirementsProp.size(); j++) {
-                            requirementsProp.get(j).replaceAll(arg, replace);
+                            requirementsProp.set(j, requirementsProp.get(j).replaceAll(arg, replace));
                         }
                     }
 

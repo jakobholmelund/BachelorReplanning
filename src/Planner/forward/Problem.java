@@ -4,7 +4,6 @@
  */
 package Planner.forward;
 
-import Planner.ActionStruct;
 import Planner.Logic;
 import jTrolog.engine.Solution;
 import jTrolog.errors.PrologException;
@@ -36,27 +35,32 @@ public class Problem {
         
         // move to world or agent definition.
         
-         /* Move  */
+        /* Move  */
         ArrayList<String> argse1 = new ArrayList<String>();
         argse1.add("Agent");
-        argse1.add("MoveDirAgent");
+        argse1.add("MoveDir");
         argse1.add("C0");
         argse1.add("C1");
         
         ArrayList<String> effects1 = new ArrayList<String>();
-        effects1.add("!agentAt(Agent,C1)");
+        effects1.add("agentAt(Agent,C1)");
         effects1.add("!agentAt(Agent,C0)");
         
         ArrayList<String> requirements1 = new ArrayList<String>();
         requirements1.add("f(C1)");
         
-        ActionStruct move = new ActionStruct("move", "move(Agent, MoveDirAgent, C0, C1) :- agentAt(Agent, C0), neighbour(C0, C1, MoveDirAgent), f(C1). ", "Move(Agent,MoveDirAgent)", argse1, effects1, requirements1);
+        ArrayList<String> prerequisites1 = new ArrayList<String>();
+        prerequisites1.add("agentAt(Agent, C0)");
+        prerequisites1.add("neighbour(C0, C1, MoveDir)");
+        prerequisites1.add("f(C1)");
+
+        ActionStruct move = new ActionStruct("move", prerequisites1, "Move(Agent,MoveDir)", argse1, effects1, requirements1);
         
         /* Pull  */
         ArrayList<String> argse2 = new ArrayList<String>();
         argse2.add("Agent");
-        argse2.add("MoveDirAgent");
-        argse2.add("CurrDirBox");
+        argse2.add("MoveDir");
+        argse2.add("CurrDir");
         argse2.add("C0");
         argse2.add("C1");
         argse2.add("C2");
@@ -70,14 +74,21 @@ public class Problem {
 
         ArrayList<String> requirements2 = new ArrayList<String>();
         requirements2.add("f(C1)");
+        
+        ArrayList<String> prerequisites2 = new ArrayList<String>();
+        prerequisites2.add("agentAt(Agent, C0)");
+        prerequisites2.add("neighbour(C0, C1, MoveDir)");
+        prerequisites2.add("boxAt(Box, C2)");
+        prerequisites2.add("neighbour(C0, C2, CurrDir)");
+        prerequisites2.add("f(C1)");
 
-        ActionStruct pull = new ActionStruct("pull", "pull(Agent, MoveDirAgent, CurrDirBox, C0, C1, C2, Box) :- agentAt(Agent, C0), neighbour(C0, C1, MoveDirAgent), boxAt(Box, C2), neighbour(C0, C2, CurrDirBox), f(C1). ", "Pull(Agent,MoveDirAgent,CurrDirBox)", argse2, effects2, requirements2);
+        ActionStruct pull = new ActionStruct("pull", prerequisites2, "Pull(Agent,MoveDir,CurrDir)", argse2, effects2, requirements2);
         
         /* Push  */
         ArrayList<String> argse3 = new ArrayList<String>();
         argse3.add("Agent");
-        argse3.add("MoveDirAgent");
-        argse3.add("MoveDirBox");
+        argse3.add("MoveDir");
+        argse3.add("MovePush");
         argse3.add("C0");
         argse3.add("C1");
         argse3.add("C2");
@@ -91,8 +102,15 @@ public class Problem {
 
         ArrayList<String> requirements3 = new ArrayList<String>();
         requirements3.add("f(C2)");
+        
+        ArrayList<String> prerequisites3 = new ArrayList<String>();
+        prerequisites3.add("agentAt(Agent, C0)");
+        prerequisites3.add("neighbour(C0, C1, MoveDir)");
+        prerequisites3.add("boxAt(Box, C1)");
+        prerequisites3.add("neighbour(C1, C2, MovePush)");
+        prerequisites3.add("f(C2)");
 
-        ActionStruct push = new ActionStruct("push", "push(Agent, MoveDirAgent, MoveDirBox, C0, C1, C2, Box) :- agentAt(Agent, C0), neighbour(C0, C1, MoveDirAgent), boxAt(Box, C1), neighbour(C1, C2, MoveDirBox), f(C2). ", "Push(Agent,MoveDirAgent,MoveDirBox) ", argse3, effects3, requirements3);
+        ActionStruct push = new ActionStruct("push", prerequisites3, "Push(Agent,MoveDir,MovePush) ", argse3, effects3, requirements3);
         
         this.actions = new ArrayList<ActionStruct>();
         actions.add(move);
@@ -132,6 +150,7 @@ public class Problem {
         
         try {
             setState(s1);
+            //System.out.println(s1.toString());
             double agentToBox;
             double boxToGoal;
 
@@ -195,7 +214,7 @@ public class Problem {
      */
     public ArrayList<Actions> actions(State s) {
         setState(s);
-        System.err.println("agent: " + agent);
+        //System.err.println("agent: " + agent);
         HashMap arguments = new HashMap<String,String>();
         arguments.put("Agent", "" + agent);
         //System.out.println("actions called!!!!!");
@@ -204,7 +223,7 @@ public class Problem {
         for(ActionStruct a : this.actions) {
             try {
                 ArrayList<Actions> acs = a.get(logic, arguments);
-                System.err.println("Gotten: " + acs.toString());
+                //System.err.println("Gotten: " + acs.toString());
                 actionsReturn.addAll(acs);
             } catch (PrologException ex) {
                 Logger.getLogger(Problem.class.getName()).log(Level.SEVERE, null, ex);
@@ -319,8 +338,8 @@ public class Problem {
         //System.err.println("No More Actions. Num of actions : " + actionsReturn.size());
         //System.err.println("Actionstime: " + (time2 - time1) / 1000 + " actions_size: " + actionsReturn.size() + " s-size " + engine.getTheoryAsString().length());
         */
-        System.err.println("!!Getting Actions!");
-        System.err.println("!!Actions: " + actionsReturn.toString());
+        //System.err.println("!!Getting Actions!");
+        //System.err.println("!!Actions: " + actionsReturn.toString());
         return actionsReturn;
     }
 

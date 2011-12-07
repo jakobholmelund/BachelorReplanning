@@ -11,6 +11,8 @@ import jTrolog.lib.*;
 import jTrolog.engine.*;
 import jTrolog.terms.*;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,14 +43,112 @@ public class Logic {
         }
     }
 
+    public Solution eval(Solution solution) {
+        Map bindings = solution.getBindings();
+        for(Object o : bindings.keySet()) {
+            char[] array = bindings.get(o).toString().toCharArray();
+            String newBinding = bindings.get(o).toString();
+            System.out.println("Trying for: " + bindings.get(o).toString());
+            for(int i = 0; i < array.length; i++) {
+                int num1;
+                String num1Buff = "";
+                int num2;
+                String num2Buff = "";
+                int replacer = 0;
+                
+                if(array[i] == '-') {
+                    // Collect first number
+                    int j = i - 1;
+                    while((array[j] == ' ') || (array[j] == '0') || (array[j] == '1') || (array[j] == '2') || (array[j] == '3') || (array[j] == '4') || (array[j] == '5') || (array[j] == '6') || (array[j] == '7') || (array[j] == '8') || (array[j] == '9')) {
+                        if((array[j] != ' ')) { 
+                            num1Buff += array[j];
+                        }
+                        array[j] = ' ';
+                        j = j - 1;
+                    }
+                    // Collect second number
+                    j = i + 1;
+                    while((array[j] == ' ') || (array[j] == '0') || (array[j] == '1') || (array[j] == '2') || (array[j] == '3') || (array[j] == '4') || (array[j] == '5') || (array[j] == '6') || (array[j] == '7') || (array[j] == '8') || (array[j] == '9')) {
+                        if((array[j] != ' ')) { 
+                            num2Buff += array[j];
+                        }
+                        array[j] = ' ';
+                        j = j + 1;
+                    }
+                    //System.err.println("For: " + bindings.get(o).toString() + "    - 1:" + num1Buff + "  2: " + num2Buff);
+                    if(num1Buff.equals("") || num2Buff.equals("")) {
+                        continue;
+                    }
+                    num1 = Integer.parseInt(num1Buff);
+                    num2 = Integer.parseInt(num2Buff);
+                    replacer = num1 - num2;
+                    String repString = "" + replacer;
+                    for(int k = 0; k < repString.length(); k++) {
+                        array[i+k] = repString.charAt(k);
+                    }
+                    //System.out.println("MINUS FOUND -- " + num1Buff + " - " + num2Buff + "  = " + repString);
+                    newBinding = String.copyValueOf(array).replaceAll("  ", "");
+                    newBinding = newBinding.replace(", ", ",");
+                    newBinding = newBinding.replace(" ,", ",");
+                }
+                
+                if(array[i] == '+') {
+                    // Collect first number
+                    int j = i - 1;
+                    while((array[j] == ' ') || (array[j] == '1') || (array[j] == '2') || (array[j] == '3') || (array[j] == '4') || (array[j] == '5') || (array[j] == '6') || (array[j] == '7') || (array[j] == '8') || (array[j] == '9')) {
+                        if((array[j] != ' ')) { 
+                            num1Buff += array[j];
+                        }
+                        array[j] = ' ';
+                        j = j - 1;
+                    }
+                    // Collect second number
+                    j = i + 1;
+                    while((array[j] == ' ') || (array[j] == '1') || (array[j] == '2') || (array[j] == '3') || (array[j] == '4') || (array[j] == '5') || (array[j] == '6') || (array[j] == '7') || (array[j] == '8') || (array[j] == '9')) {
+                        if((array[j] != ' ')) { 
+                            num2Buff += array[j];
+                        }
+                        array[j] = ' ';
+                        j = j + 1;
+                    }
+                    System.err.println("1:" + num1Buff + "  2: " + num2Buff);
+                    if(num1Buff.equals("") || num2Buff.equals("")) {
+                        continue;
+                    }else{
+                        num1 = Integer.parseInt(num1Buff);
+                        num2 = Integer.parseInt(num2Buff);
+                        replacer = num1 + num2;
+                        String repString = "" + replacer;
+                        for(int k = 0; k < repString.length(); k++) {
+                            array[i+k] = repString.charAt(k);
+                        }
+                        //System.out.println("PLUS FOUND -- " + num1Buff + " + " + num2Buff + " = " + repString);
+                        newBinding = String.copyValueOf(array).replaceAll("  ", "");
+                        newBinding = newBinding.replace(", ", ",");
+                        newBinding = newBinding.replace(" ,", ",");
+                    }
+                }
+            }
+            //System.out.println("Inserting: " + newBinding + "\n");
+            newBinding = newBinding.trim();
+            if(newBinding.endsWith(".")) {
+                newBinding = newBinding.substring(0, newBinding.length()-1);
+            }
+            newBinding = newBinding.trim();
+            bindings.put(o, (Term) parse(newBinding + ". "));
+        }
+        return solution;
+    }
+    
     public Solution solve(String q) {
+        q = q.trim();
         if(q.endsWith(".")) {
             q = q.substring(0, q.length()-1);
         }
-        q.trim();
+        q = q.trim();
         try {
             Solution info = engine.solve(q + ". ");
-            return info;
+            return info; //eval(info);
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
@@ -56,6 +156,7 @@ public class Logic {
     }
 
     public boolean solveboolean(String q) {
+        q.trim();
         if(q.endsWith(".")) {
             q = q.substring(0, q.length()-1);
         }
@@ -70,29 +171,37 @@ public class Logic {
     }
 
     public ArrayList<Solution> solveAll(String q) {
+        //System.err.println("Gotten: " + q);
+        q = q.trim();
         if(q.endsWith(".")) {
             q = q.substring(0, q.length()-1);
+            //System.err.println("Removed last element: " + q);
         }
-        q.trim();
+        q = q.trim();
 
         ArrayList<Solution> infos = new ArrayList<Solution>();
         try {
-            Solution info = engine.solve(q + ". ");
-            infos.add(info);
+            //System.err.println(q);
+            Solution info = engine.solve(q + ".");
+            infos.add(info); // eval(info)
             boolean done = false;
             while(!done){
                 try {
                     Solution infoNext = engine.solveNext();
                     if(infoNext.success()) {
-                        infos.add(infoNext);
+                        infos.add(infoNext); //(eval(infoNext)
                     }
                 } catch(Exception e) {
                     done = true;
                 }
             }
-        } catch (Throwable ex) {
-            //Logger.getLogger(Logic.class.getName()).log(Level.SEVERE, null, ex);
         }
+        catch (Throwable ex) {
+            System.out.println("msg: " + ex.toString());
+            ex.printStackTrace();
+        } 
+        
+        //System.err.println("Infos: " + infos.toString());
         return infos;
     }
 

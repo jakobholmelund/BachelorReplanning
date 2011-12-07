@@ -67,7 +67,7 @@ public class FSPlanner implements Runnable{ //  implements Runnable
         }
        long time2 = System.currentTimeMillis();
                 
-       System.out.println("Percepts gotten in: " + (time2 - time1) + " ms");
+       //System.out.println("Percepts gotten in: " + (time2 - time1) + " ms");
     }
 
     public String getStatics() {
@@ -78,7 +78,7 @@ public class FSPlanner implements Runnable{ //  implements Runnable
     @Override
     public void run() {
         while(!this.done){
-        System.out.println("New iteration");
+        //System.out.println("New iteration");
         iteration++;
         try {
             // get percepts and update current state description
@@ -107,11 +107,13 @@ public class FSPlanner implements Runnable{ //  implements Runnable
                 
                 // Apply next - act() ?
                 world.agentActionParse(next.name);
+                //world.agentActionParse(next.name);
+                
             }else{
                 if(this.plan != null) {
-                    System.out.println("Replan: " + !valid);
+                    //System.out.println("Replan: " + !valid);
                 }else{
-                    System.out.println("Started planning: ");
+                    //System.out.println("Started planning: ");
                 }
                 // Else, make a new plan ( and perform the first action ? )
                 

@@ -8,14 +8,11 @@ import Planner.Logic;
 import jTrolog.engine.Solution;
 import jTrolog.errors.PrologException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author jakobsuper
- */
 public class Problem {
     State initial;
     String goal;
@@ -24,34 +21,119 @@ public class Problem {
     LinkedList<State> futureGoals = new LinkedList<State>();
     String currentBox;
     String currentBoxGoalPos;
-
+    public ArrayList<ActionStruct> actions;
+    
     public Problem(int aid,String missionId) throws PrologException {
         this.logic = new Logic();
         agent=aid;
         currentBox = missionId;
         currentBoxGoalPos = missionId;
-    }
+        
+        // move to world or agent definition.
+        
+        /* Move  */
+        ArrayList<String> argse1 = new ArrayList<String>();
+        argse1.add("Agent");
+        argse1.add("MoveDir");
+        argse1.add("C0");
+        argse1.add("C1");
+        
+        ArrayList<String> effects1 = new ArrayList<String>();
+        effects1.add("agentAt(Agent,C1)");
+        effects1.add("!agentAt(Agent,C0)");
+        
+        ArrayList<String> requirements1 = new ArrayList<String>();
+        requirements1.add("f(C1)");
+        
+        ArrayList<String> prerequisites1 = new ArrayList<String>();
+        prerequisites1.add("agentAt(Agent, C0)");
+        prerequisites1.add("neighbour(C0, C1, MoveDir)");
+        prerequisites1.add("f(C1)");
 
+        ActionStruct move = new ActionStruct("move", prerequisites1, "move(Agent,MoveDir)", argse1, effects1, requirements1);
+        
+        /* Pull  */
+        ArrayList<String> argse2 = new ArrayList<String>();
+        argse2.add("Agent");
+        argse2.add("MoveDir");
+        argse2.add("CurrDir");
+        argse2.add("C0");
+        argse2.add("C1");
+        argse2.add("C2");
+        argse2.add("Box");
+        
+        ArrayList<String> effects2 = new ArrayList<String>();
+        effects2.add("agentAt(Agent,C1)");
+        effects2.add("!agentAt(Agent,C0)");
+        effects2.add("boxAt(Box,C0)");
+        effects2.add("!boxAt(Box,C2)");
+
+        ArrayList<String> requirements2 = new ArrayList<String>();
+        requirements2.add("f(C1)");
+        
+        ArrayList<String> prerequisites2 = new ArrayList<String>();
+        prerequisites2.add("agentAt(Agent, C0)");
+        prerequisites2.add("neighbour(C0, C1, MoveDir)");
+        prerequisites2.add("boxAt(Box, C2)");
+        prerequisites2.add("neighbour(C0, C2, CurrDir)");
+        prerequisites2.add("f(C1)");
+
+        ActionStruct pull = new ActionStruct("pull", prerequisites2, "pull(Agent,MoveDir,CurrDir)", argse2, effects2, requirements2);
+        
+        /* Push  */
+        ArrayList<String> argse3 = new ArrayList<String>();
+        argse3.add("Agent");
+        argse3.add("MoveDir");
+        argse3.add("MovePush");
+        argse3.add("C0");
+        argse3.add("C1");
+        argse3.add("C2");
+        argse3.add("Box");
+        
+        ArrayList<String> effects3 = new ArrayList<String>();
+        effects3.add("agentAt(Agent,C1)");
+        effects3.add("!agentAt(Agent,C0)");
+        effects3.add("boxAt(Box,C2)");
+        effects3.add("!boxAt(Box,C1)");
+
+        ArrayList<String> requirements3 = new ArrayList<String>();
+        requirements3.add("f(C2)");
+        
+        ArrayList<String> prerequisites3 = new ArrayList<String>();
+        prerequisites3.add("agentAt(Agent, C0)");
+        prerequisites3.add("neighbour(C0, C1, MoveDir)");
+        prerequisites3.add("boxAt(Box, C1)");
+        prerequisites3.add("neighbour(C1, C2, MovePush)");
+        prerequisites3.add("f(C2)");
+
+        ActionStruct push = new ActionStruct("push", prerequisites3, "push(Agent,MoveDir,MovePush) ", argse3, effects3, requirements3);
+        
+        this.actions = new ArrayList<ActionStruct>();
+        actions.add(move);
+        actions.add(pull);
+        actions.add(push);
+    }
+    
     @Override
     public String toString() {
         return "Initial: " + initial.toString() + " Goal: " + goal.toString();
     }
-
+    
     public boolean goalTest(State s) {
         setState(s);
         boolean bol = logic.solveboolean(getGoal());
         return bol;
     }
-
+    
     public State getInitial() {
         return initial;
     }
-
+    
     public String getGoal() {
         return goal;
     }
-
-    /**
+    
+    /*
      * Calculates the heuristik for the state.
      *
      * @param s1
@@ -61,7 +143,6 @@ public class Problem {
      */
 
     public double heuristik(State s1, Actions a, Node node) {
-        
         try {
             setState(s1);
             double agentToBox;
@@ -127,115 +208,27 @@ public class Problem {
      */
     public ArrayList<Actions> actions(State s) {
         setState(s);
+        //System.err.println("agent: " + agent);
+        HashMap arguments = new HashMap<String,String>();
+        arguments.put("Agent", "" + agent);
         //System.out.println("actions called!!!!!");
         //System.err.println("state: \n" + s.toString());
         ArrayList<Actions> actionsReturn = new ArrayList<Actions>();
-
-        ArrayList<Solution> sol = logic.solveAll("move(" + agent + ", MoveDirAgent, C0, C1). ");
-       
-        for (Solution si : sol) {
-            //System.err.println("move: " + si.bindingsToString());
+        for(ActionStruct a : this.actions) {
             try {
-                //System.out.println("SI: " + si.toString()  + "  bindings: " + si.getBindings());
-                String MoveDirAgent = "" + si.getBinding("MoveDirAgent");
-                //System.out.println("Dir: " + MoveDirAgent);
-                MoveDirAgent = MoveDirAgent.replace("'", "");
-                String C0 = "" + si.getBinding("C0");
-                //System.out.println("C0: " + C0);
-                String C1 = "" + si.getBinding("C1");
-                //System.out.println("C1: " + C1);
-                Actions act = new Actions("Move(" + agent + "," + MoveDirAgent + ")");
-                act.addEffect("agentAt(" + agent + "," + C1 + ")");
-                act.addEffect("!agentAt(" + agent + "," + C0 + ")");
-
-                act.addRequirement("f(" + C1 + ")");
-                
-                act.box = "";
-                act.moveAgentDir = MoveDirAgent;
-                //System.err.println(act.toString());
-
-                actionsReturn.add(act);
-
-            } catch (Exception e) {
-                                e.printStackTrace();
+                ArrayList<Actions> acs = a.get(logic, arguments);
+                //System.err.println("Gotten: " + acs.toString());
+                actionsReturn.addAll(acs);
+            } catch (PrologException ex) {
+                Logger.getLogger(Problem.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
-        ArrayList<Solution> sol2 = logic.solveAll("push(" + agent + ", MoveDirAgent, CurrDirBox, C0, C1, C2, B). ");
-
-        for (Solution si1 : sol2) {
-            //System.err.println("push: " + si1.bindingsToString());
-            try {
-                String MoveDirAgent = "" + si1.getBinding("MoveDirAgent");
-                //System.err.println("MoveDirAgent: " + MoveDirAgent);
-                MoveDirAgent = MoveDirAgent.replace("'", "");
-                String CurrDirBox = "" + si1.getBinding("CurrDirBox");
-                CurrDirBox = CurrDirBox.replace("'", "");
-                String C0 = "" + si1.getBinding("C0");
-                //System.err.println("C0: " + C0);
-                String C1 = "" + si1.getBinding("C1");
-                //System.err.println("C1: " + C1);
-                String C2 = "" + si1.getBinding("C2");
-                //System.err.println("C2: " + C2);
-                String B = "" + si1.getBinding("B");
-                //System.err.println("B: " + B);
-                Actions act = new Actions("Push(" + agent + "," + MoveDirAgent + "," + CurrDirBox + ") ");
-                act.addEffect("agentAt(" + agent + "," + C1 + ")");
-                act.addEffect("!agentAt(" + agent + "," + C0 + ")");
-                act.addEffect("boxAt(" + B + "," + C2 + ")");
-                act.addEffect("!boxAt(" + B + "," + C1 + ")");
-
-                act.addRequirement("f(" + C2 + ")");
-
-                act.box = B;
-                act.moveAgentDir = MoveDirAgent;
-                //System.err.println(act.toString());
-                actionsReturn.add(act);
-
-            } catch (Exception e) {
-                                e.printStackTrace();
-            }
+        
+        //System.err.println("!!Getting Actions!");
+        //System.err.println("!!Actions: ");
+        for(Actions a : actionsReturn) {
+            //System.out.println("action: " + a.toString());
         }
-
-        ArrayList<Solution> sol3 = logic.solveAll("pull(" + agent + ", MoveDirAgent, CurrDirBox, C0, C1, C2, B). ");
-
-        for (Solution si2 : sol3) {
-            //System.err.println("pull: " + si2.bindingsToString());
-            try {
-                String MoveDirAgent = "" + si2.getBinding("MoveDirAgent");
-                MoveDirAgent = MoveDirAgent.replace("'", "");
-                String CurrDirBox = "" + si2.getBinding("CurrDirBox");
-                CurrDirBox = CurrDirBox.replace("'", "");
-                String C0 = "" + si2.getBinding("C0");
-                String C1 = "" + si2.getBinding("C1");
-                String C2 = "" + si2.getBinding("C2");
-                String B = "" + si2.getBinding("B");
-
-                Actions act = new Actions("Pull(" + agent + "," + MoveDirAgent + "," + CurrDirBox + ")");
-                act.addEffect("agentAt(" + agent + "," + C1 + ")");
-                act.addEffect("!agentAt(" + agent + "," + C0 + ")");
-                act.addEffect("boxAt(" + B + "," + C0 + ")");
-                act.addEffect("!boxAt(" + B + "," + C2 + ")");
-
-                act.addRequirement("f(" + C1 + ")");
-                act.box = B;
-                act.moveAgentDir = MoveDirAgent;
-                //System.err.println("Pull(" + MoveDirAgent + "," + CurrDirBox + ")" + "   - PULL: " + C0 + " , " + C1 + " , " + C2 + " is C1 ");
-                //System.err.println(engine.getTheoryAsString());
-                //System.err.println(act.toString());
-                actionsReturn.add(act);
-
-               // Action noOp = new Action("NoOp");
-               // noOp.box = "";
-               // noOp.moveAgentDir = "";
-               // actionsReturn.add(noOp);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        //System.err.println("No More Actions. Num of actions : " + actionsReturn.size());
-        //System.err.println("Actionstime: " + (time2 - time1) / 1000 + " actions_size: " + actionsReturn.size() + " s-size " + engine.getTheoryAsString().length());
         return actionsReturn;
     }
 

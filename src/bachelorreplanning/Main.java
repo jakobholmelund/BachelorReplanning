@@ -5,7 +5,7 @@
 package bachelorreplanning;
 
 import Planner.ActionStruct;
-import Planner.backward.FSPlanner;
+import Planner.backward.BSPlanner;
 import gui.MainWindow;
 import jTrolog.errors.PrologException;
 import java.util.ArrayList;

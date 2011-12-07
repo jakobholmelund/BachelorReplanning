@@ -8,15 +8,17 @@ public class Actions implements Comparable<Actions>{
     String box;
     String moveAgentDir;
     ArrayList<String> requirements;
-
+    ArrayList<String> openPreconditions;
+    
     public Actions(String s) {
         this.name = s;
-        effect = new ArrayList<String>();
-        requirements = new ArrayList<String>();
-        box = "";
-        moveAgentDir = "";
+        this.effect = new ArrayList<String>();
+        this.requirements = new ArrayList<String>();
+        this.openPreconditions = new ArrayList<String>();
+        this.box = "";
+        this.moveAgentDir = "";
     }
-
+    
     public void addEffect(String s) {
         effect.add(s);
     }
