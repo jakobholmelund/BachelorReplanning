@@ -1,3 +1,4 @@
+
 package Planner.forward;
 
 import java.util.ArrayList;
@@ -68,5 +69,4 @@ public class FSPlannerAStar {
         }
         return s;
     }
-    
 }

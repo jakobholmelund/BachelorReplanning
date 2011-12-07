@@ -1,11 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package worldmodel;
 
 import Planner.forward.FSPlanner;
 import gui.WorldPanel;
+import jTrolog.terms.Int;
 import java.awt.FileDialog;
 import java.awt.Frame;
 import java.io.FileInputStream;
@@ -217,6 +215,32 @@ public class World {
         }
         
     }
+   
+    public HashMap<Long,Long> simpleMap(){
+        HashMap<Long,Long> coords2value = new HashMap<Long,Long>();
+        for(int i = 0; i < cols; i++) {
+            for(int j = 0; j < rows; j++) {
+                long key = map.keyFor(j, i);
+                if(map.get(key) == null){
+                    coords2value.put(key,key);
+                }
+            }
+        }
+        return coords2value;
+    }
+    
+    public long[] parseAction(String action){
+        Pattern typeP = Pattern.compile("(^\\w+)\\((\\w*)\\,\\[(\\d+\\,\\d+)\\]"); //(\\,(\\w+))?
+        Matcher m = typeP.matcher(action);
+        m.find();
+        System.out.println(m);
+        String command = m.group(1);
+        String agent = m.group(2);
+        String pos = m.group(3);
+        String[] coords = pos.split(",");
+        return new long[]{((MapAgent)objectMap.get(agent)).getPosition(),map.keyFor(Integer.parseInt(coords[0]), Integer.parseInt(coords[1])),Long.parseLong(agent)};
+    
+    }
     
     public void agentActionParse(String action){
         /*
@@ -319,3 +343,4 @@ public class World {
         
     }
 }
+
