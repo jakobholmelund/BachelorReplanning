@@ -38,26 +38,18 @@ public class Astar {
                 return makeSolution(n);
             }
             for (long position : actions(n.curPosition)) {
-                //int[] pos = coordsFor(position);
-                //System.out.println("(" + pos[0] + " , " + pos[0] + ")");
-
                 long s1 = position;
                 frontier.add(new Node(s1, n, n.g + movecost, heuristik(s1,goal)));
                 states++;
-
-                //System.err.println("Checked parent " + coordsFor(n.curPosition)[0] + "," + coordsFor(n.curPosition)[1] + " h="+heuristik(n.curPosition,goal)+ "mæææg " + coordsFor(s1)[0] + "," + coordsFor(s1)[1] + " h="+heuristik(s1,goal));
             }
-            //System.err.println("Frontier size: " + frontier.size());
-            //System.err.println("Checked parent " + n.curPosition + " mæææg " + coordsFor(n.curPosition)[0] + "," + coordsFor(n.curPosition)[1]);
+          
         }
     }
 
     public double heuristik(long cp,long goal) {
             int[] c = coordsFor(cp);
-            int[] g = coordsFor(goal);          
-
+            int[] g = coordsFor(goal);
             double h = (Math.abs(c[0] - g[0]) + Math.abs(c[1] - g[1]));
-
             return h;
     }
     

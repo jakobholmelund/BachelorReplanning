@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
+import worldmodel.Bomb;
 import worldmodel.Goal;
 import worldmodel.Wall;
 /**
@@ -24,6 +25,7 @@ import worldmodel.Wall;
  */
 public class AddItemsPanel extends JPanel{
     public AddItemsPanel(final World world,MainWindow mw){
+        this.setLayout(new FlowLayout(1,1,1));
         this.setPreferredSize(new Dimension(1000, 100));
         this.setMaximumSize( this.getPreferredSize() );
         this.setBackground(Color.blue);
@@ -108,6 +110,18 @@ public class AddItemsPanel extends JPanel{
                             world.setMoveAbleObject(new MapBox(s,0,0));
                          }
                       });
+        Bomb bomb = new Bomb(0,0);
+        this.add(bomb);
+        bomb.addMouseListener(new MouseAdapter()
+                      {
+                        @Override
+                       public void mouseClicked(MouseEvent me)
+                         {
+                            world.removeMovableObject();
+                            world.setMoveAbleObject(world.createBomb());
+                         }
+                      });
+        
         Goal goal = new Goal("Q",0,0);
         this.add(goal);
         goal.addMouseListener(new MouseAdapter()

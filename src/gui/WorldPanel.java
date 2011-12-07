@@ -39,14 +39,23 @@ public class WorldPanel extends JPanel {
      System.out.println("AFTER INITIATE");
             for(MapObject mo:fields){
                 MapObject worldobject = world.getMap().get(mo.getPosition());
+                //if(worldobject == null && mo.getComponentCount() > 0){
+                //    mo.repaint();
+                //}
                 if(worldobject != null){
-                    //if(!(worldobject instanceof Wall)){
-                        mo.removeAll();
+                    if(mo.getComponentCount() == 0 && worldobject instanceof Wall){
                         mo.add(worldobject);
                         mo.repaint();
-                    //}
-                }else{
-                    mo.repaint();
+                    }else if(mo.getComponentCount() == 0 || (mo.getComponentCount() > 0 && !mo.getComponent(0).equals(worldobject))){
+                            Tile parent = (Tile)worldobject.getParent();
+                            if(parent != null){
+                                parent.removeAll();
+                                parent.repaint();
+                            }
+                            mo.removeAll();
+                            mo.add(worldobject);
+                            mo.repaint();
+                       }
                 }
             }
     }
@@ -61,7 +70,7 @@ public class WorldPanel extends JPanel {
                 tile.setPreferredSize(new Dimension(tileSize, tileSize));
                 tile.setMaximumSize(tile.getPreferredSize());
                 tile.setMinimumSize(tile.getPreferredSize());
-                tile.setBorder(BorderFactory.createLineBorder(Color.RED, 1));
+                tile.setBorder(BorderFactory.createLineBorder(Color.RED, 0));
                 this.add(tile);
                 MapObject worldobject = world.getMap().get(j, i);
                 if(worldobject != null){

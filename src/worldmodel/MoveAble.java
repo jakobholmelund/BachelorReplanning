@@ -8,13 +8,13 @@ import java.io.Serializable;
 
 /**
  *
- * @author jakobenvy
+ * @author jakobchronos
  */
-public class Obstacle extends MapObject implements Serializable {
-    public Obstacle(long position){
+public class MoveAble extends MapObject implements Serializable {
+    public MoveAble(long position){
         super(position);
     }
-    public Obstacle(int x, int y){
+    public MoveAble(int x, int y){
         super(x,y);
     }
 }

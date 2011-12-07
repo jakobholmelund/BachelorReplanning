@@ -11,8 +11,6 @@ public class Plan {
     }
 
     void add(long a) {
-        //int[] pos = coordsFor(a);
-        //System.out.println("(" + pos[0] + " , " + pos[0] + ")");
         list.add(0, a);
     }
 

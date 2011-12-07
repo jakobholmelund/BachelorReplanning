@@ -31,8 +31,5 @@ public class OptionsPanel extends JPanel {
     public void draw(final World world,MainWindow parent){
         this.removeAll();
         this.add(new AddItemsPanel(world,parent));
-        
-        
-        
     }
 }

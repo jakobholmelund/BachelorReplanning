@@ -5,7 +5,7 @@
 package worldmodel;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.io.Serializable;
 import javax.swing.JPanel;
 
@@ -19,7 +19,7 @@ public class MapObject extends JPanel implements Serializable {
     public int y;
     
     public MapObject(){
-        this.setLayout(new FlowLayout(1,1,1));
+        this.setLayout(new GridLayout(1,1));
         this.setPreferredSize(new Dimension(50,50));
     }
     
@@ -28,7 +28,7 @@ public class MapObject extends JPanel implements Serializable {
         int[] coords = coordsFor(position);
         this.x = coords[0];
         this.y = coords[1];
-        this.setLayout(new FlowLayout(1,1,1));
+        this.setLayout(new GridLayout(1,1));
         this.setPreferredSize(new Dimension(50,50));
     }
     
@@ -36,7 +36,7 @@ public class MapObject extends JPanel implements Serializable {
         this.position = keyFor(x,y);
         this.x = x;
         this.y = y;
-        this.setLayout(new FlowLayout(1,1,1));
+        this.setLayout(new GridLayout(1,1));
         this.setPreferredSize(new Dimension(50,50));
     }
     
@@ -74,5 +74,4 @@ public class MapObject extends JPanel implements Serializable {
         int y = (int)((k >>> 32) & 0xFFFFFFFF) - 1000000000;
         return new int[]{x,y};
     }
-    
 }

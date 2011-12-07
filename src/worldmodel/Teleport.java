@@ -4,17 +4,17 @@
  */
 package worldmodel;
 
-import java.io.Serializable;
-
 /**
  *
- * @author jakobenvy
+ * @author jakobchronos
  */
-public class Obstacle extends MapObject implements Serializable {
-    public Obstacle(long position){
+public class Teleport extends MapObject{
+    
+    
+    public Teleport(long position){
         super(position);
     }
-    public Obstacle(int x, int y){
+    public Teleport(int x, int y){
         super(x,y);
     }
 }

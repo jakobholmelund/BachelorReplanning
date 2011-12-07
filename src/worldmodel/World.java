@@ -148,6 +148,18 @@ public class World {
         
         return new MapAgent(highestnum+1,0);
     }
+    
+    public MapAgent createBomb(){
+        
+        int highestnum = 0;
+        for(MapObject mo:objects){
+            if(mo instanceof Bomb && ((Bomb)mo).getNumber() > highestnum){
+                highestnum = ((Bomb)mo).getNumber();
+            }
+        }
+        
+        return new MapAgent(highestnum+1,0);
+    }
      
     public void persistMoveableObject(int x,int y){
         activeObject.setPosition(x,y);
@@ -239,7 +251,6 @@ public class World {
         String pos = m.group(3);
         String[] coords = pos.split(",");
         return new long[]{((MapAgent)objectMap.get(agent)).getPosition(),map.keyFor(Integer.parseInt(coords[0]), Integer.parseInt(coords[1])),Long.parseLong(agent)};
-    
     }
     
     public void agentActionParse(String action){
