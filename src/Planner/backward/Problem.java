@@ -4,7 +4,9 @@
  */
 package Planner.backward;
 
-import Planner.Logic;
+import Planner.Node;
+import Planner.State;
+import Planner.*;
 import jTrolog.engine.Solution;
 import jTrolog.errors.PrologException;
 import java.util.ArrayList;
@@ -50,7 +52,7 @@ public class Problem {
         prerequisites1.add("neighbour(C0, C1, MoveDir)");
         prerequisites1.add("f(C1)");
 
-        ActionStruct move = new ActionStruct("move", prerequisites1, "move(Agent,MoveDir)", argse1, effects1, requirements1);
+        ActionStruct move = new ActionStruct("move", prerequisites1, "move(Agent,MoveDir)", argse1, effects1, requirements1, false, true);
         
         /* Pull  */
         ArrayList<String> argse2 = new ArrayList<String>();
@@ -78,7 +80,7 @@ public class Problem {
         prerequisites2.add("neighbour(C0, C2, CurrDir)");
         prerequisites2.add("f(C1)");
 
-        ActionStruct pull = new ActionStruct("pull", prerequisites2, "pull(Agent,MoveDir,CurrDir)", argse2, effects2, requirements2);
+        ActionStruct pull = new ActionStruct("pull", prerequisites2, "pull(Agent,MoveDir,CurrDir)", argse2, effects2, requirements2, false, true);
         
         /* Push  */
         ArrayList<String> argse3 = new ArrayList<String>();
@@ -106,7 +108,7 @@ public class Problem {
         prerequisites3.add("neighbour(C1, C2, MovePush)");
         prerequisites3.add("f(C2)");
 
-        ActionStruct push = new ActionStruct("push", prerequisites3, "push(Agent,MoveDir,MovePush) ", argse3, effects3, requirements3);
+        ActionStruct push = new ActionStruct("push", prerequisites3, "push(Agent,MoveDir,MovePush) ", argse3, effects3, requirements3, false, true);
         
         this.actions = new ArrayList<ActionStruct>();
         actions.add(move);
@@ -215,12 +217,14 @@ public class Problem {
         //System.err.println("state: \n" + s.toString());
         ArrayList<Actions> actionsReturn = new ArrayList<Actions>();
         for(ActionStruct a : this.actions) {
-            try {
-                ArrayList<Actions> acs = a.get(logic, arguments);
-                //System.err.println("Gotten: " + acs.toString());
-                actionsReturn.addAll(acs);
-            } catch (PrologException ex) {
-                Logger.getLogger(Problem.class.getName()).log(Level.SEVERE, null, ex);
+           if(!a.expanded) {
+                try {
+                    ArrayList<Actions> acs = a.get(logic, arguments);
+                    //System.err.println("Gotten: " + acs.toString());
+                    actionsReturn.addAll(acs);
+                } catch (PrologException ex) {
+                    Logger.getLogger(Problem.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
         

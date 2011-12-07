@@ -1,24 +1,22 @@
-package Planner.backward;
+package Planner;
 
 import java.util.ArrayList;
 
 public class Actions implements Comparable<Actions>{
-    String name;
-    ArrayList<String> effect;
-    String box;
-    String moveAgentDir;
-    ArrayList<String> requirements;
-    ArrayList<String> openPreconditions;
+    public String name;
+    public ArrayList<String> effect;
+    public ArrayList<String> requirements;
+    public boolean expanded;
+    public boolean atomic;
     
-    public Actions(String s) {
+    public Actions(String s, boolean expanded, boolean atomic) {
         this.name = s;
-        this.effect = new ArrayList<String>();
-        this.requirements = new ArrayList<String>();
-        this.openPreconditions = new ArrayList<String>();
-        this.box = "";
-        this.moveAgentDir = "";
+        effect = new ArrayList<String>();
+        requirements = new ArrayList<String>();
+        this.expanded = expanded;
+        this.atomic = atomic;
     }
-    
+
     public void addEffect(String s) {
         effect.add(s);
     }

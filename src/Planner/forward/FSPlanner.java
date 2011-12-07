@@ -5,7 +5,8 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import worldmodel.*;
-
+import Planner.*;
+import gui.RouteFinder.Astar;
 public class FSPlanner implements Runnable{ //  implements Runnable
     State state;
     Plan plan;
@@ -16,7 +17,7 @@ public class FSPlanner implements Runnable{ //  implements Runnable
     int agentId;
     String goal;
     String missionId;
-    
+    Astar routeFinder;
     public FSPlanner(World world,int aid,String goal,String mid) {
         iteration = 0;
         this.plan = null;
@@ -26,6 +27,7 @@ public class FSPlanner implements Runnable{ //  implements Runnable
         this.agentId = aid;
         this.missionId = mid;
         this.goal = goal;
+        routeFinder = new Astar();
     }
 
     private void getPercepts() throws PrologException {
@@ -103,7 +105,11 @@ public class FSPlanner implements Runnable{ //  implements Runnable
                 System.err.println("Take Next Action: " + next.name);
                 
                 // Apply next - act() ?
-                world.agentActionParse(next.name);
+                if(next.atomic) {
+                    world.agentActionParse(next.name);
+                }else{
+                   Plan subPlan = routeFinder.findPlan(world,"move(0,[10,10])");
+                }
                 //world.agentActionParse(next.name);
                 
             }else{

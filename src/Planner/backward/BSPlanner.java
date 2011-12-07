@@ -1,5 +1,6 @@
 package Planner.backward;
 
+import Planner.*;
 import jTrolog.errors.PrologException;
 import java.util.ArrayList;
 import java.util.TreeSet;

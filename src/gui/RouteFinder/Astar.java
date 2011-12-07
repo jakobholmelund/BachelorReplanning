@@ -4,6 +4,8 @@
  */
 package gui.RouteFinder;
 
+import Planner.Actions;
+import Planner.Plan;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeSet;
@@ -79,10 +81,14 @@ public class Astar {
         Plan p = new Plan();
         Node node = n;
         while (node != null) {
-            p.add(node.curPosition);
+            int[] cords = coordsFor(node.curPosition);
+            Actions action = new Actions("move(" + this.agent + ", [" + cords[0] + "," + cords[1] + "])", true, true);
+            
+            //p.add(node.curPosition);
+            p.add(action);
             node = node.parent;
         }
-        p.printSolution(String.valueOf(agent));
+        //p.printSolution();
         return p;
     }
     

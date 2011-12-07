@@ -1,4 +1,4 @@
-package Planner.backward;
+package Planner;
 
 import Planner.Logic;
 import jTrolog.errors.PrologException;

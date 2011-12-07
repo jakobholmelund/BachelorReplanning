@@ -3,10 +3,10 @@ package gui.RouteFinder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Plan {
+public class OtherPlan {
     ArrayList<Long> list;
 
-    Plan() {
+    OtherPlan() {
         list = new ArrayList<Long>();
     }
 
