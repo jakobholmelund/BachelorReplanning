@@ -15,10 +15,12 @@ public class Bomb extends MoveAble {
     public Bomb(int id,long position){
         super(position);
         this.id=id;
+        super.id=String.valueOf(id);
     }
     public Bomb(int id,int x, int y){
         super(x,y);
         this.id=id;
+        super.id=String.valueOf(id);
     }
     public int getNumber(){
         return id;

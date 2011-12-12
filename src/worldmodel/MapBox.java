@@ -23,6 +23,7 @@ public class MapBox extends MapObject {
         super(x,y);
         setBackground(Color.GREEN);
         this.name = name;
+        super.id=name;
     }
     
     @Override

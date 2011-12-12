@@ -17,6 +17,7 @@ public class MapObject extends JPanel implements Serializable {
     private Long position;
     public int x;
     public int y;
+    public String id;
     
     public MapObject(){
         this.setLayout(new GridLayout(1,1));
@@ -61,6 +62,10 @@ public class MapObject extends JPanel implements Serializable {
     
     public Long getPosition(){
         return position;
+    }
+    
+    public String getId(){
+        return id;
     }
     
     static public Long keyFor(int x, int y) {

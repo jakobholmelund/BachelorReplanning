@@ -21,14 +21,17 @@ public class Main {
      */
     public static void main(String[] args) throws PrologException, Throwable {
         World world = new World(20,20); //new MiddleWorld();//new World(30,30);
-        
+        world.addObject(new MapAgent(1,1,1));
+        //world.newAgentActionParse("moveAtomic(1,[10,10])");
+        //world.newAgentActionParse("pickUp(1,a)");
+        //world.newAgentActionParse("place(1,a)");
         //World world = new World(30,30);
         //world.addObject(new MapAgent(0,1,1));
         //Astar test = new Astar();
         //test.findPlan(world,"move(0,[28,28])");
         //4294967301294967297L,4294967421554051613L
-        MainWindow mainWindow = new MainWindow();
-        mainWindow.loadNewWorld(world);
-        mainWindow.drawOptions();
+        //MainWindow mainWindow = new MainWindow();
+        //mainWindow.loadNewWorld(world);
+       //mainWindow.drawOptions();
     }
 }

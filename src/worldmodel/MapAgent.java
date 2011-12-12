@@ -14,18 +14,32 @@ import java.awt.Graphics;
  */
 public class MapAgent extends MapObject {
     protected int id;
+    protected MapObject carying = null;
     public MapAgent(int id, long position){
         super(position);
         //setBackground(Color.RED);
         this.id = id;
+        super.id=String.valueOf(id);
     }
     public MapAgent(int id, int x, int y){
         super(x,y);
         //setBackground(Color.RED);
         this.id = id;
+        super.id=String.valueOf(id);
     }
     public int getNumber(){
         return id;
+    }
+    public void pickUp(MapObject mo){
+        if(carying != null){
+            this.carying = mo;
+        }
+    }
+    public void place(){
+        this.carying = null;
+    }
+    public MapObject getCarying(){
+        return this.carying;
     }
     
     @Override public void paintComponent(Graphics g) {
