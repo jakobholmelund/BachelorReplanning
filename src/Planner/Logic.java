@@ -198,8 +198,8 @@ public class Logic {
         }
         catch (Throwable ex) {
             System.out.println("msg: " + ex.toString());
-            ex.printStackTrace();
-        } 
+            //ex.printStackTrace();
+        }
         
         //System.err.println("Infos: " + infos.toString());
         return infos;

@@ -19,6 +19,7 @@ public class BSPlanner implements Runnable { //  implements Runnable
     int agentId;
     String goal;
     String missionId;
+    private ArrayList<ActionStruct> actions;
     
     public BSPlanner(World world,int aid,String goal,String mid) {
         iteration = 0;
@@ -29,6 +30,7 @@ public class BSPlanner implements Runnable { //  implements Runnable
         this.agentId = aid;
         this.missionId = mid;
         this.goal = goal;
+        createActions();
     }
 
     public void getPercepts() {
@@ -87,8 +89,8 @@ public class BSPlanner implements Runnable { //  implements Runnable
             getPercepts();
             Problem p;
             try {
-                p = new Problem(1,"");
-                findAction(p, "boxAt(a,[5;5])");
+                p = new Problem(1,"", this.actions);
+                findAction(p, "at(a,[5;5])");
             } catch (InterruptedException ex) {
                 Logger.getLogger(BSPlanner.class.getName()).log(Level.SEVERE, null, ex);
             } catch (PrologException ex) {
@@ -177,33 +179,36 @@ public class BSPlanner implements Runnable { //  implements Runnable
     
     public Plan findAction(Problem p, String goal) throws InterruptedException {
         ArrayList<Actions> actionsReturn = new ArrayList<Actions>();
+        boolean go;
         for(ActionStruct a : p.actions) {
-            //System.out.println("Action: " + a.name);
+            go = false;
+            System.out.println("Action: " + a.name);
             HashMap arguments = new HashMap<String,String>();
+            arguments.put("Agent", "" + this.agentId);
             for(String e : a.effects) {
                 
                 String[][] action = splitAction(e);
                 String[][] goalSplittet = splitAction(goal);
                 
-                //System.out.println("Effect : " + e);
-                //System.out.println("Goal: " + goalSplittet[0][0] + " a: " + action[0][0]);
+                System.out.println("Effect : " + e);
+                System.out.println("Goal: " + goalSplittet[0][0] + " a: " + action[0][0]);
                 if(action[0][0].equals(goalSplittet[0][0])) {
+                    go = true;
                     System.out.println("FOUND AN ACTION: " + a.name);
                     System.out.println("Head: " + action[0][0]);  
                     
                     
                     for(int i = 0; i < action[1].length; i++) {
                         System.out.print(action[1][i] + ",");
-                        arguments.put(action[1][i], goalSplittet[1][i].replaceAll(";", ","));
-                        
+                        arguments.put(action[1][i], goalSplittet[1][i].replaceAll(";", ","));   
                     }
                     System.out.println("args: " + arguments.toString());
                 }
             }
             
-            if(!arguments.isEmpty()) {
+            if(go && !arguments.isEmpty()) {
                 //try {
-                    a.getSpecificAction(this.state.state, arguments);
+                    actionsReturn.addAll(a.getSpecificActions(this.state.state, arguments));
                     //actionsReturn.addAll(a.get(this.state.state, arguments));
                 //} catch (PrologException ex) {
                 //    Logger.getLogger(BSPlanner.class.getName()).log(Level.SEVERE, null, ex);
@@ -291,6 +296,123 @@ public class BSPlanner implements Runnable { //  implements Runnable
     
     public boolean done() {
         return done;
+    }
+    
+    void createActions() {
+        /* Move  */
+	ArrayList<String> argse1 = new ArrayList<String>();
+	argse1.add("Agent");
+	argse1.add("CurPos");
+	argse1.add("MovePos");
+	
+	ArrayList<String> prerequisites1 = new ArrayList<String>();
+	prerequisites1.add("agentAt(Agent, CurPos)");
+	prerequisites1.add("f(MovePos)");
+	
+	ArrayList<String> effects1 = new ArrayList<String>();
+	effects1.add("agentAt(Agent,MovePos)");
+	effects1.add("!agentAt(Agent,CurPos)");
+	
+	ArrayList<String> requirements1 = new ArrayList<String>();
+	requirements1.add("f(MovePos)");
+
+	ActionStruct move = new ActionStruct("move", prerequisites1, "Move(Agent,MovePos)", argse1, effects1, requirements1, false, false);
+	
+	/* MoveAtomic  */
+	ArrayList<String> argse2 = new ArrayList<String>();
+	argse2.add("Agent");
+	argse2.add("CurPos");
+	argse2.add("MovePos");
+	
+	ArrayList<String> prerequisites2 = new ArrayList<String>();
+	prerequisites2.add("agentAt(Agent, CurPos)");
+	prerequisites2.add("f(MovePos)");
+	
+	ArrayList<String> effects2 = new ArrayList<String>();
+	effects2.add("agentAt(Agent,MovePos)");
+	effects2.add("!agentAt(Agent,CurPos)");
+	
+	ArrayList<String> requirements2 = new ArrayList<String>();
+	requirements2.add("f(MovePos)");
+
+	ActionStruct moveAtomic = new ActionStruct("moveAtomic", prerequisites2, "MoveAtomic(Agent,MovePos)", argse2, effects2, requirements2, true, true);
+	
+	// object(Object) :- box(Object).
+	// object(Object) :- bomb(Object).	
+	
+	/* PickUp  */
+	ArrayList<String> argse3 = new ArrayList<String>();
+	argse3.add("Agent");
+	argse3.add("AgPos");
+	argse3.add("ObjectPos");
+	argse3.add("Object");
+	
+	ArrayList<String> prerequisites3 = new ArrayList<String>();
+	prerequisites3.add("\\+carries(Agent, OtherObject)");
+	prerequisites3.add("agentAt(Agent, AgPos)");
+	prerequisites3.add("ObjectPos = AgPos");
+	prerequisites3.add("at(Object, ObjectPos)");
+	prerequisites3.add("object(Object)");
+	
+	ArrayList<String> effects3 = new ArrayList<String>();
+	effects3.add("!at(Object, ObjectPos)");
+	effects3.add("carries(Agent, Object)");
+	
+	ArrayList<String> requirements3 = new ArrayList<String>();
+	requirements3.add("at(Object, ObjectPos)");
+	
+	ActionStruct pickUp = new ActionStruct("pickUp", prerequisites3, "PickUp(Agent,Object)", argse3, effects3, requirements3, false, true);
+	
+	/* Place  */
+	ArrayList<String> argse4 = new ArrayList<String>();
+	argse4.add("Agent");
+	argse4.add("AgPos");
+	argse4.add("ObjectPos");
+	argse4.add("Object");
+	
+	ArrayList<String> prerequisites4 = new ArrayList<String>();
+	prerequisites4.add("agentAt(Agent, AgPos)");
+	prerequisites4.add("ObjectPos = AgPos");
+	prerequisites4.add("carries(Agent, Object)");
+	
+	ArrayList<String> effects4 = new ArrayList<String>();
+	effects4.add("at(Object, ObjectPos)");
+	effects4.add("!carries(Agent, Object)");
+	
+	ArrayList<String> requirements4 = new ArrayList<String>();
+	requirements4.add("f(ObjectPos)");
+	requirements4.add("carries(Agent, Object)");
+	
+	ActionStruct place = new ActionStruct("place", prerequisites4, "Place(Agent,Object)", argse4, effects4, requirements4, false, true);
+
+	/* Use Teleporter  */
+	ArrayList<String> argse5 = new ArrayList<String>();
+	argse5.add("Agent");
+	argse5.add("AgPos");
+	argse5.add("TeleporterPos");
+	argse5.add("Teleporter");
+	argse5.add("To");
+	
+	ArrayList<String> prerequisites5 = new ArrayList<String>();
+	prerequisites5.add("agentAt(Agent, AgPos)");
+	prerequisites5.add("AgPos = TeleporterPos");
+	// prerequisites5.add("at(Teleporter, TeleporterPos)"); // ? Necessary ?
+	prerequisites5.add("teleporter(Teleporter, TeleporterPos, To)");
+	
+	ArrayList<String> effects5 = new ArrayList<String>();
+	effects5.add("agentAt(Agent, To)");
+	effects5.add("!agentAt(Agent, AgPos)");
+	
+	ArrayList<String> requirements5 = new ArrayList<String>();
+	
+	ActionStruct useTeleporter = new ActionStruct("useTeleporter", prerequisites5, "UseTeleporter(Agent,Teleporter)", argse5, effects5, requirements5, false, true);
+	
+        this.actions = new ArrayList<ActionStruct>();
+        actions.add(move);
+        actions.add(moveAtomic);
+        actions.add(pickUp);
+        actions.add(place);
+        //actions.add(useTeleporter);
     }
     
 }

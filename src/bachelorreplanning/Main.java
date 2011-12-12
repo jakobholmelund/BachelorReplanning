@@ -20,15 +20,15 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws PrologException, Throwable {
-        World world = new World(50,50); //new MiddleWorld();//new World(30,30);
+        World world = new World(20,20); //new MiddleWorld();//new World(30,30);
         
         //World world = new World(30,30);
-        world.addObject(new MapAgent(0,1,1));
-        Astar test = new Astar();
-        test.findPlan(world,"move(0,[28,28])");
+        //world.addObject(new MapAgent(0,1,1));
+        //Astar test = new Astar();
+        //test.findPlan(world,"move(0,[28,28])");
         //4294967301294967297L,4294967421554051613L
-        //MainWindow mainWindow = new MainWindow();
-        //mainWindow.loadNewWorld(world);
-        //mainWindow.drawOptions();
+        MainWindow mainWindow = new MainWindow();
+        mainWindow.loadNewWorld(world);
+        mainWindow.drawOptions();
     }
 }

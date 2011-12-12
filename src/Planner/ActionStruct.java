@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import Planner.*;
+import jTrolog.errors.InvalidTermException;
 /**
  *
  * @author Dan True
@@ -64,9 +65,11 @@ public class ActionStruct {
         //System.out.println(prerequsiteString);
     }
     
-    public ArrayList<Actions> getSpecificAction(Logic logic, HashMap<String,String> arguments) {
+    public ArrayList<Actions> getSpecificActions(Logic logic, HashMap<String,String> arguments) {
         System.out.println("Get specific action.");
         ArrayList<Actions> possibleActions = new ArrayList<Actions>();
+        ArrayList<String> openPreconditions = new ArrayList<String>();
+        boolean error = false;
          // push(Agent, MoveDir, MovePush, C0, C1, C2, Box) :- agentAt(Agent, C0), neighbour(C0, C1, MoveDir), boxAt(Box, C1), neighbour(C1, C2, MovePush), f(C2). 
         // For each preconditions
         for(int i = prerequisites.size()-1; i >= 0; i--) {
@@ -74,11 +77,15 @@ public class ActionStruct {
             for(String arg : arguments.keySet()) {
                 s = s.replaceAll(arg, arguments.get(arg));
             }
-            ArrayList<Solution> solutions = logic.solveAll(s);
-
+            ArrayList<Solution> solutions = new ArrayList<Solution>();
+            try {
+                solutions = logic.solveAll(s);
+            }catch(Exception e) {
+                error = true;
+            }
             // Check if true in the given state.
             System.out.println("For: " + s);
-            if(!solutions.isEmpty() && solutions.get(0).success()) {
+            if(!error && !solutions.isEmpty() && solutions.get(0).success()) {
                 // If yes - for each solution append them to arguments and search onwards from there.
                 //for(Solution sol : solutions) {
                 Map bindings = solutions.get(0).getBindings();    
@@ -93,11 +100,15 @@ public class ActionStruct {
             }else{
                 // If not, then add to open preconditions, and continue
                 System.out.println("Is empty: " + solutions.toString());
-                
+                openPreconditions.add(s);
             }
             System.out.println("Args: " + arguments.toString() + "\n");
         }
-        
+        Actions a = createInstance(arguments);
+        for(String s : openPreconditions) {
+            a.addOpenPrecondition(s);
+        }
+        possibleActions.add(a);
         return possibleActions;
     }
     
@@ -123,10 +134,10 @@ public class ActionStruct {
             query = query.substring(0, query.length()-1);
         }
         query += "). ";
-        System.err.println("Query:" + query);
+        //System.err.println("Query:" + query);
         
         ArrayList<Solution> sol = logic.solveAll(query);
-        System.err.println("Solution:" + sol.toString());
+        //System.err.println("Solution:" + sol.toString());
         for (Solution si : sol) {
             try {
                 if(si.success()) {

@@ -26,95 +26,14 @@ public class Problem {
     String currentBoxGoalPos;
     ArrayList<ActionStruct> actions;
     
-    public Problem(int aid,String missionId) throws PrologException {
+    public Problem(int aid,String missionId, ArrayList<ActionStruct> actions) throws PrologException {
         this.logic = new Logic();
         agent=aid;
         currentBox = missionId;
         currentBoxGoalPos = missionId;
-        
+        this.actions = actions;
         // move to world or agent definition.
         
-        /* Move  */
-        ArrayList<String> argse1 = new ArrayList<String>();
-        argse1.add("Agent");
-        argse1.add("MoveDir");
-        argse1.add("C0");
-        argse1.add("C1");
-        
-        ArrayList<String> effects1 = new ArrayList<String>();
-        effects1.add("agentAt(Agent,C1)");
-        effects1.add("!agentAt(Agent,C0)");
-        
-        ArrayList<String> requirements1 = new ArrayList<String>();
-        requirements1.add("f(C1)");
-        
-        ArrayList<String> prerequisites1 = new ArrayList<String>();
-        prerequisites1.add("agentAt(Agent, C0)");
-        prerequisites1.add("neighbour(C0, C1, MoveDir)");
-        prerequisites1.add("f(C1)");
-
-        ActionStruct move = new ActionStruct("move", prerequisites1, "Move(Agent,MoveDir)", argse1, effects1, requirements1, false, true);
-        
-        /* Pull  */
-        ArrayList<String> argse2 = new ArrayList<String>();
-        argse2.add("Agent");
-        argse2.add("MoveDir");
-        argse2.add("CurrDir");
-        argse2.add("C0");
-        argse2.add("C1");
-        argse2.add("C2");
-        argse2.add("Box");
-        
-        ArrayList<String> effects2 = new ArrayList<String>();
-        effects2.add("agentAt(Agent,C1)");
-        effects2.add("!agentAt(Agent,C0)");
-        effects2.add("boxAt(Box,C0)");
-        effects2.add("!boxAt(Box,C2)");
-
-        ArrayList<String> requirements2 = new ArrayList<String>();
-        requirements2.add("f(C1)");
-        
-        ArrayList<String> prerequisites2 = new ArrayList<String>();
-        prerequisites2.add("agentAt(Agent, C0)");
-        prerequisites2.add("neighbour(C0, C1, MoveDir)");
-        prerequisites2.add("boxAt(Box, C2)");
-        prerequisites2.add("neighbour(C0, C2, CurrDir)");
-        prerequisites2.add("f(C1)");
-
-        ActionStruct pull = new ActionStruct("pull", prerequisites2, "Pull(Agent,MoveDir,CurrDir)", argse2, effects2, requirements2, false, true);
-        
-        /* Push  */
-        ArrayList<String> argse3 = new ArrayList<String>();
-        argse3.add("Agent");
-        argse3.add("MoveDir");
-        argse3.add("MovePush");
-        argse3.add("C0");
-        argse3.add("C1");
-        argse3.add("C2");
-        argse3.add("Box");
-        
-        ArrayList<String> effects3 = new ArrayList<String>();
-        effects3.add("agentAt(Agent,C1)");
-        effects3.add("!agentAt(Agent,C0)");
-        effects3.add("boxAt(Box,C2)");
-        effects3.add("!boxAt(Box,C1)");
-
-        ArrayList<String> requirements3 = new ArrayList<String>();
-        requirements3.add("f(C2)");
-        
-        ArrayList<String> prerequisites3 = new ArrayList<String>();
-        prerequisites3.add("agentAt(Agent, C0)");
-        prerequisites3.add("neighbour(C0, C1, MoveDir)");
-        prerequisites3.add("boxAt(Box, C1)");
-        prerequisites3.add("neighbour(C1, C2, MovePush)");
-        prerequisites3.add("f(C2)");
-
-        ActionStruct push = new ActionStruct("push", prerequisites3, "Push(Agent,MoveDir,MovePush) ", argse3, effects3, requirements3, false, true);
-        
-        this.actions = new ArrayList<ActionStruct>();
-        actions.add(move);
-        actions.add(pull);
-        actions.add(push);
     }
 
     @Override
@@ -125,6 +44,7 @@ public class Problem {
     public boolean goalTest(State s) {
         setState(s);
         boolean bol = logic.solveboolean(getGoal());
+        System.out.println("Goal: " + getGoal() + " is: " + bol);
         return bol;
     }
 
@@ -137,7 +57,7 @@ public class Problem {
     }
 
     public double heuristik(State s1, Actions a, Node node) {
-        
+        /*
         try {
             setState(s1);
             //System.out.println(s1.toString());
@@ -179,7 +99,8 @@ public class Problem {
             //System.out.println(ex.);
             ex.printStackTrace();
             return 1;
-        }
+        }*/
+        return 1;
     }
 
     public double cost(State s1, Actions a) {
@@ -203,6 +124,7 @@ public class Problem {
      * @return The actions applicable from this state
      */
     public ArrayList<Actions> actions(State s) {
+        long time1 = System.currentTimeMillis();
         setState(s);
         //System.err.println("agent: " + agent);
         HashMap arguments = new HashMap<String,String>();
@@ -221,7 +143,9 @@ public class Problem {
                 }
             }
         }
-        
+        long time2 = System.currentTimeMillis();
+        System.out.println("Got actions in: " + (time2-time1) + " ms");
+        //System.out.println(actionsReturn);
         return actionsReturn;
     }
 

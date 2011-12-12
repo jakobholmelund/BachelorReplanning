@@ -6,6 +6,7 @@ public class Actions implements Comparable<Actions>{
     public String name;
     public ArrayList<String> effect;
     public ArrayList<String> requirements;
+    public ArrayList<String> openPreconditions;
     public boolean expanded;
     public boolean atomic;
     
@@ -13,6 +14,7 @@ public class Actions implements Comparable<Actions>{
         this.name = s;
         effect = new ArrayList<String>();
         requirements = new ArrayList<String>();
+        openPreconditions = new ArrayList<String>(); 
         this.expanded = expanded;
         this.atomic = atomic;
     }
@@ -26,6 +28,11 @@ public class Actions implements Comparable<Actions>{
         requirements.add(s);
     }
 
+    public void addOpenPrecondition(String s) {
+        //System.out.println("Requirement added: " + s);
+        openPreconditions.add(s);
+    }
+    
     @Override
     public int compareTo(Actions a) {
         //System.err.println(this.s + " -- " + a.s);

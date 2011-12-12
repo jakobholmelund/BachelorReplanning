@@ -17,9 +17,9 @@ public class Main {
     public static void main(String[] args) throws PrologException, InterruptedException  {
         World world = new MiddleWorld();//new World(30,30);
                
-        BSPlanner planner = new BSPlanner(world, 1, "boxAt(a,[5;5])", null);
+        BSPlanner planner = new BSPlanner(world, 1, "at(a,[5;5])", null);
         
-        Problem p = new Problem(1,"");
+        //Problem p = new Problem(1,"");
         planner.run();//findAction(p, "boxAt(a,[5;5])");
         
     }
