@@ -66,7 +66,8 @@ public class ActionStruct {
     }
     
     public ArrayList<Actions> getSpecificActions(Logic logic, HashMap<String,String> arguments) {
-        System.out.println("Get specific action.");
+        //System.out.println("Get specific action: " + this.name);
+        //System.out.println("Args: " + arguments.toString());
         ArrayList<Actions> possibleActions = new ArrayList<Actions>();
         ArrayList<String> openPreconditions = new ArrayList<String>();
         boolean error = false;
@@ -84,13 +85,13 @@ public class ActionStruct {
                 error = true;
             }
             // Check if true in the given state.
-            System.out.println("For: " + s);
+            //System.out.println("For: " + s);
             if(!error && !solutions.isEmpty() && solutions.get(0).success()) {
                 // If yes - for each solution append them to arguments and search onwards from there.
-                //for(Solution sol : solutions) {
+    
                 Map bindings = solutions.get(0).getBindings();    
                 //}
-                System.out.println("Bindings: " + bindings.toString());
+                //System.out.println("Bindings: " + bindings.toString());
                 for(Object o : bindings.keySet()) {
                     String key = (String) o;
                     if(!arguments.containsKey(key)) {
@@ -99,13 +100,16 @@ public class ActionStruct {
                 }
             }else{
                 // If not, then add to open preconditions, and continue
-                System.out.println("Is empty: " + solutions.toString());
+                //System.out.println("Is empty: " + s);
                 openPreconditions.add(s);
             }
-            System.out.println("Args: " + arguments.toString() + "\n");
+            //System.out.println("Args: " + arguments.toString() + "\n");
         }
         Actions a = createInstance(arguments);
         for(String s : openPreconditions) {
+            s = s.replace('\\', ' ');
+            s = s.replace('+', '!');
+            s.trim();
             a.addOpenPrecondition(s);
         }
         possibleActions.add(a);
@@ -141,46 +145,6 @@ public class ActionStruct {
         for (Solution si : sol) {
             try {
                 if(si.success()) {
-                    //System.err.println("Bindings: \n" + si.bindingsToString());
-
-                    /*String format = this.format;
-                    
-                    ArrayList<String> effectsProp = (ArrayList<String>) this.effects.clone();
-                    ArrayList<String> requirementsProp = (ArrayList<String>) this.requirements.clone();
-
-                    for(String arg : this.args) {
-                        //System.err.print("Check for: " + arg);
-                        String replace = "";
-                        // If bound from argument
-                        if(arguments.containsKey(arg)) {
-                            //System.err.println(" - in args");
-                            replace = arguments.get(arg).toString();
-                        }else{
-                             // Else
-                            //System.err.println(" - in bindings");    
-                            replace = si.getBinding(arg).toString();
-                        }
-                        //System.out.println("In: " + format + " replace: " + arg + " with: " + replace);
-                        format = format.replaceAll(arg, replace);
-                        for(int j = 0; j < effectsProp.size(); j++) {
-                            effectsProp.set(j, effectsProp.get(j).replaceAll(arg, replace));
-                        }
-                        for(int j = 0; j < requirementsProp.size(); j++) {
-                            requirementsProp.set(j, requirementsProp.get(j).replaceAll(arg, replace));
-                        }
-                    }
-
-                    Actions act = new Actions(format);
-
-                    for(int i = 0; i < effectsProp.size(); i++) {
-                        act.addEffect(effectsProp.get(i));
-                    }
-                    for(int i = 0; i < requirementsProp.size(); i++) {
-                        act.addRequirement(requirementsProp.get(i));
-                    }
-
-                    System.err.println("Action: " + act.toString());*/
-                    
                     actionsReturn.add(createInstanceFromSolution(arguments, si));
                 }
             } catch (Exception e) {
@@ -238,23 +202,26 @@ public class ActionStruct {
         
         ArrayList<String> effectsProp = (ArrayList<String>) this.effects.clone();
         ArrayList<String> requirementsProp = (ArrayList<String>) this.requirements.clone();
+        //System.out.println("args:" + arguments.toString());
 
         for(String arg : this.args) {
-            //System.err.print("Check for: " + arg);
+            //System.out.println("Check for:-" + arg);
             String replace = "";
             // If bound from argument
-            if(arguments.containsKey(arg)) {
-                //System.err.println(" - in args");
+            if(arguments.keySet().contains(arg)) {
+                //System.out.println(" - in args");
                 replace = arguments.get(arg).toString();
+                
+                //System.out.println("In: " + format + " replace: " + arg + " with: " + replace);
+                format = format.replaceAll(arg, replace);
+                for(int j = 0; j < effectsProp.size(); j++) {
+                    effectsProp.set(j, effectsProp.get(j).replaceAll(arg, replace));
+                }
+                for(int j = 0; j < requirementsProp.size(); j++) {
+                    requirementsProp.set(j, requirementsProp.get(j).replaceAll(arg, replace));
+                }
             }
-            //System.out.println("In: " + format + " replace: " + arg + " with: " + replace);
-            format = format.replaceAll(arg, replace);
-            for(int j = 0; j < effectsProp.size(); j++) {
-                effectsProp.set(j, effectsProp.get(j).replaceAll(arg, replace));
-            }
-            for(int j = 0; j < requirementsProp.size(); j++) {
-                requirementsProp.set(j, requirementsProp.get(j).replaceAll(arg, replace));
-            }
+            //System.out.println("\n");
         }
 
         Actions act = new Actions(format, this.expanded, this.atomic);
@@ -266,7 +233,7 @@ public class ActionStruct {
             act.addRequirement(requirementsProp.get(i));
         }
 
-        //System.err.println("Action: " + act.toString());
+        //System.err.println("Action Created: " + act.toString());
         
         return act;
     }

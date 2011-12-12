@@ -197,7 +197,7 @@ public class Logic {
             }
         }
         catch (Throwable ex) {
-            System.out.println("msg: " + ex.toString());
+            //System.out.println("msg: " + ex.toString());
             //ex.printStackTrace();
         }
         

@@ -206,7 +206,9 @@ public class FSPlanner implements Runnable{ //  implements Runnable
             Thread.sleep(200);
         } catch (InterruptedException ex) {
             ex.printStackTrace();
-        }
+        } catch(NullPointerException e) {
+                
+            }
         }
     }
     
@@ -296,15 +298,15 @@ public class FSPlanner implements Runnable{ //  implements Runnable
     }
  
     
-    void createActions() {
-                	/* Move  */
+void createActions() {
+        /* Move  */
 	ArrayList<String> argse1 = new ArrayList<String>();
 	argse1.add("Agent");
 	argse1.add("CurPos");
 	argse1.add("MovePos");
 	
 	ArrayList<String> prerequisites1 = new ArrayList<String>();
-	prerequisites1.add("agentAt(Agent, CurPos)");
+	prerequisites1.add("agentAt(Agent,CurPos)");
 	prerequisites1.add("f(MovePos)");
 	
 	ArrayList<String> effects1 = new ArrayList<String>();
@@ -314,7 +316,7 @@ public class FSPlanner implements Runnable{ //  implements Runnable
 	ArrayList<String> requirements1 = new ArrayList<String>();
 	requirements1.add("f(MovePos)");
 
-	ActionStruct move = new ActionStruct("move", prerequisites1, "Move(Agent,MovePos)", argse1, effects1, requirements1, false, false);
+	ActionStruct move = new ActionStruct("move", prerequisites1, "move(Agent,MovePos)", argse1, effects1, requirements1, false, false);
 	
 	/* MoveAtomic  */
 	ArrayList<String> argse2 = new ArrayList<String>();
@@ -323,7 +325,7 @@ public class FSPlanner implements Runnable{ //  implements Runnable
 	argse2.add("MovePos");
 	
 	ArrayList<String> prerequisites2 = new ArrayList<String>();
-	prerequisites2.add("agentAt(Agent, CurPos)");
+	prerequisites2.add("agentAt(Agent,CurPos)");
 	prerequisites2.add("f(MovePos)");
 	
 	ArrayList<String> effects2 = new ArrayList<String>();
@@ -333,7 +335,7 @@ public class FSPlanner implements Runnable{ //  implements Runnable
 	ArrayList<String> requirements2 = new ArrayList<String>();
 	requirements2.add("f(MovePos)");
 
-	ActionStruct moveAtomic = new ActionStruct("moveAtomic", prerequisites2, "MoveAtomic(Agent,MovePos)", argse2, effects2, requirements2, true, true);
+	ActionStruct moveAtomic = new ActionStruct("moveAtomic", prerequisites2, "moveAtomic(Agent,MovePos)", argse2, effects2, requirements2, true, true);
 	
 	// object(Object) :- box(Object).
 	// object(Object) :- bomb(Object).	
@@ -341,47 +343,47 @@ public class FSPlanner implements Runnable{ //  implements Runnable
 	/* PickUp  */
 	ArrayList<String> argse3 = new ArrayList<String>();
 	argse3.add("Agent");
-	argse3.add("AgPos");
-	argse3.add("ObjectPos");
+	//argse3.add("AgPos");
+	argse3.add("ObjPos");
 	argse3.add("Object");
 	
 	ArrayList<String> prerequisites3 = new ArrayList<String>();
-	prerequisites3.add("\\+carries(Agent, OtherObject)");
-	prerequisites3.add("agentAt(Agent, AgPos)");
-	prerequisites3.add("ObjectPos = AgPos");
-	prerequisites3.add("at(Object, ObjectPos)");
+	prerequisites3.add("\\+carries(Agent, _)");
+	prerequisites3.add("agentAt(Agent,ObjPos)"); // agentAt(Agent, AgPos)
+	//prerequisites3.add("equals(ObjPos,AgPos)");
+	prerequisites3.add("at(Object,ObjPos)");
 	prerequisites3.add("object(Object)");
 	
 	ArrayList<String> effects3 = new ArrayList<String>();
-	effects3.add("!at(Object, ObjectPos)");
-	effects3.add("carries(Agent, Object)");
+	effects3.add("!at(Object,ObjPos)");
+	effects3.add("carries(Agent,Object)");
 	
 	ArrayList<String> requirements3 = new ArrayList<String>();
-	requirements3.add("at(Object, ObjectPos)");
+	requirements3.add("at(Object,ObjPos)");
 	
-	ActionStruct pickUp = new ActionStruct("pickUp", prerequisites3, "PickUp(Agent,Object)", argse3, effects3, requirements3, false, true);
+	ActionStruct pickUp = new ActionStruct("pickUp", prerequisites3, "pickUp(Agent,Object)", argse3, effects3, requirements3, false, true);
 	
 	/* Place  */
 	ArrayList<String> argse4 = new ArrayList<String>();
 	argse4.add("Agent");
 	argse4.add("AgPos");
-	argse4.add("ObjectPos");
+	//argse4.add("ObjPos");
 	argse4.add("Object");
 	
 	ArrayList<String> prerequisites4 = new ArrayList<String>();
-	prerequisites4.add("agentAt(Agent, AgPos)");
-	prerequisites4.add("ObjectPos = AgPos");
-	prerequisites4.add("carries(Agent, Object)");
+	prerequisites4.add("agentAt(Agent,AgPos)");
+	//prerequisites4.add("equals(ObjPos, AgPos)");
+	prerequisites4.add("carries(Agent,Object)");
 	
 	ArrayList<String> effects4 = new ArrayList<String>();
-	effects4.add("at(Object, ObjectPos)");
-	effects4.add("!carries(Agent, Object)");
+	effects4.add("at(Object,AgPos)");
+	effects4.add("!carries(Agent,Object)");
 	
 	ArrayList<String> requirements4 = new ArrayList<String>();
-	requirements4.add("f(ObjectPos)");
-	requirements4.add("carries(Agent, Object)");
+	requirements4.add("f(AgPos)");
+	requirements4.add("carries(Agent,Object)");
 	
-	ActionStruct place = new ActionStruct("place", prerequisites4, "Place(Agent,Object)", argse4, effects4, requirements4, false, true);
+	ActionStruct place = new ActionStruct("place", prerequisites4, "place(Agent,Object)", argse4, effects4, requirements4, false, true);
 
 	/* Use Teleporter  */
 	ArrayList<String> argse5 = new ArrayList<String>();
@@ -392,18 +394,18 @@ public class FSPlanner implements Runnable{ //  implements Runnable
 	argse5.add("To");
 	
 	ArrayList<String> prerequisites5 = new ArrayList<String>();
-	prerequisites5.add("agentAt(Agent, AgPos)");
-	prerequisites5.add("AgPos = TeleporterPos");
+	prerequisites5.add("agentAt(Agent,TeleporterPos)");
+	//prerequisites5.add("equals(AgPos,TeleporterPos)");
 	// prerequisites5.add("at(Teleporter, TeleporterPos)"); // ? Necessary ?
-	prerequisites5.add("teleporter(Teleporter, TeleporterPos, To)");
+	prerequisites5.add("teleporter(Teleporter,TeleporterPos, To)");
 	
 	ArrayList<String> effects5 = new ArrayList<String>();
-	effects5.add("agentAt(Agent, To)");
-	effects5.add("!agentAt(Agent, AgPos)");
+	effects5.add("agentAt(Agent,To)");
+	effects5.add("!agentAt(Agent,TeleporterPos)");
 	
 	ArrayList<String> requirements5 = new ArrayList<String>();
 	
-	ActionStruct useTeleporter = new ActionStruct("useTeleporter", prerequisites5, "UseTeleporter(Agent,Teleporter)", argse5, effects5, requirements5, false, true);
+	ActionStruct useTeleporter = new ActionStruct("useTeleporter", prerequisites5, "useTeleporter(Agent,Teleporter)", argse5, effects5, requirements5, false, true);
 	
         this.actions = new ArrayList<ActionStruct>();
         actions.add(move);
@@ -411,6 +413,6 @@ public class FSPlanner implements Runnable{ //  implements Runnable
         actions.add(pickUp);
         actions.add(place);
         //actions.add(useTeleporter);
-    }
+    }    
     
 }

@@ -1,6 +1,7 @@
 package Planner.backward;
 
 import Planner.*;
+import gui.RouteFinder.Astar;
 import jTrolog.errors.PrologException;
 import java.util.ArrayList;
 import java.util.TreeSet;
@@ -8,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import worldmodel.*;
 import java.util.HashMap;
+
 
 public class BSPlanner implements Runnable { //  implements Runnable
     State state;
@@ -19,6 +21,7 @@ public class BSPlanner implements Runnable { //  implements Runnable
     int agentId;
     String goal;
     String missionId;
+    Astar routeFinder;
     private ArrayList<ActionStruct> actions;
     
     public BSPlanner(World world,int aid,String goal,String mid) {
@@ -30,48 +33,51 @@ public class BSPlanner implements Runnable { //  implements Runnable
         this.agentId = aid;
         this.missionId = mid;
         this.goal = goal;
+        routeFinder = new Astar();
         createActions();
     }
-
-    public void getPercepts() {
-        System.err.println("Getting percepts");
+    
+    private void getPercepts() throws PrologException {
        long time1 = System.currentTimeMillis();
-        String domain = "";
-        
-        for(Object o : world.getObjects()) {
-            // add to percepts            
-            if(o instanceof MapAgent) {
-                //System.err.println("Agent found");
-                MapAgent agent = (MapAgent) o;
-                domain += "agentAt(" + agent.getNumber() + ",[" + agent.x + "," + agent.y + "]). ";
-            }else if(o instanceof MapBox) {
-                //System.err.println("Box found");
-                MapBox obs = (MapBox) o;
-                domain += "boxAt(" + obs.getName() + ",[" + obs.x + "," + obs.y + "]). "; 
-            }else if(o instanceof Goal) {
-                //System.err.println("goal found");
-                Goal obs = (Goal) o;
-                domain += "goalAt(" + obs.getName() + ",[" + obs.x + "," + obs.y + "]). "; 
-            }else if(o instanceof Wall) {
-                //System.err.println("wall found");
-                Wall w = (Wall) o;
-                domain += "w([" + w.x + "," + w.y + "]). "; 
+       String domain = "";
+       
+       // add to percepts            
+       for(int i = 0; i < world.getX(); i++) {
+            for(int j = 0; j < world.getY(); j++) {
+                long key = world.getMap().keyFor(j, i);
+                Object o = world.getMap().get(key);
+                if(o == null){
+                    domain += "f([" + i + "," + j + "]). ";
+                }else if(o instanceof MapAgent) {
+                    //System.err.println("Agent found");
+                    MapAgent agent = (MapAgent) o;
+                    domain += "agentAt(" + agent.getNumber() + ",[" + agent.x + "," + agent.y + "]). ";
+                }else if(o instanceof MapBox) {
+                    //System.err.println("Box found");
+                    MapBox obs = (MapBox) o;
+                    domain += "at(" + obs.getName() + ",[" + obs.x + "," + obs.y + "]). "; 
+                    domain += "object(" + obs.getName() + "). ";
+                }else if(o instanceof Goal) {
+                    //System.err.println("goal found");
+                    Goal obs = (Goal) o;
+                    domain += "goalAt(" + obs.getName() + ",[" + obs.x + "," + obs.y + "]). "; 
+                }else if(o instanceof Wall) {
+                    //System.err.println("wall found");
+                    Wall w = (Wall) o;
+                    domain += "w([" + w.x + "," + w.y + "]). "; 
+                }
             }
         }
-        
+
         String theory = getStatics() + domain;
         //System.out.println("statics:\n " + statics);
         //System.out.println("objects:\n " + world.getObjects().toString());
         //System.out.println("Num objects: " + world.getObjects().size() + "\n Theory:");
         //System.out.println(theory);
         //System.err.println(theory);
-        try {
-            this.state = new State(theory);
-            //String goal = "boxAt(a, [9,9]). ";
-        } catch (PrologException ex) {
-            Logger.getLogger(BSPlanner.class.getName()).log(Level.SEVERE, null, ex);
-        }
-       long time2 = System.currentTimeMillis();
+        this.state = new State(theory);
+        //System.out.println(this.state.toString());
+        long time2 = System.currentTimeMillis();
                 
        System.out.println("Percepts gotten in: " + (time2 - time1) + " ms");
     }
@@ -84,28 +90,32 @@ public class BSPlanner implements Runnable { //  implements Runnable
     @Override
     public void run() {
         while(!this.done){
-            System.out.println("New iteration");
+            System.out.println("\n");
             iteration++;
-            getPercepts();
-            Problem p;
-            try {
-                p = new Problem(1,"", this.actions);
-                findAction(p, "at(a,[5;5])");
-            } catch (InterruptedException ex) {
-                Logger.getLogger(BSPlanner.class.getName()).log(Level.SEVERE, null, ex);
+            /*try {
+                getPercepts();
             } catch (PrologException ex) {
                 Logger.getLogger(BSPlanner.class.getName()).log(Level.SEVERE, null, ex);
             }
-            this.done = true;
+            Problem p;
+            try {
+                p = new Problem(1,"", this.actions);
+                this.plan = findPlan(p, "at(a,[5,5])");
+                System.out.println("Plan:\n" + this.plan);
+            } catch (PrologException ex) {
+                Logger.getLogger(BSPlanner.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            this.done = true;*/
             
-            //try {
-                // get percepts and update current state description
-                //getPercepts();
+            Problem p;
+            try {
+                //get percepts and update current state description
+                getPercepts();
                 //System.err.println("f(3,3): " + state.state.solveboolean("f([3,3]). "));
                 //System.err.println("f(10, 10): " + state.state.solveboolean("f([10,10]). "));
 
-                // check if plan is still valid
-                /*boolean valid = false;
+                //check if plan is still valid
+                boolean valid = false;
                 if(this.plan != null && this.plan.list.isEmpty()) {
                     this.done = true;
                     System.err.println("DONE! ");
@@ -117,14 +127,23 @@ public class BSPlanner implements Runnable { //  implements Runnable
                 }
 
                 //System.err.println("Free: " + state.state.solveboolean("f([1,3])"));
-                if(this.plan != null && !this.plan.isEmpty() && valid) {
+                if(this.plan != null) {//this.plan != null && !this.plan.isEmpty() && valid) {
 
                     // If it is, do the next action
                     Actions next = plan.pop();
                     System.err.println("Take Next Action: " + next.name);
 
                     // Apply next - act() ?
-                    world.agentActionParse(next.name);
+                    if(next.atomic) {
+                        //world.agentActionParse(next.name);
+                    }else{
+                       Plan subPlan = routeFinder.findPlan(world,next.name);
+                       //subPlan.printSolution();
+                       this.plan.prependAll(subPlan);
+                       //System.out.println("New plan:\n" + this.plan);
+                    }
+                    //world.agentActionParse(next.name);
+                    //world.agentActionParse(next.name);
                 }else{
                     if(this.plan != null) {
                         System.out.println("Replan: " + !valid);
@@ -133,7 +152,7 @@ public class BSPlanner implements Runnable { //  implements Runnable
                     }
                     // Else, make a new plan ( and perform the first action ? )
 
-                    Problem p = new Problem(agentId,missionId);
+                    p = new Problem(agentId,"", this.actions);
                     p.setInitial(this.state);
                     //System.out.println(this.state);
                     p.setGoal(this.goal);
@@ -141,7 +160,7 @@ public class BSPlanner implements Runnable { //  implements Runnable
                     //System.out.println("Problem: " + p.toString());
 
                     long time1 = System.currentTimeMillis();
-                    //this.plan = this.findPlan(p, this.goal);
+                    this.plan = findPlan(p, this.goal);
                     long time2 = System.currentTimeMillis();
 
                     System.out.println("Plan found in: " + (time2 - time1) + " ms");
@@ -155,14 +174,17 @@ public class BSPlanner implements Runnable { //  implements Runnable
             }
             try {
                 world.draw();
-                Thread.sleep(500);
+                Thread.sleep(200);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
-            }*/
+            } catch(NullPointerException e) {
+                
+            }
         }
     }
     
     public String[][] splitAction(String action) {
+        action = action.replaceAll("\\[([0-9]*),([0-9]*)\\]", "[$1;$2]");
         String[] res = action.split("\\(");
         String head = res[0];
         //System.out.println("Rest: " + res[1]);
@@ -177,50 +199,78 @@ public class BSPlanner implements Runnable { //  implements Runnable
         return result;
     }
     
-    public Plan findAction(Problem p, String goal) throws InterruptedException {
+    public Plan findPlan(Problem p, String goal) {
+        goal = goal.replaceAll("\\[([0-9]*),([0-9]*)\\]", "[$1;$2]");
+        Plan plan = new Plan();
+        try {
+            ArrayList<Actions> actions = findAction(p, goal);
+            //System.out.println("p:");
+            //System.out.println("   " + actions.toString());
+            for(Actions a : actions) {
+                for(String openPrecondition : a.openPreconditions) {
+                    //System.out.println("Find plan for: " + openPrecondition);
+                    plan.appendAll(findPlan(p, openPrecondition));
+                }
+            }
+            plan.appendAll(actions);
+        } catch (InterruptedException ex) {
+            //Logger.getLogger(BSPlanner.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return plan;
+    }
+    
+    public ArrayList<Actions> findAction(Problem p, String goal) throws InterruptedException {
+        //System.out.print("FindAction: " + goal);
+        goal = goal.replaceAll("\\[\\s*([0-9]*)\\s*,\\s*([0-9]*)\\s*\\]", "[$1;$2]");
+        //System.out.println("   --  " + goal);
         ArrayList<Actions> actionsReturn = new ArrayList<Actions>();
         boolean go;
         for(ActionStruct a : p.actions) {
-            go = false;
-            System.out.println("Action: " + a.name);
-            HashMap arguments = new HashMap<String,String>();
-            arguments.put("Agent", "" + this.agentId);
-            for(String e : a.effects) {
-                
-                String[][] action = splitAction(e);
-                String[][] goalSplittet = splitAction(goal);
-                
-                System.out.println("Effect : " + e);
-                System.out.println("Goal: " + goalSplittet[0][0] + " a: " + action[0][0]);
-                if(action[0][0].equals(goalSplittet[0][0])) {
-                    go = true;
-                    System.out.println("FOUND AN ACTION: " + a.name);
-                    System.out.println("Head: " + action[0][0]);  
-                    
-                    
-                    for(int i = 0; i < action[1].length; i++) {
-                        System.out.print(action[1][i] + ",");
-                        arguments.put(action[1][i], goalSplittet[1][i].replaceAll(";", ","));   
+            if(!a.expanded) {
+                go = false;
+                //System.out.println("Action: " + a.name);
+                HashMap arguments = new HashMap<String,String>();
+                arguments.put("Agent", "" + this.agentId);
+                for(String e : a.effects) {
+
+                    String[][] action = splitAction(e);
+                    String[][] goalSplittet = splitAction(goal);
+
+                    //System.out.println("Effect : " + e);
+                    //System.out.println("Goal: " + goalSplittet[0][0] + " a: " + action[0][0]);
+                    if(action[0][0].equals(goalSplittet[0][0])) {
+                        go = true;
+                        //System.out.println("FOUND AN ACTION: " + a.name);
+                        //System.out.println("Head: " + action[0][0]);  
+
+                        for(int i = 0; i < action[1].length; i++) {
+                            //System.out.print(action[1][i] + ",");
+                            arguments.put(action[1][i].trim(), goalSplittet[1][i].replaceAll(";", ","));   
+                        }
+                        //System.out.println("args: " + arguments.toString());
                     }
-                    System.out.println("args: " + arguments.toString());
                 }
-            }
-            
-            if(go && !arguments.isEmpty()) {
-                //try {
-                    actionsReturn.addAll(a.getSpecificActions(this.state.state, arguments));
-                    //actionsReturn.addAll(a.get(this.state.state, arguments));
-                //} catch (PrologException ex) {
-                //    Logger.getLogger(BSPlanner.class.getName()).log(Level.SEVERE, null, ex);
-                //}
+
+                if(go && !arguments.isEmpty()) {
+                    //try {
+                        actionsReturn.addAll(a.getSpecificActions(this.state.state, arguments));
+                        //actionsReturn.addAll(a.get(this.state.state, arguments));
+                    //} catch (PrologException ex) {
+                    //    Logger.getLogger(BSPlanner.class.getName()).log(Level.SEVERE, null, ex);
+                    //}
+                }else{
+                    //System.out.println("No args");
+                }
+                //System.out.println("\n");
             }else{
-                System.out.println("No args");
+                continue;
             }
-            System.out.println("\n");
         }
-        System.out.println("Actions: " + actionsReturn.toString());
+        //findAction(p, "at(a,[5;5])");
+        //System.out.println("Actions: " + actionsReturn.toString());
         
-        return null;
+        return actionsReturn;
     }
 
     
@@ -256,40 +306,12 @@ public class BSPlanner implements Runnable { //  implements Runnable
     }
 
     private String getRules() {
-        String move = "move(Agent, MoveDir, C0, C1) :- agentAt(Agent, C0), neighbour(C0, C1, MoveDir), f(C1). ";
-        String push = "push(Agent, MoveDir, MovePush, C0, C1, C2, Box) :- agentAt(Agent, C0), neighbour(C0, C1, MoveDir), boxAt(Box, C1), neighbour(C1, C2, MovePush), f(C2). ";
-        String pull = "pull(Agent, MoveDir, CurrDir, C0, C1, C2, Box) :- agentAt(Agent, C0), neighbour(C0, C1, MoveDir), boxAt(Box, C2), neighbour(C0, C2, CurrDir), f(C1). ";
-
+      
         //String goal = "goalAt(a, [6,11]). ";
-        String free = "f(C0) :- \\+w(C0), \\+agentAt(Agent, C0), \\+boxAt(Box, C0). ";
+        //String free = "f(C0) :- \\+w(C0), \\+agentAt(Agent, C0), \\+boxAt(Box, C0). ";
+        //String equals = "equals(A, B) :- B = A. ";
         
-        String neighbours = "";
-            /*neighbours += "neighbour([X1, Y1], [X2, Y2], n):- is(Y1, Y2 + 1), X1 = X2. ";
-            neighbours += "neighbour([X1, Y1], [X2, Y2], s):- is(Y1,Y2 - 1), X2 = X1. ";
-            neighbours += "neighbour([X1, Y1], [X2, Y2], e):- is(X1,X2 - 1), Y1 = Y2. ";
-            neighbours += "neighbour([X1, Y1], [X2, Y2], w):- is(X1,X2 + 1), Y1 = Y2. ";
-
-            neighbours += "neighbour([X1, Y1], [X2, Y2], n):- is(Y2,Y1 - 1), X1 = X2. ";
-            neighbours += "neighbour([X1, Y1], [X2, Y2], s):- is(Y2,Y1 + 1), X2 = X1. ";
-            neighbours += "neighbour([X1, Y1], [X2, Y2], e):- is(X2,X1 + 1), Y1 = Y2. ";
-            neighbours += "neighbour([X1, Y1], [X2, Y2], w):- is(X2,X1 - 1), Y1 = Y2. ";
-            */
-            neighbours += "neighbour([X1, Y1], [X2, Y2], n):- Y1 = Y2 + 1, X1 = X2. ";
-            neighbours += "neighbour([X1, Y1], [X2, Y2], s):- Y1 = Y2 - 1, X2 = X1. ";
-            neighbours += "neighbour([X1, Y1], [X2, Y2], e):- X1 = X2 - 1, Y1 = Y2. ";
-            neighbours += "neighbour([X1, Y1], [X2, Y2], w):- X1 = X2 + 1, Y1 = Y2. ";
-
-            neighbours += "neighbour([X1, Y1], [X2, Y2], n):- Y2 = Y1 - 1, X1 = X2. ";
-            neighbours += "neighbour([X1, Y1], [X2, Y2], s):- Y2 = Y1 + 1, X2 = X1. ";
-            neighbours += "neighbour([X1, Y1], [X2, Y2], e):- X2 = X1 + 1, Y1 = Y2. ";
-            neighbours += "neighbour([X1, Y1], [X2, Y2], w):- X2 = X1 - 1, Y1 = Y2. ";
-
-            //neighbours += "neighbour([X1,Y1], [X2,Y2], n) :- B is Y1 - 1, Y2 = B, X1 = X2. ";
-            //neighbours += "neighbour([X1,Y1], [X2,Y2], s) :- B is Y1 + 1, Y2 = B, X2 = X1. ";
-            //neighbours += "neighbour([X1,Y1], [X2,Y2], e) :- B is X1 + 1, X2 = B, Y1 = Y2. ";
-            //neighbours += "neighbour([X1,Y1], [X2,Y2], w) :- B is X1 - 1, X2 = B, Y1 = Y2. ";
-            
-        String rules = move + push + pull + neighbours + free;
+        String rules = ""; //equals; //  move + push + pull + neighbours + 
 
         return rules;
     }
@@ -306,7 +328,7 @@ public class BSPlanner implements Runnable { //  implements Runnable
 	argse1.add("MovePos");
 	
 	ArrayList<String> prerequisites1 = new ArrayList<String>();
-	prerequisites1.add("agentAt(Agent, CurPos)");
+	prerequisites1.add("agentAt(Agent,CurPos)");
 	prerequisites1.add("f(MovePos)");
 	
 	ArrayList<String> effects1 = new ArrayList<String>();
@@ -316,7 +338,7 @@ public class BSPlanner implements Runnable { //  implements Runnable
 	ArrayList<String> requirements1 = new ArrayList<String>();
 	requirements1.add("f(MovePos)");
 
-	ActionStruct move = new ActionStruct("move", prerequisites1, "Move(Agent,MovePos)", argse1, effects1, requirements1, false, false);
+	ActionStruct move = new ActionStruct("move", prerequisites1, "move(Agent,MovePos)", argse1, effects1, requirements1, false, false);
 	
 	/* MoveAtomic  */
 	ArrayList<String> argse2 = new ArrayList<String>();
@@ -325,7 +347,7 @@ public class BSPlanner implements Runnable { //  implements Runnable
 	argse2.add("MovePos");
 	
 	ArrayList<String> prerequisites2 = new ArrayList<String>();
-	prerequisites2.add("agentAt(Agent, CurPos)");
+	prerequisites2.add("agentAt(Agent,CurPos)");
 	prerequisites2.add("f(MovePos)");
 	
 	ArrayList<String> effects2 = new ArrayList<String>();
@@ -335,7 +357,7 @@ public class BSPlanner implements Runnable { //  implements Runnable
 	ArrayList<String> requirements2 = new ArrayList<String>();
 	requirements2.add("f(MovePos)");
 
-	ActionStruct moveAtomic = new ActionStruct("moveAtomic", prerequisites2, "MoveAtomic(Agent,MovePos)", argse2, effects2, requirements2, true, true);
+	ActionStruct moveAtomic = new ActionStruct("moveAtomic", prerequisites2, "moveAtomic(Agent,MovePos)", argse2, effects2, requirements2, true, true);
 	
 	// object(Object) :- box(Object).
 	// object(Object) :- bomb(Object).	
@@ -343,47 +365,47 @@ public class BSPlanner implements Runnable { //  implements Runnable
 	/* PickUp  */
 	ArrayList<String> argse3 = new ArrayList<String>();
 	argse3.add("Agent");
-	argse3.add("AgPos");
-	argse3.add("ObjectPos");
+	//argse3.add("AgPos");
+	argse3.add("ObjPos");
 	argse3.add("Object");
 	
 	ArrayList<String> prerequisites3 = new ArrayList<String>();
-	prerequisites3.add("\\+carries(Agent, OtherObject)");
-	prerequisites3.add("agentAt(Agent, AgPos)");
-	prerequisites3.add("ObjectPos = AgPos");
-	prerequisites3.add("at(Object, ObjectPos)");
+	prerequisites3.add("\\+carries(Agent, _)");
+	prerequisites3.add("agentAt(Agent,ObjPos)"); // agentAt(Agent, AgPos)
+	//prerequisites3.add("equals(ObjPos,AgPos)");
+	prerequisites3.add("at(Object,ObjPos)");
 	prerequisites3.add("object(Object)");
 	
 	ArrayList<String> effects3 = new ArrayList<String>();
-	effects3.add("!at(Object, ObjectPos)");
-	effects3.add("carries(Agent, Object)");
+	effects3.add("!at(Object,ObjPos)");
+	effects3.add("carries(Agent,Object)");
 	
 	ArrayList<String> requirements3 = new ArrayList<String>();
-	requirements3.add("at(Object, ObjectPos)");
+	requirements3.add("at(Object,ObjPos)");
 	
-	ActionStruct pickUp = new ActionStruct("pickUp", prerequisites3, "PickUp(Agent,Object)", argse3, effects3, requirements3, false, true);
+	ActionStruct pickUp = new ActionStruct("pickUp", prerequisites3, "pickUp(Agent,Object)", argse3, effects3, requirements3, false, true);
 	
 	/* Place  */
 	ArrayList<String> argse4 = new ArrayList<String>();
 	argse4.add("Agent");
 	argse4.add("AgPos");
-	argse4.add("ObjectPos");
+	//argse4.add("ObjPos");
 	argse4.add("Object");
 	
 	ArrayList<String> prerequisites4 = new ArrayList<String>();
-	prerequisites4.add("agentAt(Agent, AgPos)");
-	prerequisites4.add("ObjectPos = AgPos");
-	prerequisites4.add("carries(Agent, Object)");
+	prerequisites4.add("agentAt(Agent,AgPos)");
+	//prerequisites4.add("equals(ObjPos, AgPos)");
+	prerequisites4.add("carries(Agent,Object)");
 	
 	ArrayList<String> effects4 = new ArrayList<String>();
-	effects4.add("at(Object, ObjectPos)");
-	effects4.add("!carries(Agent, Object)");
+	effects4.add("at(Object,AgPos)");
+	effects4.add("!carries(Agent,Object)");
 	
 	ArrayList<String> requirements4 = new ArrayList<String>();
-	requirements4.add("f(ObjectPos)");
-	requirements4.add("carries(Agent, Object)");
+	requirements4.add("f(AgPos)");
+	requirements4.add("carries(Agent,Object)");
 	
-	ActionStruct place = new ActionStruct("place", prerequisites4, "Place(Agent,Object)", argse4, effects4, requirements4, false, true);
+	ActionStruct place = new ActionStruct("place", prerequisites4, "place(Agent,Object)", argse4, effects4, requirements4, false, true);
 
 	/* Use Teleporter  */
 	ArrayList<String> argse5 = new ArrayList<String>();
@@ -394,18 +416,18 @@ public class BSPlanner implements Runnable { //  implements Runnable
 	argse5.add("To");
 	
 	ArrayList<String> prerequisites5 = new ArrayList<String>();
-	prerequisites5.add("agentAt(Agent, AgPos)");
-	prerequisites5.add("AgPos = TeleporterPos");
+	prerequisites5.add("agentAt(Agent,TeleporterPos)");
+	//prerequisites5.add("equals(AgPos,TeleporterPos)");
 	// prerequisites5.add("at(Teleporter, TeleporterPos)"); // ? Necessary ?
-	prerequisites5.add("teleporter(Teleporter, TeleporterPos, To)");
+	prerequisites5.add("teleporter(Teleporter,TeleporterPos, To)");
 	
 	ArrayList<String> effects5 = new ArrayList<String>();
-	effects5.add("agentAt(Agent, To)");
-	effects5.add("!agentAt(Agent, AgPos)");
+	effects5.add("agentAt(Agent,To)");
+	effects5.add("!agentAt(Agent,TeleporterPos)");
 	
 	ArrayList<String> requirements5 = new ArrayList<String>();
 	
-	ActionStruct useTeleporter = new ActionStruct("useTeleporter", prerequisites5, "UseTeleporter(Agent,Teleporter)", argse5, effects5, requirements5, false, true);
+	ActionStruct useTeleporter = new ActionStruct("useTeleporter", prerequisites5, "useTeleporter(Agent,Teleporter)", argse5, effects5, requirements5, false, true);
 	
         this.actions = new ArrayList<ActionStruct>();
         actions.add(move);
@@ -413,6 +435,5 @@ public class BSPlanner implements Runnable { //  implements Runnable
         actions.add(pickUp);
         actions.add(place);
         //actions.add(useTeleporter);
-    }
-    
+    }    
 }

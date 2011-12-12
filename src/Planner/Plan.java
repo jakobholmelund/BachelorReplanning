@@ -12,10 +12,42 @@ public class Plan {
         list = new ArrayList<Actions>();
     }
 
+    public void appendAll(Plan p1) {
+        this.list.addAll(p1.list);
+    }
+    
+    public void prependAll(Plan p1) {
+        this.list.addAll(0, p1.list);
+    }
+    
+    public void addAll(int index, ArrayList<Actions> list) {
+        this.list.addAll(index, list);
+    }
+    
+    public void appendAll(ArrayList<Actions> list) {
+        this.list.addAll(list);
+    }
+    
+    public void prependAll(ArrayList<Actions> list) {
+        this.list.addAll(0, list);
+    }
+    
+    public void append(Actions act) {
+        this.list.add(act);
+    }
+    
+    public void prepend(Actions act) {
+        this.list.add(0, act);
+    }
+
+    public void add(int index, Actions a) {
+        list.add(index, a);
+    }
+    
     public void add(Actions a) {
         list.add(0, a);
     }
-
+    
     public Actions pop() {
         Actions ret = list.get(0);
         list.remove(0);

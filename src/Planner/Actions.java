@@ -51,7 +51,12 @@ public class Actions implements Comparable<Actions>{
         String str = effect.toString();
         return str;
     }
-
+    
+    public String openPreconditionsToString() {
+        String str = openPreconditions.toString();
+        return str;
+    }
+ 
     public String reqToString() {
         String str = requirements.toString();
         return str;
@@ -59,6 +64,6 @@ public class Actions implements Comparable<Actions>{
 
     @Override
     public String toString() {
-        return name + effectToString() + " " + reqToString();
+        return name + " " + effectToString() + " " + openPreconditionsToString();
     }
 }
