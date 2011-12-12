@@ -74,7 +74,7 @@ public class Astar {
         Node node = n;
         while (node != null) {
             int[] cords = coordsFor(node.curPosition);
-            Actions action = new Actions("move(" + this.agent + ", [" + cords[0] + "," + cords[1] + "])", true, true);
+            Actions action = new Actions("moveAtomic(" + this.agent + ", [" + cords[0] + "," + cords[1] + "])", true, true);
             
             //p.add(node.curPosition);
             p.add(action);
