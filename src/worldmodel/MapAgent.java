@@ -31,7 +31,7 @@ public class MapAgent extends MapObject {
         return id;
     }
     public void pickUp(MapObject mo){
-        if(carying != null){
+        if(carying == null){
             this.carying = mo;
         }
     }

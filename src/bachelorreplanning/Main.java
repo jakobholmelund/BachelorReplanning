@@ -20,7 +20,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws PrologException, Throwable {
-        World world = new World(20,20); //new MiddleWorld();//new World(30,30);
+        World world = new World(100,100); //new MiddleWorld();//new World(30,30);
         world.addObject(new MapAgent(1,1,1));
         //world.newAgentActionParse("moveAtomic(1,[10,10])");
         //world.newAgentActionParse("pickUp(1,a)");
