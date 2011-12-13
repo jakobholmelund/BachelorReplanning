@@ -129,6 +129,7 @@ public class World {
     //test
     public void removeObject(MapObject mo){
         map.remove(mo.getPosition(), mo);
+        objectMap.remove(mo.getId());
         this.hasChanged = true;
     }
     
