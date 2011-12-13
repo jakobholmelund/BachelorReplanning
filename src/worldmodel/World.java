@@ -263,15 +263,19 @@ public class World {
         this.removeObject(mo);
     }
     public void place(MapAgent ma){
-        this.addObject(ma.getCarying());
+        MapObject mo = ma.getCarying();
+        mo.setPosition(ma.getPosition());
+        this.addObject(mo);
         ma.place();
     }
     
    public void newAgentActionParse(String action){
-        Pattern typeP = Pattern.compile("(^\\w+)\\((\\w*)\\,((\\w+)|\\[((\\d+)\\,(\\d+))\\])\\)");
+        Pattern typeP = Pattern.compile("(^\\w+)\\((\\w*)\\,((\\w+)|\\s\\[((\\d+)\\,(\\d+))\\])\\)");
         Matcher m = typeP.matcher(action);
         boolean matchFound = m.find();
         if (matchFound) {
+            System.out.println("FOUND MATCH");
+            System.out.println(m.group(1));
             MapAgent agent = (MapAgent)objectMap.get(m.group(2));
             if(m.group(1).equals("moveAtomic")){
                 this.moveObject(agent,Integer.parseInt(m.group(6)),Integer.parseInt(m.group(7)));
@@ -280,7 +284,7 @@ public class World {
                 this.pickUp(agent,object);
             }else if(m.group(1).equals("place")){
                 //MapObject object = objectMap.get(m.group(3));
-                this.place(agent);
+               this.place(agent);
             }
         }
     }
