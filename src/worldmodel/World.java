@@ -2,6 +2,7 @@
 package worldmodel;
 
 import Planner.forward.FSPlanner;
+import Planner.backward.BSPlanner;
 import gui.WorldPanel;
 import jTrolog.terms.Int;
 import java.awt.FileDialog;
@@ -62,10 +63,13 @@ public class World {
             if(mo instanceof MapAgent){
                 System.out.println("Starting agent");
                 FSPlanner agent = null;
+                //BSPlanner agent = null;
                 if(((MapAgent)mo).getNumber()==1){
-                    agent = new FSPlanner(this,((MapAgent)mo).getNumber(),"boxAt(a,[13,18]). ","a");
+                    agent = new FSPlanner(this,((MapAgent)mo).getNumber(),"at(a,[13,18]). ","a");
+                    //agent = new BSPlanner(this,((MapAgent)mo).getNumber(),"at(a,[13,18]). ","a");
                 }else if(((MapAgent)mo).getNumber()==2){
-                    agent = new FSPlanner(this,((MapAgent)mo).getNumber(),"boxAt(b,[13,1]). ","b");
+                    agent = new FSPlanner(this,((MapAgent)mo).getNumber(),"at(b,[13,1]). ","b");
+                    //agent = new BSPlanner(this,((MapAgent)mo).getNumber(),"at(b,[13,1]). ","b");
                 }
                 Thread init = new Thread(agent);
                     init.start();

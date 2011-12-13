@@ -135,7 +135,7 @@ public class BSPlanner implements Runnable { //  implements Runnable
 
                     // Apply next - act() ?
                     if(next.atomic) {
-                        //world.agentActionParse(next.name);
+                        world.newAgentActionParse(next.name);
                     }else{
                        Plan subPlan = routeFinder.findPlan(world,next.name);
                        //subPlan.printSolution();

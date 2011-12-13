@@ -30,8 +30,8 @@ public class Main {
         //Astar test = new Astar();
         //test.findPlan(world,"move(0,[28,28])");
         //4294967301294967297L,4294967421554051613L
-        //MainWindow mainWindow = new MainWindow();
-        //mainWindow.loadNewWorld(world);
+        MainWindow mainWindow = new MainWindow();
+        mainWindow.loadNewWorld(world);
        //mainWindow.drawOptions();
     }
 }
