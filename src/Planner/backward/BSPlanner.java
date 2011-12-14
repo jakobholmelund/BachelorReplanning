@@ -190,23 +190,12 @@ public class BSPlanner implements Runnable { //  implements Runnable
         Matcher m = typeP.matcher(action);
         boolean matchFound = m.find();
         if (matchFound) {
-             String command = m.group(1);
-             String arg1 = m.group(2);
-             String arg2 = m.group(4);  
-            String head = command;
+            String command = m.group(1);
+            String arg1 = m.group(2);
+            String arg2 = m.group(4);
+            String[] headT = new String[]{command};
             String[] args = new String[]{arg1,arg2};
-
-            String[][] result = new String[2][];
-            String[] headT = {command};
-
-            result[0] = headT;
-            result[1] = args;
-
-            for(String[] s:result){
-                for(String s2:s){
-                        System.out.println(s2);
-                }
-            }
+            String[][] result = new String[][]{headT,args};
             return result;
         }
         return null;
