@@ -110,6 +110,12 @@ public class World {
     public void moveObject(MapObject mo, int x, int y){
         synchronized(this){
             long key = map.keyFor(x, y);
+            if(map.get(key) instanceof Oil){
+                System.out.println("OILPUUUUUUUUD");
+                ArrayList<Long> neighbors = map.emptyNeighborsKeysFor(key);
+                Random random = new Random();
+                key = neighbors.get(random.nextInt(neighbors.size()-1));
+            }
             map.update(mo.getPosition(), key, mo);
             mo.setPosition(key,x,y);
             this.hasChanged = true;
@@ -118,6 +124,7 @@ public class World {
     
     public void moveObject(MapObject mo, long key){
         synchronized(this){
+            System.out.println("OILPUUUUUUUUD");
             if(map.get(key) instanceof Oil){
                 System.out.println("OILPUUUUUUUUD");
                 ArrayList<Long> neighbors = map.emptyNeighborsKeysFor(key);
