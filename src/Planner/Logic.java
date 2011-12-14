@@ -229,7 +229,8 @@ public class Logic {
                 }
             }
         } catch (Exception e) {
-            System.err.println("Exception when handling: " + q + ". Malformed predicate");
+            //System.err.println("Exception when handling: " + q + ". Malformed predicate");
+            //e.printStackTrace();
         }
     }
 
