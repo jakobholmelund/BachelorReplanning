@@ -34,10 +34,6 @@ public class Astar {
         
         int states = 0;
         while (true) {
-            for(Node n:frontier){
-                    int[] coords = coordsFor(n.curPosition);
-                    System.out.print("(" + coords[0] + "," + coords[1] + ") h: " + n.h + " g: " + n.g + " f: " + n.f + " ,");
-            }
             System.out.println("");
             if (frontier.isEmpty()) {
                 return null;

@@ -29,7 +29,7 @@ public class Node implements Comparable<Node> {
             return Double.compare(this.h, other.h);
         } else {
             //System.err.println("ZERO ZERO ZERO ZERO!!!!!!!!!!!!!!!!!!!!!!!!");
-            return 0;
+            return 1;
         }
     }
 

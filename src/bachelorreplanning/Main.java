@@ -21,7 +21,7 @@ public class Main {
         World world = new MiddleWorld();//new World(30,30);
         MainWindow mainWindow = new MainWindow();
         mainWindow.loadNewWorld(world);
-        BSPlanner planner = new BSPlanner(world, 0, "agentAt(0,[5;5])", null); // at(a,[5;5]) // agentAt(0,[5;5])
+        BSPlanner planner = new BSPlanner(world, 0, "agentAt(0,[15;15])", null); // at(a,[5;5]) // agentAt(0,[5;5])
         Thread init = new Thread(planner);
         init.start();
         //planner.run();//findAction(p, "boxAt(a,[5;5])");
