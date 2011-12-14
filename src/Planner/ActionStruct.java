@@ -68,6 +68,8 @@ public class ActionStruct {
     public ArrayList<Actions> getSpecificActions(Logic logic, HashMap<String,String> arguments) {
         //System.out.println("Get specific action: " + this.name);
         //System.out.println("Args: " + arguments.toString());
+        //System.out.println("STATE");
+        //System.out.println(logic.getTheoryAsString());
         ArrayList<Actions> possibleActions = new ArrayList<Actions>();
         ArrayList<String> openPreconditions = new ArrayList<String>();
         boolean error = false;
@@ -85,12 +87,18 @@ public class ActionStruct {
                 error = true;
             }
             // Check if true in the given state.
-            //System.out.println("For: " + s);
+            /*System.out.println("For: " + s);
+            System.out.println("Error: " + error);
+            System.out.println("Empty: " + solutions.isEmpty());
+            if(!solutions.isEmpty()) {
+                System.out.println("Success: " + solutions.get(0).success());
+                System.out.println("Sol: " + solutions.get(0).toString());
+            }*/
             if(!error && !solutions.isEmpty() && solutions.get(0).success()) {
                 // If yes - for each solution append them to arguments and search onwards from there.
     
                 Map bindings = solutions.get(0).getBindings();    
-                //}
+                
                 //System.out.println("Bindings: " + bindings.toString());
                 for(Object o : bindings.keySet()) {
                     String key = (String) o;

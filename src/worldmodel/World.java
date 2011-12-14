@@ -2,9 +2,7 @@
 package worldmodel;
 
 import Planner.forward.FSPlanner;
-import Planner.backward.BSPlanner;
 import gui.WorldPanel;
-import jTrolog.terms.Int;
 import java.awt.FileDialog;
 import java.awt.Frame;
 import java.io.FileInputStream;
@@ -18,7 +16,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import javax.swing.JPanel;
 import java.util.regex.*;
 /**
  *
@@ -122,6 +119,7 @@ public class World {
     public void moveObject(MapObject mo, long key){
         synchronized(this){
             if(map.get(key) instanceof Oil){
+                System.out.println("OILPUUUUUUUUD");
                 ArrayList<Long> neighbors = map.emptyNeighborsKeysFor(key);
                 Random random = new Random();
                 key = neighbors.get(random.nextInt(neighbors.size()-1));
@@ -268,6 +266,7 @@ public class World {
         ma.pickUp(mo);
         this.removeObject(mo);
     }
+    
     public void place(MapAgent ma){
         MapObject mo = ma.getCarying();
         mo.setPosition(ma.getPosition());

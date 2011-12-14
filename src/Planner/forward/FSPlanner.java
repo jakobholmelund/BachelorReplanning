@@ -28,9 +28,9 @@ public class FSPlanner implements Runnable{ //  implements Runnable
         done = false;
         this.agentId = aid;
         this.missionId = mid;
-        this.goal = "agentAt(1, [5,5]). "; //goal;
+        this.goal = goal;
         routeFinder = new Astar();
-        createActions();
+        actions = this.setActions();
     }
 
     private void getPercepts() throws PrologException {
@@ -244,7 +244,7 @@ public class FSPlanner implements Runnable{ //  implements Runnable
     }
 
     private Plan makeSolution(Node n, Problem p) {
-        Plan s = new Plan();
+        Plan s = new Plan(this.goal);
         s.s = n.s;
         Node node = n;
         while (node != null) {
@@ -298,7 +298,7 @@ public class FSPlanner implements Runnable{ //  implements Runnable
     }
  
     
-void createActions() {
+public ArrayList<ActionStruct> setActions() {
         /* Move  */
 	ArrayList<String> argse1 = new ArrayList<String>();
 	argse1.add("Agent");
@@ -407,12 +407,14 @@ void createActions() {
 	
 	ActionStruct useTeleporter = new ActionStruct("useTeleporter", prerequisites5, "useTeleporter(Agent,Teleporter)", argse5, effects5, requirements5, false, true);
 	
-        this.actions = new ArrayList<ActionStruct>();
+        ArrayList<ActionStruct> actions = new ArrayList<ActionStruct>();
         actions.add(move);
         actions.add(moveAtomic);
         actions.add(pickUp);
         actions.add(place);
         //actions.add(useTeleporter);
+        
+        return actions;
     }    
     
 }

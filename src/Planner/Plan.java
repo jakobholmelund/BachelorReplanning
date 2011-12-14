@@ -2,14 +2,29 @@ package Planner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class Plan {
 
     public State s;
     public ArrayList<Actions> list;
-
+    private String goal;
+    
     public Plan() {
         list = new ArrayList<Actions>();
+    }
+    
+    public Plan(String goal) {
+        list = new ArrayList<Actions>();
+        this.goal = goal.replaceAll("\\[([0-9]*);([0-9]*)\\]", "[$1,$2]");
+    }
+    
+    public void setGoal(String goal) {
+        this.goal = goal.replaceAll("\\[([0-9]*);([0-9]*)\\]", "[$1,$2]");
+    }
+    
+    public String getGoal() {
+        return this.goal;
     }
 
     public void appendAll(Plan p1) {
@@ -79,8 +94,10 @@ public class Plan {
         return this.list.isEmpty();
     }
 
+    /*
     public boolean valid(State state) {
         boolean valid = true;
+        
         //System.err.println("state: " + state);
         for (Actions a : list) {
             for (String st : a.requirements) {
@@ -98,5 +115,22 @@ public class Plan {
         }
 
         return valid;
+    }*/
+    
+    public boolean valid(State state) {
+        Logic s = state.state.clone();
+        for(Actions action : list) {
+            for (String string : action.effect) {
+                try {
+                    System.out.println("Setting: " + string);
+                    s.set(string);
+                } catch (Throwable ex) {
+
+                }
+            }
+        }
+        boolean bol = s.solveboolean(getGoal());
+        System.out.println("Goal: " + getGoal() + " - valid: " + bol);
+        return bol;
     }
 }

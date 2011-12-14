@@ -9,6 +9,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import worldmodel.*;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,12 +23,13 @@ public class BSPlanner implements Runnable { //  implements Runnable
     String statics;
     boolean done;
     int agentId;
+    LinkedList<String> goals;
     String goal;
     String missionId;
     Astar routeFinder;
     private ArrayList<ActionStruct> actions;
     
-    public BSPlanner(World world,int aid,String goal,String mid) {
+    public BSPlanner(World world, int aid, LinkedList<String> goals, String mid) {
         iteration = 0;
         this.plan = null;
         this.world = world;
@@ -34,9 +37,9 @@ public class BSPlanner implements Runnable { //  implements Runnable
         done = false;
         this.agentId = aid;
         this.missionId = mid;
-        this.goal = goal;
+        this.goals = goals;
         routeFinder = new Astar();
-        createActions();
+        actions = this.setActions();
     }
     
     private void getPercepts() throws PrologException {
@@ -48,28 +51,35 @@ public class BSPlanner implements Runnable { //  implements Runnable
             for(int j = 0; j < world.getY(); j++) {
                 long key = world.getMap().keyFor(j, i);
                 Object o = world.getMap().get(key);
-                if(o == null){
+                if(!(o instanceof Wall)){
                     domain += "f([" + i + "," + j + "]). ";
-                }else if(o instanceof MapAgent) {
-                    //System.err.println("Agent found");
-                    MapAgent agent = (MapAgent) o;
-                    domain += "agentAt(" + agent.getNumber() + ",[" + agent.x + "," + agent.y + "]). ";
-                }else if(o instanceof MapBox) {
-                    //System.err.println("Box found");
-                    MapBox obs = (MapBox) o;
-                    domain += "at(" + obs.getName() + ",[" + obs.x + "," + obs.y + "]). "; 
-                    domain += "object(" + obs.getName() + "). ";
-                }else if(o instanceof Goal) {
-                    //System.err.println("goal found");
-                    Goal obs = (Goal) o;
-                    domain += "goalAt(" + obs.getName() + ",[" + obs.x + "," + obs.y + "]). "; 
-                }else if(o instanceof Wall) {
-                    //System.err.println("wall found");
-                    Wall w = (Wall) o;
-                    domain += "w([" + w.x + "," + w.y + "]). "; 
                 }
             }
-        }
+       }
+       
+       for(MapObject o : world.getObjects()) {
+           if(o instanceof MapAgent) {
+                //System.err.println("Agent found");
+                MapAgent agent = (MapAgent) o;
+                domain += "agentAt(" + agent.getNumber() + ",[" + agent.x + "," + agent.y + "]). ";
+                if(agent.getCarying() != null) {
+                    domain += "carries(" + agent.getNumber() + "," + agent.getCarying().getId() + "). ";
+                }
+            }else if(o instanceof MapBox) {
+                //System.err.println("Box found");
+                MapBox obs = (MapBox) o;
+                domain += "at(" + obs.getId() + ",[" + obs.x + "," + obs.y + "]). "; 
+                domain += "object(" + obs.getId() + "). ";
+            }else if(o instanceof Goal) {
+                //System.err.println("goal found");
+                Goal obs = (Goal) o;
+                domain += "goalAt(" + obs.getId() + ",[" + obs.x + "," + obs.y + "]). "; 
+            }else if(o instanceof Wall) {
+                //System.err.println("wall found");
+                Wall w = (Wall) o;
+                domain += "w([" + w.x + "," + w.y + "]). "; 
+            }
+       }
 
         String theory = getStatics() + domain;
         //System.out.println("statics:\n " + statics);
@@ -94,42 +104,33 @@ public class BSPlanner implements Runnable { //  implements Runnable
         while(!this.done){
             System.out.println("\n");
             iteration++;
-            /*try {
-                getPercepts();
-            } catch (PrologException ex) {
-                Logger.getLogger(BSPlanner.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            Problem p;
-            try {
-                p = new Problem(1,"", this.actions);
-                this.plan = findPlan(p, "at(a,[5,5])");
-                System.out.println("Plan:\n" + this.plan);
-            } catch (PrologException ex) {
-                Logger.getLogger(BSPlanner.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            this.done = true;*/
             
             Problem p;
             try {
                 //get percepts and update current state description
                 getPercepts();
-                //System.err.println("f(3,3): " + state.state.solveboolean("f([3,3]). "));
-                //System.err.println("f(10, 10): " + state.state.solveboolean("f([10,10]). "));
-
+                if(this.goal == null || this.goal.equals("")) {
+                    this.goal = goals.pop();
+                }
                 //check if plan is still valid
                 boolean valid = false;
                 if(this.plan != null && this.plan.list.isEmpty()) {
-                    this.done = true;
-                    System.err.println("DONE! ");
-                    Thread.currentThread().join();
-                    return; 
+                    if(!this.goals.isEmpty()) {
+                        this.goal = this.goals.pop();
+                        this.plan = null;
+                    } else{
+                        this.done = true;
+                        System.err.println("DONE! ");
+                        Thread.currentThread().join();
+                        return; 
+                    }
                 }
                 if(this.plan != null) {
                     valid = this.plan.valid(state);
                 }
 
                 //System.err.println("Free: " + state.state.solveboolean("f([1,3])"));
-                if(this.plan != null) {//this.plan != null && !this.plan.isEmpty() && valid) {
+                if(this.plan != null && !this.plan.isEmpty() && valid) {
 
                     // If it is, do the next action
                     Actions next = plan.pop();
@@ -229,7 +230,8 @@ public class BSPlanner implements Runnable { //  implements Runnable
     
     public Plan findPlan(Problem p, String goal) {
         goal = goal.replaceAll("\\[([0-9]*),([0-9]*)\\]", "[$1;$2]");
-        Plan plan = new Plan();
+        Plan plan = new Plan(goal);
+        
         try {
             ArrayList<Actions> actions = findAction(p, goal);
             //System.out.println("p:");
@@ -348,7 +350,7 @@ public class BSPlanner implements Runnable { //  implements Runnable
         return done;
     }
     
-    void createActions() {
+    public ArrayList<ActionStruct> setActions() {
         /* Move  */
 	ArrayList<String> argse1 = new ArrayList<String>();
 	argse1.add("Agent");
@@ -457,11 +459,13 @@ public class BSPlanner implements Runnable { //  implements Runnable
 	
 	ActionStruct useTeleporter = new ActionStruct("useTeleporter", prerequisites5, "useTeleporter(Agent,Teleporter)", argse5, effects5, requirements5, false, true);
 	
-        this.actions = new ArrayList<ActionStruct>();
+        ArrayList<ActionStruct> actions = new ArrayList<ActionStruct>();
         actions.add(move);
         actions.add(moveAtomic);
         actions.add(pickUp);
         actions.add(place);
         //actions.add(useTeleporter);
+        
+        return actions;
     }    
 }
