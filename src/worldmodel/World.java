@@ -239,7 +239,6 @@ public class World {
             for(int j = 0; j < rows; j++) {
                 long key = map.keyFor(j, i);
                 if(!(map.get(key) instanceof Wall)){
-                    //System.out.println(j + "," + i);
                     coords2value.add(key);
                 }
             }
