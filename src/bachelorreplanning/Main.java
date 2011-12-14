@@ -22,9 +22,9 @@ public class Main {
     public static void main(String[] args) throws PrologException, Throwable {
         World world = new World(100,100); //new MiddleWorld();//new World(30,30);
         world.addObject(new MapAgent(1,1,1));
-        world.newAgentActionParse("moveAtomic(0,[5,10])");
-        world.newAgentActionParse("pickUp(1,a)");
-        world.newAgentActionParse("place(1,a)");
+        //world.newAgentActionParse("moveAtomic(0,[5,10])");
+        //world.newAgentActionParse("pickUp(1,a)");
+        //world.newAgentActionParse("place(1,a)");
         //World world = new World(30,30);
         //world.addObject(new MapAgent(0,1,1));
         //Astar test = new Astar();
