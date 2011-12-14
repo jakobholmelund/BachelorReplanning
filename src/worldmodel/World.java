@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import javax.swing.JPanel;
 import java.util.regex.*;
 /**
@@ -120,6 +121,11 @@ public class World {
     
     public void moveObject(MapObject mo, long key){
         synchronized(this){
+            if(map.get(key) instanceof Oil){
+                ArrayList<Long> neighbors = map.emptyNeighborsKeysFor(key);
+                Random random = new Random();
+                key = neighbors.get(random.nextInt(neighbors.size()-1));
+            }
             map.update(mo.getPosition(), key, mo);
             mo.setPosition(key);
             this.hasChanged = true;

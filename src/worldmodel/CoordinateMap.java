@@ -59,13 +59,13 @@ public class CoordinateMap<V> {
     }
 
     // extract the x and y from the keys
-    private int[] coordsFor(long k) {
+    public int[] coordsFor(long k) {
         int x = (int)(k & 0xFFFFFFFF) - 1000000000;
         int y = (int)((k >>> 32) & 0xFFFFFFFF) - 1000000000;
         return new int[]{x,y};
     }
     
-    private ArrayList<V> neighborsFor(long k){    
+    public ArrayList<V> neighborsFor(long k){    
         int x = (int)(k & 0xFFFFFFFF) - 1000000000;
         int y = (int)((k >>> 32) & 0xFFFFFFFF) - 1000000000;
         ArrayList<V> newlist = new ArrayList<V>();
@@ -73,6 +73,29 @@ public class CoordinateMap<V> {
         newlist.add(this.get(keyFor(x+1,y)));
         newlist.add(this.get(keyFor(x,y-1)));
         newlist.add(this.get(keyFor(x,y-1)));
+        return newlist;
+    }
+    
+    public ArrayList<Long> emptyNeighborsKeysFor(long k){    
+        int x = (int)(k & 0xFFFFFFFF) - 1000000000;
+        int y = (int)((k >>> 32) & 0xFFFFFFFF) - 1000000000;
+        ArrayList<Long> newlist = new ArrayList<Long>();
+        V key1 = this.get(keyFor(x-1,y));
+        if(!(key1 instanceof Wall)){
+            newlist.add(keyFor(x-1,y));
+        }
+        V key2 = this.get(keyFor(x+1,y));
+        if(!(key2 instanceof Wall)){
+            newlist.add(keyFor(x+1,y));
+        }
+        V key3 = this.get(keyFor(x,y+1));
+        if(!(key3 instanceof Wall)){
+            newlist.add(keyFor(x,y+1));
+        }
+        V key4 = this.get(keyFor(x,y-1));
+        if(!(key4 instanceof Wall)){
+            newlist.add(keyFor(x,y-1));
+        }
         return newlist;
     }
 }
