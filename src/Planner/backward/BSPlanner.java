@@ -193,10 +193,7 @@ public class BSPlanner implements Runnable { //  implements Runnable
             String command = m.group(1);
             String arg1 = m.group(2);
             String arg2 = m.group(4);
-            String[] headT = new String[]{command};
-            String[] args = new String[]{arg1,arg2};
-            String[][] result = new String[][]{headT,args};
-            return result;
+            return new String[][]{new String[]{command},new String[]{arg1,arg2}};
         }
         return null;
         /*
