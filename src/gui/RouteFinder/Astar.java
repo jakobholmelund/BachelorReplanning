@@ -17,7 +17,7 @@ import worldmodel.World;
  */
 public class Astar {
     private int movecost = 1;
-    private Map<Long,Long> map;
+    private ArrayList<Long> map;
     private long agent;
     
     public Plan findPlan(World w,String action) throws InterruptedException {
@@ -30,11 +30,14 @@ public class Astar {
         TreeSet<Node> frontier = new TreeSet<Node>();
         Node init = makeInitialNode(current);
         frontier.add(init);
+        System.out.println(frontier);
         int states = 0;
         while (true) {
+            System.out.println(frontier);
             if (frontier.isEmpty()) {
                 return null;
             }
+            
             Node n = frontier.pollFirst();
             if (n.curPosition == goal) {
                 return makeSolution(n);
@@ -88,14 +91,30 @@ public class Astar {
         int x = (int)(k & 0xFFFFFFFF) - 1000000000;
         int y = (int)((k >>> 32) & 0xFFFFFFFF) - 1000000000;
         ArrayList<Long> newlist = new ArrayList<Long>();
-        newlist.add(k-1);
-        newlist.add(k+1);
-        newlist.add(map.get(keyFor(x,y-1)));
-        newlist.add(map.get(keyFor(x,y+1)));
-        newlist.add(map.get(keyFor(x-1,y-1)));
-        newlist.add(map.get(keyFor(x-1,y-1)));
-        newlist.add(map.get(keyFor(x+1,y+1)));
-        newlist.add(map.get(keyFor(x+1,y+1)));
+        long key1 = keyFor(x-1,y);
+        if(map.contains(key1)){
+            newlist.add(key1);
+        }
+        long key2 = keyFor(x+1,y);
+        if(map.contains(key2)){
+            newlist.add(key2);
+        }
+        long key3 = keyFor(x,y-1);
+        if(map.contains(key3)){
+            newlist.add(key3);
+        }
+        long key4 = keyFor(x,y+1);
+        if(map.contains(key4)){
+            newlist.add(key4);
+        }
+        
+        //newlist.add(map.get());
+        //newlist.add(map.get());
+        //newlist.add(map.get());
+        //newlist.add(map.get(keyFor(x-1,y-1)));
+        //newlist.add(map.get(keyFor(x-1,y-1)));
+        //newlist.add(map.get(keyFor(x+1,y+1)));
+        //newlist.add(map.get(keyFor(x+1,y+1)));
         return newlist;
     }
     
