@@ -31,9 +31,16 @@ public class Astar {
         Node init = makeInitialNode(current);
         frontier.add(init);
         System.out.println(frontier);
+        
         int states = 0;
         while (true) {
-            System.out.println(frontier);
+            for(Node n:frontier){
+                    int[] coords = coordsFor(n.curPosition);
+                    System.out.print("(" + coords[0] + "," + coords[1] + ")" + ",");
+                
+            
+            }
+            System.out.println("");
             if (frontier.isEmpty()) {
                 return null;
             }
