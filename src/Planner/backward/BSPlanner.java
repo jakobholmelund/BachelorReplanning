@@ -9,6 +9,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import worldmodel.*;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class BSPlanner implements Runnable { //  implements Runnable
@@ -184,10 +186,38 @@ public class BSPlanner implements Runnable { //  implements Runnable
     }
     
     public String[][] splitAction(String action) {
+        Pattern typeP = Pattern.compile("^(\\!?.*)\\((.[^,]*\\)?)(\\,(.*)\\))?");
+        Matcher m = typeP.matcher(action);
+        boolean matchFound = m.find();
+        if (matchFound) {
+             String command = m.group(1);
+             String arg1 = m.group(2);
+             String arg2 = m.group(4);  
+            String head = command;
+            String[] args = new String[]{arg1,arg2};
+
+            String[][] result = new String[2][];
+            String[] headT = {command};
+
+            result[0] = headT;
+            result[1] = args;
+
+            for(String[] s:result){
+                for(String s2:s){
+                        System.out.println(s2);
+                }
+            }
+            return result;
+        }
+        return null;
+        /*
+        System.out.println(action);
+        
+        
         action = action.replaceAll("\\[([0-9]*),([0-9]*)\\]", "[$1;$2]");
         String[] res = action.split("\\(");
         String head = res[0];
-        //System.out.println("Rest: " + res[1]);
+        System.out.println("Rest: " + res[1]);
         String[] args = res[1].substring(0, res[1].length()-1).trim().split("\\,");
         
         String[][] result = new String[2][];
@@ -196,7 +226,14 @@ public class BSPlanner implements Runnable { //  implements Runnable
         result[0] = headT;
         result[1] = args;
         
+        for(String[] s:result){
+            for(String s2:s){
+                System.out.println(s2);
+            }
+        }
         return result;
+         * 
+         */
     }
     
     public Plan findPlan(Problem p, String goal) {
