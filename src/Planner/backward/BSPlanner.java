@@ -130,7 +130,7 @@ public class BSPlanner implements Runnable { //  implements Runnable
                 }
 
                 //System.err.println("Free: " + state.state.solveboolean("f([1,3])"));
-                if(this.plan != null && !this.plan.isEmpty() && valid) {
+                if(this.plan != null) {//this.plan != null && !this.plan.isEmpty() && valid) {
 
                     // If it is, do the next action
                     Actions next = plan.pop();
