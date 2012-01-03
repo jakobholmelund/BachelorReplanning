@@ -36,9 +36,14 @@ public class Actions implements Comparable<Actions>{
     @Override
     public int compareTo(Actions a) {
         //System.err.println(this.s + " -- " + a.s);
-        if (!this.effect.containsAll(a.effect)) {
+        //if (!this.effect.containsAll(a.effect)) {
+        //    return 1;
+        //} else {
+        //    return 0;
+        //}
+        if(this.name.equals(a.name)) {
             return 1;
-        } else {
+        }else{
             return 0;
         }
     }

@@ -1,7 +1,7 @@
 
 package worldmodel;
 
-import Planner.forward.FSPlanner;
+import Planner.NFSP.NFSPlanner;
 import gui.WorldPanel;
 import java.awt.FileDialog;
 import java.awt.Frame;
@@ -60,13 +60,13 @@ public class World {
         for(MapObject mo:objects){
             if(mo instanceof MapAgent){
                 System.out.println("Starting agent");
-                FSPlanner agent = null;
+                NFSPlanner agent = null;
                 //BSPlanner agent = null;
                 if(((MapAgent)mo).getNumber()==1){
-                    agent = new FSPlanner(this,((MapAgent)mo).getNumber(),"at(a,[13,18]). ","a");
+                    agent = new NFSPlanner(this,((MapAgent)mo).getNumber(),"at(a,[13,18]). ","a");
                     //agent = new BSPlanner(this,((MapAgent)mo).getNumber(),"at(a,[13,18]). ","a");
                 }else if(((MapAgent)mo).getNumber()==2){
-                    agent = new FSPlanner(this,((MapAgent)mo).getNumber(),"at(b,[13,1]). ","b");
+                    agent = new NFSPlanner(this,((MapAgent)mo).getNumber(),"at(b,[13,1]). ","b");
                     //agent = new BSPlanner(this,((MapAgent)mo).getNumber(),"at(b,[13,1]). ","b");
                 }
                 Thread init = new Thread(agent);
