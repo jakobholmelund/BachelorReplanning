@@ -127,23 +127,26 @@ public class BSPlanner implements Runnable { //  implements Runnable
                 }
                 if(this.plan != null) {
                     valid = this.plan.valid(state);
+                    System.out.println("PLAN VALID: " + valid);
                 }
 
                 //System.err.println("Free: " + state.state.solveboolean("f([1,3])"));
-                if(this.plan != null) {//this.plan != null && !this.plan.isEmpty() && valid) {
-
+                if(this.plan != null && !this.plan.isEmpty() && valid) { // this.plan != null) {//
+                    System.out.println("Go --->\n");
                     // If it is, do the next action
                     Actions next = plan.pop();
-                    System.err.println("Take Next Action: " + next.name);
+                    System.out.print("Take Next Action: " + next.name);
 
                     // Apply next - act() ?
                     if(next.atomic) {
+                        System.out.println(" -- which is atomic");
                         world.newAgentActionParse(next.name);
                     }else{
+                       System.out.println(" -- which is not atomic");
                        Plan subPlan = routeFinder.findPlan(world,next.name);
                        //subPlan.printSolution();
                        this.plan.prependAll(subPlan);
-                       //System.out.println("New plan:\n" + this.plan);
+                       System.out.println("New plan:\n" + this.plan);
                     }
                     //world.agentActionParse(next.name);
                     //world.agentActionParse(next.name);
@@ -365,10 +368,10 @@ public class BSPlanner implements Runnable { //  implements Runnable
 	effects1.add("agentAt(Agent,MovePos)");
 	effects1.add("!agentAt(Agent,CurPos)");
 	
-	ArrayList<String> requirements1 = new ArrayList<String>();
-	requirements1.add("f(MovePos)");
+	//ArrayList<String> requirements1 = new ArrayList<String>();
+	//requirements1.add("f(MovePos)");
 
-	ActionStruct move = new ActionStruct("move", prerequisites1, "move(Agent,MovePos)", argse1, effects1, requirements1, false, false);
+	ActionStruct move = new ActionStruct("move", prerequisites1, "move(Agent,MovePos)", argse1, effects1, false, false);
 	
 	/* MoveAtomic  */
 	ArrayList<String> argse2 = new ArrayList<String>();
@@ -384,10 +387,10 @@ public class BSPlanner implements Runnable { //  implements Runnable
 	effects2.add("agentAt(Agent,MovePos)");
 	effects2.add("!agentAt(Agent,CurPos)");
 	
-	ArrayList<String> requirements2 = new ArrayList<String>();
-	requirements2.add("f(MovePos)");
+	//ArrayList<String> requirements2 = new ArrayList<String>();
+	//requirements2.add("f(MovePos)");
 
-	ActionStruct moveAtomic = new ActionStruct("moveAtomic", prerequisites2, "moveAtomic(Agent,MovePos)", argse2, effects2, requirements2, true, true);
+	ActionStruct moveAtomic = new ActionStruct("moveAtomic", prerequisites2, "moveAtomic(Agent,MovePos)", argse2, effects2, true, true);
 	
 	// object(Object) :- box(Object).
 	// object(Object) :- bomb(Object).	
@@ -410,10 +413,10 @@ public class BSPlanner implements Runnable { //  implements Runnable
 	effects3.add("!at(Object,ObjPos)");
 	effects3.add("carries(Agent,Object)");
 	
-	ArrayList<String> requirements3 = new ArrayList<String>();
-	requirements3.add("at(Object,ObjPos)");
+	//ArrayList<String> requirements3 = new ArrayList<String>();
+	//requirements3.add("at(Object,ObjPos)");
 	
-	ActionStruct pickUp = new ActionStruct("pickUp", prerequisites3, "pickUp(Agent,Object)", argse3, effects3, requirements3, false, true);
+	ActionStruct pickUp = new ActionStruct("pickUp", prerequisites3, "pickUp(Agent,Object)", argse3, effects3, false, true);
 	
 	/* Place  */
 	ArrayList<String> argse4 = new ArrayList<String>();
@@ -431,11 +434,11 @@ public class BSPlanner implements Runnable { //  implements Runnable
 	effects4.add("at(Object,AgPos)");
 	effects4.add("!carries(Agent,Object)");
 	
-	ArrayList<String> requirements4 = new ArrayList<String>();
-	requirements4.add("f(AgPos)");
-	requirements4.add("carries(Agent,Object)");
+	//ArrayList<String> requirements4 = new ArrayList<String>();
+	//requirements4.add("f(AgPos)");
+	//requirements4.add("carries(Agent,Object)");
 	
-	ActionStruct place = new ActionStruct("place", prerequisites4, "place(Agent,Object)", argse4, effects4, requirements4, false, true);
+	ActionStruct place = new ActionStruct("place", prerequisites4, "place(Agent,Object)", argse4, effects4, false, true);
 
 	/* Use Teleporter  */
 	ArrayList<String> argse5 = new ArrayList<String>();
@@ -455,9 +458,9 @@ public class BSPlanner implements Runnable { //  implements Runnable
 	effects5.add("agentAt(Agent,To)");
 	effects5.add("!agentAt(Agent,TeleporterPos)");
 	
-	ArrayList<String> requirements5 = new ArrayList<String>();
+	//ArrayList<String> requirements5 = new ArrayList<String>();
 	
-	ActionStruct useTeleporter = new ActionStruct("useTeleporter", prerequisites5, "useTeleporter(Agent,Teleporter)", argse5, effects5, requirements5, false, true);
+	ActionStruct useTeleporter = new ActionStruct("useTeleporter", prerequisites5, "useTeleporter(Agent,Teleporter)", argse5, effects5, false, true);
 	
         ArrayList<ActionStruct> actions = new ArrayList<ActionStruct>();
         actions.add(move);

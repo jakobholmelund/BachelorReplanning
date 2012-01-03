@@ -57,7 +57,7 @@ public class Problem {
     }
 
     public double heuristik(State s1, Actions a, Node node) {
-        /*
+        
         try {
             setState(s1);
             //System.out.println(s1.toString());
@@ -99,8 +99,8 @@ public class Problem {
             //System.out.println(ex.);
             ex.printStackTrace();
             return 1;
-        }*/
-        return 1;
+        }
+        //return 1;
     }
 
     public double cost(State s1, Actions a) {

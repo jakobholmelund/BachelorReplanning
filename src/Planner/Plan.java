@@ -119,10 +119,12 @@ public class Plan {
     
     public boolean valid(State state) {
         Logic s = state.state.clone();
+        long time1 = System.currentTimeMillis();
+
         for(Actions action : list) {
             for (String string : action.effect) {
                 try {
-                    System.out.println("Setting: " + string);
+                    //System.out.println("Setting: " + string);
                     s.set(string);
                 } catch (Throwable ex) {
 
@@ -130,7 +132,9 @@ public class Plan {
             }
         }
         boolean bol = s.solveboolean(getGoal());
-        System.out.println("Goal: " + getGoal() + " - valid: " + bol);
+        long time2 = System.currentTimeMillis();
+        System.out.println("Plan monitoring took: " + (time2-time1) + " ms");
+        //System.out.println("Goal: " + getGoal() + " - valid: " + bol);
         return bol;
     }
 }

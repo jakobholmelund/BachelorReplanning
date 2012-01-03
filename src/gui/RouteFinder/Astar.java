@@ -75,10 +75,12 @@ public class Astar {
     private Plan makeSolution(Node n) {
         Plan p = new Plan();
         Node node = n;
-        while (node != null) {
+        while (node != null && node.parent != null) {
             int[] cords = coordsFor(node.curPosition);
+            int[] cordsParent = coordsFor(node.parent.curPosition);
             Actions action = new Actions("moveAtomic(" + this.agent + ", [" + cords[0] + "," + cords[1] + "])", true, true);
-            
+            action.addEffect("agentAt(" + this.agent + ",[" + cords[0] + "," + cords[1] + "])");
+            action.addEffect("!agentAt(" + this.agent + ",[" + cordsParent[0] + "," + cordsParent[1] + "])");
             //p.add(node.curPosition);
             p.add(action);
             node = node.parent;

@@ -313,10 +313,10 @@ public ArrayList<ActionStruct> setActions() {
 	effects1.add("agentAt(Agent,MovePos)");
 	effects1.add("!agentAt(Agent,CurPos)");
 	
-	ArrayList<String> requirements1 = new ArrayList<String>();
-	requirements1.add("f(MovePos)");
+	//ArrayList<String> requirements1 = new ArrayList<String>();
+	//requirements1.add("f(MovePos)");
 
-	ActionStruct move = new ActionStruct("move", prerequisites1, "move(Agent,MovePos)", argse1, effects1, requirements1, false, false);
+	ActionStruct move = new ActionStruct("move", prerequisites1, "move(Agent,MovePos)", argse1, effects1, false, false);
 	
 	/* MoveAtomic  */
 	ArrayList<String> argse2 = new ArrayList<String>();
@@ -332,10 +332,10 @@ public ArrayList<ActionStruct> setActions() {
 	effects2.add("agentAt(Agent,MovePos)");
 	effects2.add("!agentAt(Agent,CurPos)");
 	
-	ArrayList<String> requirements2 = new ArrayList<String>();
-	requirements2.add("f(MovePos)");
+	//ArrayList<String> requirements2 = new ArrayList<String>();
+	//requirements2.add("f(MovePos)");
 
-	ActionStruct moveAtomic = new ActionStruct("moveAtomic", prerequisites2, "moveAtomic(Agent,MovePos)", argse2, effects2, requirements2, true, true);
+	ActionStruct moveAtomic = new ActionStruct("moveAtomic", prerequisites2, "moveAtomic(Agent,MovePos)", argse2, effects2, true, true);
 	
 	// object(Object) :- box(Object).
 	// object(Object) :- bomb(Object).	
@@ -358,10 +358,10 @@ public ArrayList<ActionStruct> setActions() {
 	effects3.add("!at(Object,ObjPos)");
 	effects3.add("carries(Agent,Object)");
 	
-	ArrayList<String> requirements3 = new ArrayList<String>();
-	requirements3.add("at(Object,ObjPos)");
+	//ArrayList<String> requirements3 = new ArrayList<String>();
+	//requirements3.add("at(Object,ObjPos)");
 	
-	ActionStruct pickUp = new ActionStruct("pickUp", prerequisites3, "pickUp(Agent,Object)", argse3, effects3, requirements3, false, true);
+	ActionStruct pickUp = new ActionStruct("pickUp", prerequisites3, "pickUp(Agent,Object)", argse3, effects3, false, true);
 	
 	/* Place  */
 	ArrayList<String> argse4 = new ArrayList<String>();
@@ -379,11 +379,11 @@ public ArrayList<ActionStruct> setActions() {
 	effects4.add("at(Object,AgPos)");
 	effects4.add("!carries(Agent,Object)");
 	
-	ArrayList<String> requirements4 = new ArrayList<String>();
-	requirements4.add("f(AgPos)");
-	requirements4.add("carries(Agent,Object)");
+	//ArrayList<String> requirements4 = new ArrayList<String>();
+	//requirements4.add("f(AgPos)");
+	//requirements4.add("carries(Agent,Object)");
 	
-	ActionStruct place = new ActionStruct("place", prerequisites4, "place(Agent,Object)", argse4, effects4, requirements4, false, true);
+	ActionStruct place = new ActionStruct("place", prerequisites4, "place(Agent,Object)", argse4, effects4, false, true);
 
 	/* Use Teleporter  */
 	ArrayList<String> argse5 = new ArrayList<String>();
@@ -403,9 +403,9 @@ public ArrayList<ActionStruct> setActions() {
 	effects5.add("agentAt(Agent,To)");
 	effects5.add("!agentAt(Agent,TeleporterPos)");
 	
-	ArrayList<String> requirements5 = new ArrayList<String>();
+	//ArrayList<String> requirements5 = new ArrayList<String>();
 	
-	ActionStruct useTeleporter = new ActionStruct("useTeleporter", prerequisites5, "useTeleporter(Agent,Teleporter)", argse5, effects5, requirements5, false, true);
+	ActionStruct useTeleporter = new ActionStruct("useTeleporter", prerequisites5, "useTeleporter(Agent,Teleporter)", argse5, effects5, false, true);
 	
         ArrayList<ActionStruct> actions = new ArrayList<ActionStruct>();
         actions.add(move);

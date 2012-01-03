@@ -206,11 +206,12 @@ public class Logic {
     }
 
     public void set(String q) throws Throwable {
+        q = q.trim();
         if(q.endsWith(".")) {
             q = q.substring(0, q.length()-1);
         }
-        q.trim();
-
+        q = q.trim();
+        
         try {
             if (Character.toString(q.charAt(0)).equals("!")) {
                 not(q.substring(1));
