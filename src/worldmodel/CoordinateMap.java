@@ -37,6 +37,21 @@ public class CoordinateMap<V> {
             //value2coords.put(value, key);
     }
     
+    public void addObjects(long key, V[] values )
+    {
+        V[] vals = coords2value.get(key);
+        List<V> newvals = new ArrayList<V>();
+        
+        newvals.addAll(Arrays.asList(values));
+        if(vals!=null){
+            newvals.addAll(Arrays.asList(vals));
+        }
+        
+        
+
+        put(key,(V[])newvals.toArray());
+    }
+    
     public void put( long key, V[] values )
     {
             coords2value.put(key, values);
@@ -46,7 +61,7 @@ public class CoordinateMap<V> {
     public void update(long oldC,long newC, V[] values){
         //value2coords.remove(value);
         removeObjects(oldC,values);
-        this.put(newC, values);
+        addObjects(newC, values);
     }
     
     public void removeObjects(long key, V[] values){
