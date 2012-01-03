@@ -274,7 +274,11 @@ public class World {
             for(int j = 0; j < rows; j++) {
                 long key = map.keyFor(j, i);
                 Object[] mapobjects = map.get(key);
-                if(mapobjects != null && !((MapObject)mapobjects[0] instanceof Wall)){
+                if(mapobjects != null){
+                    if(!((MapObject)mapobjects[0] instanceof Wall)){
+                        coords2value.add(key);
+                    }
+                }else{
                     coords2value.add(key);
                 }
             }

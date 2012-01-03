@@ -32,8 +32,6 @@ public class Plan {
     }
     
     public void prependAll(Plan p1) {
-        System.out.println("WTF");
-        p1.printSolution();
         this.list.addAll(0, p1.list);
     }
     

@@ -55,12 +55,14 @@ public class CoordinateMap<V> {
         newvals.addAll(Arrays.asList(vals));
         
         for(int i=0;i<values.length;i++){
-            if(newvals.contains(values[i])){
                 newvals.remove(values[i]);
-            }
+        }
+        if(newvals.size()<1){
+            coords2value.remove(key);
+        }else{
+            put(key,(V[])newvals.toArray());
         }
         
-        put(key,(V[])newvals.toArray());
     }
     
     public void remove(long position, V[] values){
