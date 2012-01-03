@@ -1,7 +1,5 @@
 package gui.RouteFinder;
 
-import Planner.forward.*;
-
 public class Node implements Comparable<Node> {
 
     long curPosition;
