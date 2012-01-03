@@ -11,14 +11,18 @@ import Planner.Actions;
  * @author Dan True
  */
 class CausalLink {
-    Actions A;
-    Actions B;
-    String p;
+    public Actions A;
+    public Actions B;
+    public String p;
     
     // Read as "A achieves p for B"
     CausalLink(Actions A, Actions B, String p) {
         this.A = A;
         this.B = B;
         this.p = p;
+    }
+    
+    public String toString() {
+       return A.getAction() + " achives " + p + " for " + B.getAction(); 
     }
 }

@@ -48,7 +48,7 @@ public class Logic {
         for(Object o : bindings.keySet()) {
             char[] array = bindings.get(o).toString().toCharArray();
             String newBinding = bindings.get(o).toString();
-            System.out.println("Trying for: " + bindings.get(o).toString());
+            //System.out.println("Trying for: " + bindings.get(o).toString());
             for(int i = 0; i < array.length; i++) {
                 int num1;
                 String num1Buff = "";
@@ -111,7 +111,7 @@ public class Logic {
                         array[j] = ' ';
                         j = j + 1;
                     }
-                    System.err.println("1:" + num1Buff + "  2: " + num2Buff);
+                    //System.err.println("1:" + num1Buff + "  2: " + num2Buff);
                     if(num1Buff.equals("") || num2Buff.equals("")) {
                         continue;
                     }else{
@@ -156,40 +156,74 @@ public class Logic {
     }
 
     public boolean solveboolean(String q) {
-        q.trim();
+        q = q.trim();
         if(q.endsWith(".")) {
             q = q.substring(0, q.length()-1);
         }
-        q.trim();
-        try {
-            Solution info = engine.solve(q + ". ");
-            return info.success();
-        } catch (Throwable ex) {
-            //Logger.getLogger(Logic.class.getName()).log(Level.SEVERE, null, ex);
+        q = q.trim();
+        if (Character.toString(q.charAt(0)).equals("!")) {
+            try {
+                q = q.substring(1, q.length());
+                Solution info = engine.solve(q + ". ");
+                //System.out.println("         !--> succes for: " + q + "  ? " + !info.success());
+                return !info.success();
+            } catch (Throwable ex) {
+                //Logger.getLogger(Logic.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return false;
+        } else {
+            try {
+                Solution info = engine.solve(q + ". ");
+                //System.out.println("         --> succes for: " + q + "  ? " + !info.success());
+                return info.success();
+            } catch (Throwable ex) {
+                //Logger.getLogger(Logic.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return false;
         }
-        return false;
     }
 
     public ArrayList<Solution> solveAll(String q) {
         //System.err.println("Gotten: " + q);
+        boolean not = false;
         q = q.trim();
         if(q.endsWith(".")) {
             q = q.substring(0, q.length()-1);
             //System.err.println("Removed last element: " + q);
         }
         q = q.trim();
-
+        if (Character.toString(q.charAt(0)).equals("!")) {
+            not = true;
+            q = q.substring(1, q.length());
+        }
         ArrayList<Solution> infos = new ArrayList<Solution>();
         try {
             //System.err.println(q);
             Solution info = engine.solve(q + ".");
-            infos.add(info); // eval(info)
+            if(not) {
+                if(info.success()) {
+                    infos.add(engine.solve("fail."));
+                }else{
+                    infos.add(engine.solve("true."));
+                }
+            }else{
+                infos.add(info); // eval(info)
+            }
             boolean done = false;
             while(!done){
                 try {
                     Solution infoNext = engine.solveNext();
-                    if(infoNext.success()) {
-                        infos.add(infoNext); //(eval(infoNext)
+                    
+                    if(not) {
+                        if(infoNext.success()) {
+                            infos.add(engine.solve("fail."));
+                        }else{
+                            infos.add(engine.solve("true."));
+                        }
+                    }else{
+                        if(infoNext.success()) {
+                            infos.add(infoNext); //(eval(infoNext)
+                        }
                     }
                 } catch(Exception e) {
                     done = true;

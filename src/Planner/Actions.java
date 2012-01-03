@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Actions implements Comparable<Actions>{
     public String name;
     public ArrayList<String> effect;
-    public ArrayList<String> requirements;
+    public ArrayList<String> prerequisites;
     public ArrayList<String> openPreconditions;
     public boolean expanded;
     public boolean atomic;
@@ -13,7 +13,7 @@ public class Actions implements Comparable<Actions>{
     public Actions(String s, boolean expanded, boolean atomic) {
         this.name = s;
         effect = new ArrayList<String>();
-        requirements = new ArrayList<String>();
+        prerequisites = new ArrayList<String>();
         openPreconditions = new ArrayList<String>(); 
         this.expanded = expanded;
         this.atomic = atomic;
@@ -23,9 +23,9 @@ public class Actions implements Comparable<Actions>{
         effect.add(s);
     }
 
-    public void addRequirement(String s) {
+    public void addPrerequisites(String s) {
         //System.out.println("Requirement added: " + s);
-        requirements.add(s);
+        prerequisites.add(s);
     }
 
     public void addOpenPrecondition(String s) {
@@ -62,8 +62,8 @@ public class Actions implements Comparable<Actions>{
         return str;
     }
  
-    public String reqToString() {
-        String str = requirements.toString();
+    public String preqToString() {
+        String str = prerequisites.toString();
         return str;
     }
 

@@ -232,9 +232,66 @@ public class POPlanner implements Runnable { //  implements Runnable
     }
     
     public Plan findPlan(Problem p, String goal) {
+        // Fix format to avoid prolog-collisions. 
         goal = goal.replaceAll("\\[([0-9]*),([0-9]*)\\]", "[$1;$2]");
         Plan plan = new Plan(goal);
         
+        
+        // PARTIAL-ORDER PLAN-SPACE SEARCHING
+        POP pop = new POP(goal);
+        long time = System.currentTimeMillis();
+        
+        while(!pop.isSolution() && (System.currentTimeMillis() - time) < 2000) {
+            OpenPrecondition oP = pop.pollOpenPreconditions();
+            System.out.println("OP: " + oP.toString());
+            try {
+                ArrayList<Actions> gottenActions = findAction(p, oP.condition);
+                //System.out.println("p:");
+                //System.out.println("   " + actions.toString());
+                for(Actions A : gottenActions) {
+                    boolean newlyAdded = false;
+                    // Enforce Consistency 
+                    Actions B = oP.action;
+                    pop.addCausalLink(A, B, oP.condition);
+                    pop.addOrderingConstraint(A, B);
+                    if(!pop.contains(A)) {
+                        pop.addActions(A);
+                        pop.addOrderingConstraint(pop.getStart(), A);
+                        pop.addOrderingConstraint(A, pop.getFinish());
+                        newlyAdded = true;
+                    }
+                    System.out.println("Found: " + A.getAction() + " with: " + A.openPreconditionsToString());
+                    pop.addActions(A);
+                    
+                    // Resolve conflicts
+                    
+                    // Between the new causal link and all existing actions
+                    
+                    // Between action A and all existing causal links
+                    if(newlyAdded) {
+                    
+                    }
+                    
+                    // Add new open preconditions
+                    for(String P : A.openPreconditions) {
+                        
+                        //plan.appendAll(findPlan(p, openPrecondition));
+                        
+                        // Fix format to avoid prolog-collisions. 
+                        P = P.replaceAll("\\[([0-9]*),([0-9]*)\\]", "[$1;$2]");
+                        System.out.println("   Adding: " + P);
+                        pop.addOpenPrecondition(P, A);
+                    }
+                }
+                //plan.appendAll(actions);
+            } catch (InterruptedException ex) {
+                //Logger.getLogger(BSPlanner.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            System.out.println("Time spent so far: " + (System.currentTimeMillis() - time) + " ms. Is solution?= " + pop.isSolution() + "\n\n");
+        }
+        
+        // TOTAL-ORDER PLAN-SPACE SEARCHING
+        /*
         try {
             ArrayList<Actions> actions = findAction(p, goal);
             //System.out.println("p:");
@@ -249,7 +306,8 @@ public class POPlanner implements Runnable { //  implements Runnable
         } catch (InterruptedException ex) {
             //Logger.getLogger(BSPlanner.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+        */
+        pop.printToConsole();
         return plan;
     }
     
