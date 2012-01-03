@@ -5,7 +5,9 @@
 package worldmodel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,44 +15,70 @@ import java.util.Map;
  * @author jakobenvy
  */
 public class CoordinateMap<V> {
-    Map<Long,V> coords2value = new HashMap<Long,V>();
-    Map<V,Long> value2coords = new HashMap<V,Long>();
+    Map<Long,V[]> coords2value = new HashMap<Long,V[]>();
+    //Map<V,Long> value2coords = new HashMap<V,Long>();
     
-    public void put( int x, int y, V value )
+    public void put( int x, int y, V[] values )
     {
             long key = keyFor(x,y);
-            coords2value.put(key, value);
-            value2coords.put(value, key);
+            coords2value.put(key, values);
+            //value2coords.put(value, key);
     }
     
-    public void put( long key, V value )
+    public void add(long key, V value )
     {
-            coords2value.put(key, value);
-            value2coords.put(value, key);
+            V[] vals = coords2value.get(key);
+            List<V> newvals = new ArrayList<V>();
+            newvals.add(value); 
+            if(vals != null){
+                newvals.addAll(Arrays.asList(vals));
+            }
+            coords2value.put(key,(V[])newvals.toArray());
+            //value2coords.put(value, key);
     }
     
-    public void update(long oldC,long newC, V value){
-        value2coords.remove(value);
-        coords2value.remove(oldC);
-        this.put(newC, value);
+    public void put( long key, V[] values )
+    {
+            coords2value.put(key, values);
+            //value2coords.put(value, key);
     }
     
-    public void remove(long position, V value){
-        value2coords.remove(value);
+    public void update(long oldC,long newC, V[] values){
+        //value2coords.remove(value);
+        removeObjects(oldC,values);
+        this.put(newC, values);
+    }
+    
+    public void removeObjects(long key, V[] values){
+        V[] vals = coords2value.get(key);
+        List<V> newvals = new ArrayList<V>();
+        newvals.addAll(Arrays.asList(vals));
+        
+        for(int i=0;i<values.length;i++){
+            if(newvals.contains(values[i])){
+                newvals.remove(values[i]);
+            }
+        }
+        
+        put(key,(V[])newvals.toArray());
+    }
+    
+    public void remove(long position, V[] values){
+        //value2coords.remove(value);
         coords2value.remove(position);
     }
     
-    public V get(long key){
+    public V[] get(long key){
         return coords2value.get(key);
     }
     
-    public V get(int x,int y){
+    public V[] get(int x,int y){
         return coords2value.get(keyFor(x,y));
     }
     
-    public long get(V key){
-        return value2coords.get(key);
-    }
+    //public long get(V key){
+    //    return value2coords.get(key);
+    //}
     
     public Long keyFor(int x, int y) {
         int kx = x + 1000000000;
@@ -65,10 +93,10 @@ public class CoordinateMap<V> {
         return new int[]{x,y};
     }
     
-    public ArrayList<V> neighborsFor(long k){    
+    public ArrayList<V[]> neighborsFor(long k){    
         int x = (int)(k & 0xFFFFFFFF) - 1000000000;
         int y = (int)((k >>> 32) & 0xFFFFFFFF) - 1000000000;
-        ArrayList<V> newlist = new ArrayList<V>();
+        ArrayList<V[]> newlist = new ArrayList<V[]>();
         newlist.add(this.get(keyFor(x-1,y)));
         newlist.add(this.get(keyFor(x+1,y)));
         newlist.add(this.get(keyFor(x,y-1)));
@@ -76,26 +104,35 @@ public class CoordinateMap<V> {
         return newlist;
     }
     
+    public void checkNeighbor(long key,V[] values,ArrayList<Long> list, int x, int y){
+        for(int i=0;i<values.length;i++){
+            if(!(values[i] instanceof Wall)){
+                list.add(key);
+            }
+        }
+    }
+    
     public ArrayList<Long> emptyNeighborsKeysFor(long k){    
         int x = (int)(k & 0xFFFFFFFF) - 1000000000;
         int y = (int)((k >>> 32) & 0xFFFFFFFF) - 1000000000;
         ArrayList<Long> newlist = new ArrayList<Long>();
-        V key1 = this.get(keyFor(x-1,y));
-        if(!(key1 instanceof Wall)){
-            newlist.add(keyFor(x-1,y));
-        }
-        V key2 = this.get(keyFor(x+1,y));
-        if(!(key2 instanceof Wall)){
-            newlist.add(keyFor(x+1,y));
-        }
-        V key3 = this.get(keyFor(x,y+1));
-        if(!(key3 instanceof Wall)){
-            newlist.add(keyFor(x,y+1));
-        }
-        V key4 = this.get(keyFor(x,y-1));
-        if(!(key4 instanceof Wall)){
-            newlist.add(keyFor(x,y-1));
-        }
+      
+        long key1 = keyFor(x-1,y);
+        V[] vals1 = this.get(key1);
+        checkNeighbor(key1,vals1,newlist,x,y);
+        
+        long key2 = keyFor(x+1,y);
+        V[] vals2 = this.get(key2);
+        checkNeighbor(key2,vals2,newlist,x,y);
+        
+        long key3 = keyFor(x,y+1);
+        V[] vals3 = this.get(key3);
+        checkNeighbor(key3,vals3,newlist,x,y);
+        
+        long key4 = keyFor(x,y-1);
+        V[] vals4 = this.get(key4);
+        checkNeighbor(key4,vals4,newlist,x,y);
+        
         return newlist;
     }
 }
