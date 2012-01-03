@@ -189,7 +189,7 @@ public class World {
         return new MapAgent(highestnum+1,0);
     }
     
-    public MapAgent createBomb(){
+    public Bomb createBomb(){
         
         int highestnum = 0;
         for(MapObject mo:objects){
@@ -198,7 +198,7 @@ public class World {
             }
         }
         
-        return new MapAgent(highestnum+1,0);
+        return new Bomb(highestnum+1,0);
     }
      
     public void persistMoveableObject(int x,int y){
@@ -303,11 +303,15 @@ public class World {
         this.removeObject(mo);
     }
     
-    public void place(MapAgent ma){
-        MapObject mo = ma.getCarying();
-        mo.setPosition(ma.getPosition());
-        this.addObject(mo);
-        ma.place();
+    public boolean place(MapAgent ma){
+        if(ma.carying != null){
+            MapObject mo = ma.getCarying();
+            mo.setPosition(ma.getPosition());
+            this.addObject(mo);
+            ma.place();
+            return true;
+        }
+        return false;
     }
     
    public void newAgentActionParse(String action){
