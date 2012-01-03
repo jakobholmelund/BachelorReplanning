@@ -38,22 +38,23 @@ public class WorldPanel extends JPanel {
     public void update(final World world){
      System.out.println("AFTER INITIATE");
             for(MapObject mo:fields){
-                MapObject worldobject = world.getMap().get(mo.getPosition());
+                Object[] worldobjects = world.getMap().get(mo.getPosition());
                 //if(worldobject == null && mo.getComponentCount() > 0){
                 //    mo.repaint();
                 //}
-                if(worldobject != null){
-                    if(mo.getComponentCount() == 0 && worldobject instanceof Wall){
-                        mo.add(worldobject);
+                if(worldobjects != null){
+                    MapObject test = (MapObject)worldobjects[0];
+                    if(mo.getComponentCount() == 0 && test instanceof Wall){
+                        mo.add(test);
                         mo.repaint();
-                    }else if(mo.getComponentCount() == 0 || (mo.getComponentCount() > 0 && !mo.getComponent(0).equals(worldobject))){
-                            Tile parent = (Tile)worldobject.getParent();
+                    }else if(mo.getComponentCount() == 0 || (mo.getComponentCount() > 0 && !mo.getComponent(0).equals(test))){
+                            Tile parent = (Tile)test.getParent();
                             if(parent != null){
                                 parent.removeAll();
                                 parent.repaint();
                             }
                             mo.removeAll();
-                            mo.add(worldobject);
+                            mo.add(test);
                             mo.repaint();
                        }
                 }
@@ -72,9 +73,10 @@ public class WorldPanel extends JPanel {
                 tile.setMinimumSize(tile.getPreferredSize());
                 tile.setBorder(BorderFactory.createLineBorder(Color.RED, 0));
                 this.add(tile);
-                MapObject worldobject = world.getMap().get(j, i);
+                //System.out.println(world.getMap().get(j, i).toString());
+                Object[] worldobject = world.getMap().get(j, i);
                 if(worldobject != null){
-                    tile.add(worldobject);
+                    tile.add((MapObject)worldobject[0]);
                 }
                 fields.add(tile);
                 tile.addMouseListener(new MouseAdapter()

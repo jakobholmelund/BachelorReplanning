@@ -96,42 +96,66 @@ public class World {
         return this.map;
     }
     
-    public void addObject(MapObject mo){
-        this.objects.add(mo);
-        this.map.put(mo.getPosition(), mo);
-        this.hasChanged = true;
-        if(mo instanceof MapAgent){
-            objectMap.put(""+((MapAgent)mo).id, mo);
-        }else if(mo instanceof MapBox){
-            objectMap.put(""+((MapBox)mo).name, mo);
+    public void addObjects(long position, MapObject[] mo){
+        for(int i=0;i<mo.length;i++){
+            this.objects.add(mo[i]);
+            this.hasChanged = true;
+                if(mo[i] instanceof MapAgent){
+                objectMap.put(""+((MapAgent)mo[i]).id, mo[i]);
+            }else if(mo[i] instanceof MapBox){
+                objectMap.put(""+((MapBox)mo[i]).name, mo[i]);
+            }
         }
+        this.map.put(position, mo);
     }
+    
+    public void addObject(MapObject mo){
+        
+            this.objects.add(mo);
+            this.hasChanged = true;
+                if(mo instanceof MapAgent){
+                objectMap.put(""+((MapAgent)mo).id, mo);
+            }else if(mo instanceof MapBox){
+                objectMap.put(""+((MapBox)mo).name, mo);
+            }
+   
+        this.map.add(mo.getPosition(),mo);
+    }
+    
     
     public void moveObject(MapObject mo, int x, int y){
         synchronized(this){
             long key = map.keyFor(x, y);
-            if(map.get(key) instanceof Oil){
-                System.out.println("OILPUUUUUUUUD");
-                ArrayList<Long> neighbors = map.emptyNeighborsKeysFor(key);
-                Random random = new Random();
-                key = neighbors.get(random.nextInt(neighbors.size()-1));
-            }
-            map.update(mo.getPosition(), key, mo);
-            mo.setPosition(key,x,y);
+            
+            
+            //if(map.get(key) instanceof Oil){
+            //    System.out.println("OILPUUUUUUUUD");
+            //    ArrayList<Long> neighbors = map.emptyNeighborsKeysFor(key);
+            //    Random random = new Random();
+            //    key = neighbors.get(random.nextInt(neighbors.size()-1));
+            //}
+            
+            
+            map.update(mo.getPosition(), key, new MapObject[]{mo});
+            mo.setPosition(key);
             this.hasChanged = true;
         }
     }
     
     public void moveObject(MapObject mo, long key){
         synchronized(this){
-            System.out.println("OILPUUUUUUUUD");
+            /*
             if(map.get(key) instanceof Oil){
                 System.out.println("OILPUUUUUUUUD");
                 ArrayList<Long> neighbors = map.emptyNeighborsKeysFor(key);
                 Random random = new Random();
                 key = neighbors.get(random.nextInt(neighbors.size()-1));
+            }*/
+            if(mo instanceof MapAgent && ((MapAgent)mo).carying != null){
+                map.update(mo.getPosition(), key, new MapObject[]{mo,((MapAgent)mo).carying});
+            }else{
+                map.update(mo.getPosition(), key, new MapObject[]{mo});
             }
-            map.update(mo.getPosition(), key, mo);
             mo.setPosition(key);
             this.hasChanged = true;
         }
@@ -139,7 +163,7 @@ public class World {
     
     //test
     public void removeObject(MapObject mo){
-        map.remove(mo.getPosition(), mo);
+        map.removeObjects(mo.getPosition(), new MapObject[]{mo});
         objectMap.remove(mo.getId());
         this.hasChanged = true;
     }
@@ -249,7 +273,12 @@ public class World {
         for(int i = 0; i < cols; i++) {
             for(int j = 0; j < rows; j++) {
                 long key = map.keyFor(j, i);
-                if(!(map.get(key) instanceof Wall)){
+                Object[] mapobjects = map.get(key);
+                if(mapobjects != null){
+                    if(!((MapObject)mapobjects[0] instanceof Wall)){
+                        coords2value.add(key);
+                    }
+                }else{
                     coords2value.add(key);
                 }
             }
@@ -302,13 +331,13 @@ public class World {
     }
     
     public void agentActionParse(String action){
-        /*
-        for(Long key: map.coords2value.keySet()){
-            System.out.println(key);
-            System.out.println(map.get(key));
-            MapObject test = map.get(key);
-            System.out.println("x: " + test.x + " y: " + test.y);
-        }*/
+        
+        //for(Long key: map.coords2value.keySet()){
+        //    System.out.println(key);
+        //    System.out.println(map.get(key));
+        //    MapObject test = map.get(key);
+        //    System.out.println("x: " + test.x + " y: " + test.y);
+        //}
         
         Pattern typeP = Pattern.compile("(^\\w+)\\((\\w*)\\,(\\w+)(\\,(\\w+))?");
         Matcher m = typeP.matcher(action);
@@ -335,13 +364,13 @@ public class World {
             MapBox box = null;
                 if("Push".equals(command)){
                     if("n".equals(amovedir)){
-                        box = (MapBox)map.get(mapagent.x, mapagent.y-1);
+                        box = (MapBox)map.get(mapagent.x, mapagent.y-1)[0];
                     }else if("s".equals(amovedir)){
-                        box = (MapBox)map.get(mapagent.x, mapagent.y+1);
+                        box = (MapBox)map.get(mapagent.x, mapagent.y+1)[0];
                     }else if("e".equals(amovedir)){
-                        box = (MapBox)map.get(mapagent.x+1, mapagent.y);
+                        box = (MapBox)map.get(mapagent.x+1, mapagent.y)[0];
                     }else if("w".equals(amovedir)){
-                        box = (MapBox)map.get(mapagent.x-1, mapagent.y);
+                        box = (MapBox)map.get(mapagent.x-1, mapagent.y)[0];
                     }
                     if("n".equals(boxcurdir)){
                         int boxoldx = box.x;
@@ -366,13 +395,13 @@ public class World {
                     }
                 }else if("Pull".equals(command)){
                     if("n".equals(boxcurdir)){
-                        box = (MapBox)map.get(mapagent.x, mapagent.y-1);
+                        box = (MapBox)map.get(mapagent.x, mapagent.y-1)[0];
                     }else if("s".equals(boxcurdir)){
-                        box = (MapBox)map.get(mapagent.x, mapagent.y+1);
+                        box = (MapBox)map.get(mapagent.x, mapagent.y+1)[0];
                     }else if("e".equals(boxcurdir)){
-                        box = (MapBox)map.get(mapagent.x+1, mapagent.y);
+                        box = (MapBox)map.get(mapagent.x+1, mapagent.y)[0];
                     }else if("w".equals(boxcurdir)){
-                        box = (MapBox)map.get(mapagent.x-1, mapagent.y);
+                        box = (MapBox)map.get(mapagent.x-1, mapagent.y)[0];
                     }
                     
                     
