@@ -17,7 +17,8 @@ import java.util.regex.Pattern;
 
 public class POPlanner implements Runnable { //  implements Runnable
     State state;
-    Plan plan;
+    TOPlan plan;
+    POP popPlan;
     public int iteration;
     World world;
     String statics;
@@ -143,7 +144,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                         world.newAgentActionParse(next.name);
                     }else{
                        System.out.println(" -- which is not atomic");
-                       Plan subPlan = routeFinder.findPlan(world,next.name);
+                       TOPlan subPlan = routeFinder.findPlan(world,next.name);
                        //subPlan.printSolution();
                        this.plan.prependAll(subPlan);
                        System.out.println("New plan:\n" + this.plan);
@@ -166,7 +167,8 @@ public class POPlanner implements Runnable { //  implements Runnable
                     //System.out.println("Problem: " + p.toString());
 
                     long time1 = System.currentTimeMillis();
-                    this.plan = findPlan(p, this.goal);
+                    this.popPlan = findPlan(p, this.goal);;
+                    this.plan = getTotalOrderPlan(popPlan);
                     long time2 = System.currentTimeMillis();
 
                     System.out.println("Plan found in: " + (time2 - time1) + " ms");
@@ -205,110 +207,175 @@ public class POPlanner implements Runnable { //  implements Runnable
             return new String[][]{new String[]{command},new String[]{arg1,arg2}};
         }
         return null;
-        /*
-        System.out.println(action);
-        
-        
-        action = action.replaceAll("\\[([0-9]*),([0-9]*)\\]", "[$1;$2]");
-        String[] res = action.split("\\(");
-        String head = res[0];
-        System.out.println("Rest: " + res[1]);
-        String[] args = res[1].substring(0, res[1].length()-1).trim().split("\\,");
-        
-        String[][] result = new String[2][];
-        String[] headT = {head};
-        
-        result[0] = headT;
-        result[1] = args;
-        
-        for(String[] s:result){
-            for(String s2:s){
-                System.out.println(s2);
-            }
-        }
-        return result;
-         * 
-         */
     }
     
-    public Plan findPlan(Problem p, String goal) {
+    public TOPlan getTotalOrderPlan(POP pop) { 
+        return pop.getLinearization();
+    }
+    
+    public POP findPlan(Problem p, String goal) { 
         // Fix format to avoid prolog-collisions. 
-        goal = goal.replaceAll("\\[([0-9]*),([0-9]*)\\]", "[$1;$2]");
-        Plan plan = new Plan(goal);
-        
-        
-        // PARTIAL-ORDER PLAN-SPACE SEARCHING
+        goal = goal.replaceAll("\\[\\s*([0-9]*)\\s*,\\s*([0-9]*)\\s*\\]", "[$1;$2]");
         POP pop = new POP(goal);
-        long time = System.currentTimeMillis();
+        return refinePlan(p, pop);
+    }
+    
+    private POP refinePlan(Problem p, final POP pop) {
+        // PARTIAL-ORDER PLAN-SPACE SEARCHING
+        if(pop == null) {
+            return null;
+        }
         
-        while(!pop.isSolution() && (System.currentTimeMillis() - time) < 2000) {
-            OpenPrecondition oP = pop.pollOpenPreconditions();
-            System.out.println("OP: " + oP.toString());
-            try {
-                ArrayList<Actions> gottenActions = findAction(p, oP.condition);
-                //System.out.println("p:");
-                //System.out.println("   " + actions.toString());
-                for(Actions A : gottenActions) {
-                    boolean newlyAdded = false;
-                    // Enforce Consistency 
-                    Actions B = oP.action;
-                    pop.addCausalLink(A, B, oP.condition);
-                    pop.addOrderingConstraint(A, B);
-                    if(!pop.contains(A)) {
-                        pop.addActions(A);
-                        pop.addOrderingConstraint(pop.getStart(), A);
-                        pop.addOrderingConstraint(A, pop.getFinish());
-                        newlyAdded = true;
-                    }
-                    System.out.println("Found: " + A.getAction() + " with: " + A.openPreconditionsToString());
-                    pop.addActions(A);
-                    
-                    // Resolve conflicts
-                    
-                    // Between the new causal link and all existing actions
-                    
-                    // Between action A and all existing causal links
-                    if(newlyAdded) {
-                    
-                    }
-                    
+        if(pop.hasCycles()) {
+            return null;
+        }
+        
+        if(pop.isSolution()) {
+            pop.printToConsole();
+            return pop;
+        }
+        
+        
+        OpenPrecondition oP = pop.pollOpenPreconditions();
+        
+        //System.out.println("OP: " + oP.toString());
+        try {
+            ArrayList<Actions> gottenActions = findAction(p, oP.condition);
+            //System.out.println("p:");
+            //System.out.println("   " + actions.toString());
+            for(Actions A : gottenActions) {
+                boolean newlyAdded = false;
+                // Enforce Consistency 
+                Actions B = oP.action;
+                CausalLink link = pop.addAndGetCausalLink(A, B, oP.condition);
+                pop.addOrderingConstraint(A, B);
+                if(!pop.contains(A)) {
+                    pop.addOrderingConstraint(pop.getStart(), A);
+                    pop.addOrderingConstraint(A, pop.getFinish());
+                    newlyAdded = true;
+                
                     // Add new open preconditions
                     for(String P : A.openPreconditions) {
-                        
+
                         //plan.appendAll(findPlan(p, openPrecondition));
-                        
+
                         // Fix format to avoid prolog-collisions. 
-                        P = P.replaceAll("\\[([0-9]*),([0-9]*)\\]", "[$1;$2]");
-                        System.out.println("   Adding: " + P);
+                        P = P.replaceAll("\\[\\s*([0-9]*)\\s*,\\s*([0-9]*)\\s*\\]", "[$1;$2]");
+                        //System.out.println("   Adding: " + P);
                         pop.addOpenPrecondition(P, A);
                     }
                 }
-                //plan.appendAll(actions);
-            } catch (InterruptedException ex) {
-                //Logger.getLogger(BSPlanner.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            System.out.println("Time spent so far: " + (System.currentTimeMillis() - time) + " ms. Is solution?= " + pop.isSolution() + "\n\n");
-        }
-        
-        // TOTAL-ORDER PLAN-SPACE SEARCHING
-        /*
-        try {
-            ArrayList<Actions> actions = findAction(p, goal);
-            //System.out.println("p:");
-            //System.out.println("   " + actions.toString());
-            for(Actions a : actions) {
-                for(String openPrecondition : a.openPreconditions) {
-                    //System.out.println("Find plan for: " + openPrecondition);
-                    plan.appendAll(findPlan(p, openPrecondition));
+
+                // Resolve conflicts
+                //System.out.println("\nResolve - Between the new causal link and all existing actions");
+                // Between the new causal link and all existing actions
+                for(Actions C : pop.actions) {
+                    // If there is a (potential?) conclict between oA and link, resolve it:
+                    if(conflict(link, C, pop)) {
+
+                        // CONFLICT! Solve it
+                        
+                        POP newPlan1 = refinePlan(p, pop.addOrderingConstraint(B, C));
+                        if(newPlan1 != null) {
+                            return newPlan1;
+                        }
+                        
+                        POP newPlan2 = refinePlan(p, pop.addOrderingConstraint(C, A));
+                        if(newPlan2 != null) {
+                            return newPlan2;
+                        }
+                    }
+                }
+
+                if(newlyAdded) {
+                    // Between action A and all existing causal links      
+                    //System.out.println("\nResolve - Between action A and all existing causal links");
+                    for(CausalLink oL : pop.causalLinks) {
+                        // If there is a conclict between A and oL, resolve it:
+
+                        //String prop = oL.p.replace("\\+", "!");
+                        //System.out.println(prop + " c? " + A.effectToString());
+                        if(conflict(oL, A, pop)) {
+                            // CONFLICT! Solve it
+                            Actions C = oL.A;
+                            //pop.addOrderingConstraint(C, A);
+                            POP newPlan1 = refinePlan(p, pop.addOrderingConstraint(B, C));
+                            if(newPlan1 != null) {
+                                return newPlan1;
+                            }
+
+                            POP newPlan2 = refinePlan(p, pop.addOrderingConstraint(C, A));
+                            if(newPlan2 != null) {
+                                return newPlan2;
+                            }
+                        }
+                    }
+                    pop.addActions(A);
                 }
             }
-            plan.appendAll(actions);
         } catch (InterruptedException ex) {
             //Logger.getLogger(BSPlanner.class.getName()).log(Level.SEVERE, null, ex);
         }
-        */
-        pop.printToConsole();
-        return plan;
+        //System.out.println("Time spent so far: " + (System.currentTimeMillis() - time) + " ms. Is solution?= " + pop.isSolution() + "\n\n");
+
+        return refinePlan(p, pop);
+        
+    }
+    
+    private boolean conflict(CausalLink aToB, Actions C, POP pop) {
+        String lookFor = "";
+        String prop = aToB.p;
+        boolean position = false;
+        boolean not = false;
+        boolean conflict = false;
+        if(aToB.p.startsWith("!")) {
+            lookFor = aToB.p.substring(1, aToB.p.length());
+            not = true;
+        }else{
+            lookFor = "!" + aToB.p;
+            not = false;
+        }
+        lookFor = lookFor.trim().replace("\\+", "!");
+        lookFor = lookFor.replaceAll("\\[\\s*([0-9]*)\\s*,\\s*([0-9]*)\\s*\\]", "[$1;$2]");
+        
+        prop = prop.trim().replace("\\+", "!");
+        prop = prop.replaceAll("\\[\\s*([0-9]*)\\s*,\\s*([0-9]*)\\s*\\]", "[$1;$2]");
+        if(aToB.p.contains("agentAt")) {
+            position = true;
+        }
+        //System.out.println("Matching: <-- " + lookFor + " --> and " + C.effectToString() + "\n");
+        Pattern propPattern = Pattern.compile(lookFor);
+        //Pattern agentPosPattern = Pattern.compile("agentAt(" + agentId + ",[\\s*\\d*;\\s*\\d*])");
+        for(String effect : C.effects) {
+            effect = effect.trim().replace("\\+", "!");
+            effect = effect.replaceAll("\\[\\s*([0-9]*)\\s*,\\s*([0-9]*)\\s*\\]", "[$1;$2]");
+            Matcher m = propPattern.matcher(effect);
+            if(lookFor.equals(effect.trim())) {
+                conflict = true;
+            }
+            if(position && !not) {
+                //System.out.println("   matching: " + aToB.p + " and " + effect);
+                if(!effect.equals(prop) && effect.startsWith("agentAt(" + agentId)) {//if(effect.matches("agentAt(" + agentId + ",[\\s*\\d*;\\s*\\d*])")) {
+                    //System.out.println("         POSITION CONFLICT!!!! between: " + prop + " and " + effect);
+                    conflict = true;
+                }
+            }
+            // Unless C before A and B before C
+            if(conflict) {
+                Actions A = aToB.A;
+                Actions B = aToB.B;
+                if(pop.hasOrderingConstraint(C, A) || pop.hasOrderingConstraint(B, C)) {
+                    conflict = false;
+                }
+            }
+            
+            if(conflict) {
+                //System.out.println("         CONFLICT!!!! between: " + prop + " and " + effect);
+                return conflict;
+            }
+        }
+        
+        return false;
     }
     
     public ArrayList<Actions> findAction(Problem p, String goal) throws InterruptedException {
@@ -369,8 +436,8 @@ public class POPlanner implements Runnable { //  implements Runnable
         return new Node(initial, null, null, 0, 0);
     }
 
-    private Plan makeSolution(Node n, Problem p) {
-        Plan s = new Plan();
+    private TOPlan makeSolution(Node n, Problem p) {
+        TOPlan s = new TOPlan();
         s.s = n.s;
         Node node = n;
         while (node != null) {

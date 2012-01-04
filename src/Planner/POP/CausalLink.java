@@ -25,4 +25,8 @@ class CausalLink {
     public String toString() {
        return A.getAction() + " achives " + p + " for " + B.getAction(); 
     }
+    
+    public boolean equals(CausalLink o) {
+        return o.A.equals(this.A) && o.B.equals(this.B) && o.p.equals(this.p);
+    }
 }

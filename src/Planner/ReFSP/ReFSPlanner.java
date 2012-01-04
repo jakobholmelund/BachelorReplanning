@@ -11,7 +11,7 @@ import gui.RouteFinder.Astar;
 import java.util.ArrayList;
 public class ReFSPlanner implements Runnable{ //  implements Runnable
     State state;
-    Plan plan;
+    TOPlan plan;
     public int iteration;
     World world;
     String statics;
@@ -168,7 +168,7 @@ public class ReFSPlanner implements Runnable{ //  implements Runnable
                 if(next.atomic) {
                     world.agentActionParse(next.name);
                 }else{
-                   Plan subPlan = routeFinder.findPlan(world,next.name);
+                   TOPlan subPlan = routeFinder.findPlan(world,next.name);
                    subPlan.printSolution();
                    this.plan = subPlan;
                 }
@@ -213,7 +213,7 @@ public class ReFSPlanner implements Runnable{ //  implements Runnable
         }
     }
     
-    public Plan findPlan(Problem p) throws InterruptedException {
+    public TOPlan findPlan(Problem p) throws InterruptedException {
         TreeSet<Node> frontier = new TreeSet<Node>();
         Node init = makeInitialNode(p.getInitial());
         frontier.add(init);
@@ -244,8 +244,8 @@ public class ReFSPlanner implements Runnable{ //  implements Runnable
         return new Node(initial, null, null, 0, 0);
     }
 
-    private Plan makeSolution(Node n, Problem p) {
-        Plan s = new Plan(this.goal);
+    private TOPlan makeSolution(Node n, Problem p) {
+        TOPlan s = new TOPlan(this.goal);
         s.s = n.s;
         Node node = n;
         while (node != null) {

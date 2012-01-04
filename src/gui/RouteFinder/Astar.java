@@ -5,7 +5,7 @@
 package gui.RouteFinder;
 
 import Planner.Actions;
-import Planner.Plan;
+import Planner.TOPlan;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeSet;
@@ -20,7 +20,7 @@ public class Astar {
     private ArrayList<Long> map;
     private long agent;
     
-    public Plan findPlan(World w,String action) throws InterruptedException {
+    public TOPlan findPlan(World w,String action) throws InterruptedException {
         map = w.simpleMap();
         
         long[] startogoal = w.parseAction(action);
@@ -72,8 +72,8 @@ public class Astar {
         return new Node(cp, null, 0, 0);
     }
 
-    private Plan makeSolution(Node n) {
-        Plan p = new Plan();
+    private TOPlan makeSolution(Node n) {
+        TOPlan p = new TOPlan();
         Node node = n;
         while (node != null && node.parent != null) {
             int[] cords = coordsFor(node.curPosition);

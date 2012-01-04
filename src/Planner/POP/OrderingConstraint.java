@@ -23,4 +23,8 @@ class OrderingConstraint {
     public String toString() {
        return A.getAction() + " before " + B.getAction(); 
     }
+    
+    public boolean equals(OrderingConstraint o) {
+        return o.A.equals(this.A) && o.B.equals(this.B);
+    }
 }

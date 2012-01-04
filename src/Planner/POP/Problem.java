@@ -160,7 +160,7 @@ public class Problem {
         //System.err.println("Action : " + a.name);
         //System.out.println("\nSTATE 1: " + logic.getTheoryAsString());
         //System.out.println("Action: " + a.name);
-        for (String string : a.effect) {
+        for (String string : a.effects) {
             try {
                 logicClone.set(string);
                 //System.out.println("EFFECT: " + string);

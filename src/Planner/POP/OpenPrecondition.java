@@ -22,4 +22,8 @@ public class OpenPrecondition {
     public String toString() {
         return condition + " for " + action.getAction();
     }
+    
+    public boolean equals(OpenPrecondition o) {
+        return o.condition.equals(this.condition) && o.action.equals(this.action);
+    }
 }
