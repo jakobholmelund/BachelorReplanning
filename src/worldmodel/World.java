@@ -130,7 +130,7 @@ public class World {
             if(mobjects != null){
                 for(int i=0;i<mobjects.length;i++){
                     MapObject mobject = (MapObject)mobjects[i];
-                    if(mobject instanceof Wall || mobject instanceof MapAgent || map.neighborsFor(key).contains(mo)){
+                    if(mobject instanceof Wall || mobject instanceof MapAgent || !map.neighborsFor(key).contains(mo)){
                         return false;
                     }
                 }
