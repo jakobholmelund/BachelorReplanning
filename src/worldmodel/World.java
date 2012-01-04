@@ -124,30 +124,7 @@ public class World {
     
     
     public boolean moveObject(MapObject mo, int x, int y){
-        synchronized(this){
-            long key = map.keyFor(x, y);
-            Object[] mobjects = map.get(key);
-            if(mobjects != null){
-                for(int i=0;i<mobjects.length;i++){
-                    MapObject mobject = (MapObject)mobjects[i];
-                    if(mobject instanceof Wall || mobject instanceof MapAgent || !map.neighborsFor(key).contains(mo)){
-                        return false;
-                    }
-                }
-            }
-            //if(map.get(key) instanceof Oil){
-            //    System.out.println("OILPUUUUUUUUD");
-            //    ArrayList<Long> neighbors = map.emptyNeighborsKeysFor(key);
-            //    Random random = new Random();
-            //    key = neighbors.get(random.nextInt(neighbors.size()-1));
-            //}
-            
-            
-            map.update(mo.getPosition(), key, new MapObject[]{mo});
-            mo.setPosition(key);
-            this.hasChanged = true;
-            return true;
-        }
+        return moveObject(mo,map.keyFor(x, y));
     }
     
     public boolean moveObject(MapObject mo, long key){
@@ -160,8 +137,23 @@ public class World {
                 key = neighbors.get(random.nextInt(neighbors.size()-1));
             }*/
             Object[] mobjects = map.get(key);
-            if(mobjects != null && (MapObject)mobjects[0] instanceof Wall){
-                return false;
+            if(mobjects != null){
+                for(int i=0;i<mobjects.length;i++){
+                    MapObject mobject = (MapObject)mobjects[i];
+                    if(mobject instanceof Wall || mobject instanceof MapAgent || !map.neighborsFor(key).contains(mo)){
+                        return false;
+                    }
+                    if(mobject instanceof Oil){
+                        System.out.println("OILPUUUUUUUUD");
+                        ArrayList<Long> neighbors = map.emptyNeighborsKeysFor(key);
+                        Random random = new Random();
+                        int test = random.nextInt(neighbors.size());
+                        System.out.println(test);
+                        System.out.println(neighbors);
+                        key = neighbors.get(test);
+                    }
+                }
+                
             }
             
             if(mo instanceof MapAgent && ((MapAgent)mo).carying != null){

@@ -135,12 +135,15 @@ public class CoordinateMap<V> {
         return newlist;
     }
     
-    public void checkNeighbor(long key,V[] values,ArrayList<Long> list, int x, int y){
+    public boolean checkNeighbor(V[] values){
+        if(values != null){
         for(int i=0;i<values.length;i++){
             if(!(values[i] instanceof Wall)){
-                list.add(key);
+                return false;
             }
         }
+        }
+        return true;
     }
     
     public ArrayList<Long> emptyNeighborsKeysFor(long k){    
@@ -150,19 +153,27 @@ public class CoordinateMap<V> {
       
         long key1 = keyFor(x-1,y);
         V[] vals1 = this.get(key1);
-        checkNeighbor(key1,vals1,newlist,x,y);
+        if(checkNeighbor(vals1)){
+            newlist.add(key1);
+        }
         
         long key2 = keyFor(x+1,y);
         V[] vals2 = this.get(key2);
-        checkNeighbor(key2,vals2,newlist,x,y);
+        if(checkNeighbor(vals2)){
+            newlist.add(key2);
+        }
         
         long key3 = keyFor(x,y+1);
         V[] vals3 = this.get(key3);
-        checkNeighbor(key3,vals3,newlist,x,y);
+        if(checkNeighbor(vals3)){
+            newlist.add(key3);
+        }
         
         long key4 = keyFor(x,y-1);
         V[] vals4 = this.get(key4);
-        checkNeighbor(key4,vals4,newlist,x,y);
+        if(checkNeighbor(vals4)){
+            newlist.add(key4);
+        }
         
         return newlist;
     }
