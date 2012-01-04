@@ -115,11 +115,23 @@ public class CoordinateMap<V> {
         int y = (int)((k >>> 32) & 0xFFFFFFFF) - 1000000000;
         ArrayList<V> newlist = new ArrayList<V>();
         
-        newlist.addAll(Arrays.asList(this.get(keyFor(x-1,y))));
-        newlist.addAll(Arrays.asList(this.get(keyFor(x+1,y))));
-        newlist.addAll(Arrays.asList(this.get(keyFor(x,y-1))));
-        newlist.addAll(Arrays.asList(this.get(keyFor(x,y-1))));
- 
+        V[] vals1 = this.get(keyFor(x-1,y));
+        if(vals1 != null){
+            newlist.addAll(Arrays.asList(vals1));
+        }
+        
+        V[] vals2 = this.get(keyFor(x+1,y));
+        if(vals2 != null){
+            newlist.addAll(Arrays.asList(vals2));
+         }
+        V[] vals3 = this.get(keyFor(x,y-1));
+        if(vals3 != null){
+            newlist.addAll(Arrays.asList(vals3));
+         }
+        V[] vals4 = this.get(keyFor(x,y+1));
+        if(vals4 != null){
+            newlist.addAll(Arrays.asList(vals4));
+        }
         return newlist;
     }
     
