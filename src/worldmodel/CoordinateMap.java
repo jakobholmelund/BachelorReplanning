@@ -110,14 +110,16 @@ public class CoordinateMap<V> {
         return new int[]{x,y};
     }
     
-    public ArrayList<V[]> neighborsFor(long k){    
+    public ArrayList<V> neighborsFor(long k){    
         int x = (int)(k & 0xFFFFFFFF) - 1000000000;
         int y = (int)((k >>> 32) & 0xFFFFFFFF) - 1000000000;
-        ArrayList<V[]> newlist = new ArrayList<V[]>();
-        newlist.add(this.get(keyFor(x-1,y)));
-        newlist.add(this.get(keyFor(x+1,y)));
-        newlist.add(this.get(keyFor(x,y-1)));
-        newlist.add(this.get(keyFor(x,y-1)));
+        ArrayList<V> newlist = new ArrayList<V>();
+        
+        newlist.addAll(Arrays.asList(this.get(keyFor(x-1,y))));
+        newlist.addAll(Arrays.asList(this.get(keyFor(x+1,y))));
+        newlist.addAll(Arrays.asList(this.get(keyFor(x,y-1))));
+        newlist.addAll(Arrays.asList(this.get(keyFor(x,y-1))));
+ 
         return newlist;
     }
     

@@ -123,11 +123,18 @@ public class World {
     }
     
     
-    public void moveObject(MapObject mo, int x, int y){
+    public boolean moveObject(MapObject mo, int x, int y){
         synchronized(this){
             long key = map.keyFor(x, y);
-            
-            
+            Object[] mobjects = map.get(key);
+            if(mobjects != null){
+                for(int i=0;i<mobjects.length;i++){
+                    MapObject mobject = (MapObject)mobjects[i];
+                    if(mobject instanceof Wall || mobject instanceof MapAgent || map.neighborsFor(key).contains(mo)){
+                        return false;
+                    }
+                }
+            }
             //if(map.get(key) instanceof Oil){
             //    System.out.println("OILPUUUUUUUUD");
             //    ArrayList<Long> neighbors = map.emptyNeighborsKeysFor(key);
@@ -139,10 +146,11 @@ public class World {
             map.update(mo.getPosition(), key, new MapObject[]{mo});
             mo.setPosition(key);
             this.hasChanged = true;
+            return true;
         }
     }
     
-    public void moveObject(MapObject mo, long key){
+    public boolean moveObject(MapObject mo, long key){
         synchronized(this){
             /*
             if(map.get(key) instanceof Oil){
@@ -151,6 +159,11 @@ public class World {
                 Random random = new Random();
                 key = neighbors.get(random.nextInt(neighbors.size()-1));
             }*/
+            Object[] mobjects = map.get(key);
+            if(mobjects != null && (MapObject)mobjects[0] instanceof Wall){
+                return false;
+            }
+            
             if(mo instanceof MapAgent && ((MapAgent)mo).carying != null){
                 map.update(mo.getPosition(), key, new MapObject[]{mo,((MapAgent)mo).carying});
             }else{
@@ -158,6 +171,7 @@ public class World {
             }
             mo.setPosition(key);
             this.hasChanged = true;
+            return true;
         }
     }
     
