@@ -148,17 +148,16 @@ public class World {
                         ArrayList<Long> neighbors = map.emptyNeighborsKeysFor(key);
                         Random random = new Random();
                         int test = random.nextInt(neighbors.size());
-                        System.out.println(test);
-                        System.out.println(neighbors);
                         key = neighbors.get(test);
                     }
+                    /*
                     if(mobject instanceof MapBox){
                         Random random = new Random();
                         int randtest = random.nextInt(100);
                         if(randtest>50){
                             return false;
                         }
-                    }
+                    }*/
                 }
                 
             }
@@ -311,9 +310,10 @@ public class World {
         return new long[]{((MapAgent)objectMap.get(agent)).getPosition(),map.keyFor(Integer.parseInt(coords[0]), Integer.parseInt(coords[1])),Long.parseLong(agent)};
     }
     
-    public void pickUp(MapAgent ma,MapObject mo){
+    public boolean pickUp(MapAgent ma,MapObject mo){
         ma.pickUp(mo);
         this.removeObject(mo);
+        return true;
     }
     
     public boolean place(MapAgent ma){
@@ -327,7 +327,7 @@ public class World {
         return false;
     }
     
-   public void newAgentActionParse(String action){
+   public boolean newAgentActionParse(String action){
         Pattern typeP = Pattern.compile("(^\\w+)\\((\\w*)\\,((\\w+)|\\s\\[((\\d+)\\,(\\d+))\\])\\)");
         Matcher m = typeP.matcher(action);
         boolean matchFound = m.find();
@@ -336,15 +336,16 @@ public class World {
             System.out.println(m.group(1));
             MapAgent agent = (MapAgent)objectMap.get(m.group(2));
             if(m.group(1).equals("moveAtomic")){
-                this.moveObject(agent,Integer.parseInt(m.group(6)),Integer.parseInt(m.group(7)));
+                return this.moveObject(agent,Integer.parseInt(m.group(6)),Integer.parseInt(m.group(7)));
             }else if(m.group(1).equals("pickUp")){
                 MapObject object = objectMap.get(m.group(3));
-                this.pickUp(agent,object);
+                return this.pickUp(agent,object);
             }else if(m.group(1).equals("place")){
                 //MapObject object = objectMap.get(m.group(3));
-               this.place(agent);
+               return this.place(agent);
             }
         }
+        return false;
     }
     
     public void agentActionParse(String action){
