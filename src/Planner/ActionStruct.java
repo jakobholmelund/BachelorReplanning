@@ -167,7 +167,7 @@ public class ActionStruct {
         String format = this.format;
         
         ArrayList<String> effectsProp = (ArrayList<String>) this.effects.clone();
-        //ArrayList<String> requirementsProp = (ArrayList<String>) this.requirements.clone();
+        ArrayList<String> prerequisitesProp = (ArrayList<String>) this.prerequisites.clone();
 
         for(String arg : this.args) {
             //System.err.print("Check for: " + arg);
@@ -186,9 +186,9 @@ public class ActionStruct {
             for(int j = 0; j < effectsProp.size(); j++) {
                 effectsProp.set(j, effectsProp.get(j).replaceAll(arg, replace));
             }
-            //for(int j = 0; j < requirementsProp.size(); j++) {
-            //    requirementsProp.set(j, requirementsProp.get(j).replaceAll(arg, replace));
-            //}
+            for(int j = 0; j < prerequisitesProp.size(); j++) {
+                prerequisitesProp.set(j, prerequisitesProp.get(j).replaceAll(arg, replace));
+            }
         }
 
         Actions act = new Actions(format, this.expanded, this.atomic);
@@ -196,9 +196,9 @@ public class ActionStruct {
         for(int i = 0; i < effectsProp.size(); i++) {
             act.addEffect(effectsProp.get(i));
         }
-        //for(int i = 0; i < requirementsProp.size(); i++) {
-        //    act.addRequirement(requirementsProp.get(i));
-        //}
+        for(int i = 0; i < prerequisitesProp.size(); i++) {
+            act.addPrerequisites(prerequisitesProp.get(i));
+        }
 
         //System.err.println("Action: " + act.toString());
         
@@ -209,9 +209,9 @@ public class ActionStruct {
         String format = this.format;
         
         ArrayList<String> effectsProp = (ArrayList<String>) this.effects.clone();
-        //ArrayList<String> requirementsProp = (ArrayList<String>) this.requirements.clone();
+        ArrayList<String> prerequisitesProp = (ArrayList<String>) this.prerequisites.clone();
         //System.out.println("args:" + arguments.toString());
-
+        
         for(String arg : this.args) {
             //System.out.println("Check for:-" + arg);
             String replace = "";
@@ -225,9 +225,9 @@ public class ActionStruct {
                 for(int j = 0; j < effectsProp.size(); j++) {
                     effectsProp.set(j, effectsProp.get(j).replaceAll(arg, replace));
                 }
-                //for(int j = 0; j < requirementsProp.size(); j++) {
-                //    requirementsProp.set(j, requirementsProp.get(j).replaceAll(arg, replace));
-                //}
+                for(int j = 0; j < prerequisitesProp.size(); j++) {
+                    prerequisitesProp.set(j, prerequisitesProp.get(j).replaceAll(arg, replace));
+                }
             }
             //System.out.println("\n");
         }
@@ -237,9 +237,9 @@ public class ActionStruct {
         for(int i = 0; i < effectsProp.size(); i++) {
             act.addEffect(effectsProp.get(i));
         }
-        //for(int i = 0; i < requirementsProp.size(); i++) {
-        //    act.addRequirement(requirementsProp.get(i));
-        //}
+        for(int i = 0; i < prerequisitesProp.size(); i++) {
+            act.addPrerequisites(prerequisitesProp.get(i));
+        }
 
         //System.err.println("Action Created: " + act.toString());
         

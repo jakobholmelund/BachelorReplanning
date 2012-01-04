@@ -327,7 +327,7 @@ public class World {
         return false;
     }
     
-   public boolean newAgentActionParse(String action){
+   public boolean act(String action){
         Pattern typeP = Pattern.compile("(^\\w+)\\((\\w*)\\,((\\w+)|\\s\\[((\\d+)\\,(\\d+))\\])\\)");
         Matcher m = typeP.matcher(action);
         boolean matchFound = m.find();

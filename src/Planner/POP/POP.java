@@ -142,6 +142,7 @@ public class POP {
             if(this.debug)
                 System.out.println("Adding expanded: " + a.name);
             plan = findLinearization(a, plan.append(a));
+            //System.out.println("PREQ ADDED: " + a.preqToString());
         }
         return newPlan;
     }

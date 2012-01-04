@@ -102,48 +102,80 @@ public class TOPlan {
     public boolean isEmpty() {
         return this.list.isEmpty();
     }
-
-    /*
-    public boolean valid(State state) {
-        boolean valid = true;
-        
-        //System.err.println("state: " + state);
-        for (Actions a : list) {
-            for (String st : a.requirements) {
-                
-                boolean res = state.state.solveboolean(st);
-                //System.out.println("Solving: " + st + " res: " + res);
-                if (!res) {
-                    valid = false;
-                    break;
-                }
-            }
-            if (!valid) {
-                break;
-            }
-        }
-
-        return valid;
-    }*/
     
-    public boolean valid(State state) {
+    /**
+     * 
+     * @param state
+     * @return 
+     *  i if the plan is broken at action i
+     *  -1 if the plan is valid
+     *  -2 if the plan is valid but does not fulfill the goal
+     */
+    public int valid(State state) {
         Logic s = state.state.clone();
         long time1 = System.currentTimeMillis();
 
-        for(Actions action : list) {
-            for (String string : action.effects) {
+        for(int i = 0; i < list.size(); i++) {
+            Actions action = list.get(i);
+            //System.out.println("   PREQ: " + action.preqToString());
+            
+            for(String preq : action.prerequisites) {
+                Boolean result =  s.solveboolean(preq);
+                System.out.println("   Checking for: " + preq + "  Result: " + result);
+                
+                if(!result) {
+                    System.out.println("   State failed at:\n " + s.getTheoryAsString());
+                    return i;
+                }
+            }
+            
+            for (String effect : action.effects) {
                 try {
                     //System.out.println("Setting: " + string);
-                    s.set(string);
+                    s.set(effect);
                 } catch (Throwable ex) {
 
                 }
             }
         }
         boolean bol = s.solveboolean(getGoal());
+        
         long time2 = System.currentTimeMillis();
-        System.out.println("Plan monitoring took: " + (time2-time1) + " ms");
+        System.out.println("Plan monitoring took: " + (time2-time1) + " ms  -- goal is: " + bol);
         //System.out.println("Goal: " + getGoal() + " - valid: " + bol);
-        return bol;
+        if(bol) {
+            return -1;
+        }else{
+            return -2;
+        }
+    }
+    
+    public int validForPOP(State state) {
+        Logic s = state.state.clone();
+        long time1 = System.currentTimeMillis();
+
+        for(int i = 0; i < list.size(); i++) {
+            Actions action = list.get(i);
+            //System.out.println("   PREQ: " + action.preqToString());
+            
+            for (String effect : action.effects) {
+                try {
+                    //System.out.println("Setting: " + string);
+                    s.set(effect);
+                } catch (Throwable ex) {
+
+                }
+            }
+        }
+        boolean bol = s.solveboolean(getGoal());
+        
+        long time2 = System.currentTimeMillis();
+        System.out.println("Plan monitoring took: " + (time2-time1) + " ms  -- goal is: " + bol);
+        //System.out.println("Goal: " + getGoal() + " - valid: " + bol);
+        if(bol) {
+            return -1;
+        }else{
+            return -2;
+        }
     }
 }

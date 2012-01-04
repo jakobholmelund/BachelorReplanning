@@ -157,6 +157,8 @@ public class Logic {
 
     public boolean solveboolean(String q) {
         q = q.trim();
+        q = q.replace("\\+", "!");
+        
         if(q.endsWith(".")) {
             q = q.substring(0, q.length()-1);
         }
@@ -166,20 +168,22 @@ public class Logic {
                 q = q.substring(1, q.length());
                 Solution info = engine.solve(q + ". ");
                 //System.out.println("         !--> succes for: " + q + "  ? " + !info.success());
+                System.out.println("      Solve NOT Bool: " + q + " success: " + info.success());
                 return !info.success();
             } catch (Throwable ex) {
+                return true;
                 //Logger.getLogger(Logic.class.getName()).log(Level.SEVERE, null, ex);
             }
-            return false;
         } else {
             try {
                 Solution info = engine.solve(q + ". ");
                 //System.out.println("         --> succes for: " + q + "  ? " + !info.success());
+                System.out.println("      Solve Bool: " + q + " success: " + info.success());
                 return info.success();
             } catch (Throwable ex) {
+                return false;
                 //Logger.getLogger(Logic.class.getName()).log(Level.SEVERE, null, ex);
             }
-            return false;
         }
     }
 

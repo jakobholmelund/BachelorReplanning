@@ -127,8 +127,18 @@ public class POPlanner implements Runnable { //  implements Runnable
                     }
                 }
                 if(this.plan != null) {
-                    valid = this.plan.valid(state);
-                    System.out.println("PLAN VALID: " + valid);
+                    int planSucceed = this.plan.validForPOP(state);
+                    // Plan is good
+                    if(planSucceed == -1) {
+                        valid = true;
+                    // Plan is good but goal is not fulfilled
+                    }else if(planSucceed == -2) {
+                        valid = false;
+                    // Plan is broken
+                    }else{
+                        valid = false;
+                    }
+                    System.out.println("PLAN VALID: " + planSucceed + "  which is: " + valid);
                 }
 
                 //System.err.println("Free: " + state.state.solveboolean("f([1,3])"));
@@ -141,7 +151,13 @@ public class POPlanner implements Runnable { //  implements Runnable
                     // Apply next - act() ?
                     if(next.atomic) {
                         System.out.println(" -- which is atomic");
-                        world.newAgentActionParse(next.name);
+                        
+                        // If action succeeded
+                        if(world.act(next.name)) {
+                            // Replan. Later on, try to introduce new open preconditions to popPlan instead and refine it further.
+                            plan = null;
+                            popPlan = null; 
+                        }
                     }else{
                        System.out.println(" -- which is not atomic");
                        TOPlan subPlan = routeFinder.findPlan(world,next.name);
@@ -231,7 +247,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         }
         
         if(pop.isSolution()) {
-            pop.printToConsole();
+            //pop.printToConsole();
             return pop;
         }
         
@@ -324,6 +340,7 @@ public class POPlanner implements Runnable { //  implements Runnable
     
     private boolean conflict(CausalLink aToB, Actions C, POP pop) {
         String lookFor = "";
+        String lookForall = "";
         String prop = aToB.p;
         boolean position = false;
         boolean not = false;
@@ -338,6 +355,9 @@ public class POPlanner implements Runnable { //  implements Runnable
         lookFor = lookFor.trim().replace("\\+", "!");
         lookFor = lookFor.replaceAll("\\[\\s*([0-9]*)\\s*,\\s*([0-9]*)\\s*\\]", "[$1;$2]");
         
+        lookForall = lookFor.replaceAll(",.*\\)", ",_)");
+        
+        //System.out.println("LookFor: " + lookFor + "   LookForAll: " + lookForall);
         prop = prop.trim().replace("\\+", "!");
         prop = prop.replaceAll("\\[\\s*([0-9]*)\\s*,\\s*([0-9]*)\\s*\\]", "[$1;$2]");
         if(aToB.p.contains("agentAt")) {
@@ -350,7 +370,7 @@ public class POPlanner implements Runnable { //  implements Runnable
             effect = effect.trim().replace("\\+", "!");
             effect = effect.replaceAll("\\[\\s*([0-9]*)\\s*,\\s*([0-9]*)\\s*\\]", "[$1;$2]");
             Matcher m = propPattern.matcher(effect);
-            if(lookFor.equals(effect.trim())) {
+            if(lookFor.equals(effect) || lookForall.equals(effect)) {
                 conflict = true;
             }
             if(position && !not) {

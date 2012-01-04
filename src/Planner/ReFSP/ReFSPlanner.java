@@ -154,7 +154,18 @@ public class ReFSPlanner implements Runnable{ //  implements Runnable
                 return; 
             }
             if(this.plan != null) {
-                valid = this.plan.valid(state);
+                int planSucceed = this.plan.valid(state);
+                    // Plan is good
+                    if(planSucceed == -1) {
+                        valid = true;
+                    // Plan is good but goal is not fulfilled
+                    }else if(planSucceed == -2) {
+                        valid = false;
+                    // Plan is broken
+                    }else{
+                        valid = false;
+                    }
+                System.out.println("PLAN VALID: " + planSucceed + "  which is: " + valid);
             }
             
             //System.err.println("Free: " + state.state.solveboolean("f([1,3])"));
