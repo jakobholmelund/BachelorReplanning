@@ -152,6 +152,13 @@ public class World {
                         System.out.println(neighbors);
                         key = neighbors.get(test);
                     }
+                    if(mobject instanceof MapBox){
+                        Random random = new Random();
+                        int randtest = random.nextInt(100);
+                        if(randtest>50){
+                            return false;
+                        }
+                    }
                 }
                 
             }
