@@ -4,7 +4,7 @@
  */
 package Planner.POP;
 
-import Planner.Actions;
+import Planner.Action;
 import Planner.TOPlan;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,21 +20,21 @@ public class POP {
     HashSet<OpenPrecondition> openPreconditions;
     HashSet<CausalLink> causalLinks;
     HashSet<OrderingConstraint> orderingConstraints;
-    HashSet<Actions> actions;
+    HashSet<Action> actions;
     String goal;
-    Actions startAction;
-    Actions finishAction;
+    Action startAction;
+    Action finishAction;
     boolean debug = false;
     
     public POP(String goal) {
         this.openPreconditions = new HashSet<OpenPrecondition>();
         this.causalLinks = new HashSet<CausalLink>();
         this.orderingConstraints = new HashSet<OrderingConstraint>();
-        this.actions = new HashSet<Actions>();
+        this.actions = new HashSet<Action>();
 
-        this.startAction = new Actions("Start", false, false);
+        this.startAction = new Action("Start", false, false);
         this.actions.add(this.startAction);
-        this.finishAction = new Actions("Finish", false, false);
+        this.finishAction = new Action("Finish", false, false);
         this.actions.add(this.finishAction);
         
         this.addOrderingConstraint(startAction, finishAction);
@@ -48,15 +48,15 @@ public class POP {
         newPoP.openPreconditions = (HashSet<OpenPrecondition>) this.openPreconditions.clone();
         newPoP.causalLinks = (HashSet<CausalLink>) this.causalLinks.clone();
         newPoP.orderingConstraints = (HashSet<OrderingConstraint>) this.orderingConstraints.clone();
-        newPoP.actions = (HashSet<Actions>) this.actions.clone();
+        newPoP.actions = (HashSet<Action>) this.actions.clone();
         return newPoP;
     }
     
-    public boolean hasOrderingConstraint(Actions A, Actions B) {
+    public boolean hasOrderingConstraint(Action A, Action B) {
         return orderingConstraints.contains(new OrderingConstraint(A, B));
     }
     
-    public POP addOrderingConstraint(Actions A, Actions B) {
+    public POP addOrderingConstraint(Action A, Action B) {
         if(!A.equals(B)) {
             OrderingConstraint o = new OrderingConstraint(A, B);
             orderingConstraints.add(o);
@@ -64,7 +64,7 @@ public class POP {
         return this;
     }
     
-    public POP removeOrderingConstraint(Actions A, Actions B) {
+    public POP removeOrderingConstraint(Action A, Action B) {
         for(OrderingConstraint o : this.orderingConstraints) {
             if(o.A.equals(A) && o.B.equals(B)) {
                 this.orderingConstraints.remove(o);
@@ -72,19 +72,19 @@ public class POP {
         }
         return this;
     }
-    public POP addCausalLink(Actions A, Actions B, String p) {
+    public POP addCausalLink(Action A, Action B, String p) {
         CausalLink c = new CausalLink(A, B, p);
         causalLinks.add(c);
         return this;
     }
     
-     public POP addOpenPrecondition(String p, Actions a) {
+     public POP addOpenPrecondition(String p, Action a) {
         OpenPrecondition op = new OpenPrecondition(p, a);
         openPreconditions.add(op);
         return this;
     }
      
-    public OrderingConstraint addAndGetOrderingConstraint(Actions A, Actions B) {
+    public OrderingConstraint addAndGetOrderingConstraint(Action A, Action B) {
         if(!A.equals(B)) {
             OrderingConstraint o = new OrderingConstraint(A, B);
             orderingConstraints.add(o);
@@ -94,13 +94,13 @@ public class POP {
         }
     }
     
-    public CausalLink addAndGetCausalLink(Actions A, Actions B, String p) {
+    public CausalLink addAndGetCausalLink(Action A, Action B, String p) {
         CausalLink c = new CausalLink(A, B, p);
         causalLinks.add(c);
         return c;
     }
     
-     public OpenPrecondition addAndGetOpenPrecondition(String p, Actions a) {
+     public OpenPrecondition addAndGetOpenPrecondition(String p, Action a) {
         OpenPrecondition op = new OpenPrecondition(p, a);
         openPreconditions.add(op);
         return op;
@@ -114,11 +114,11 @@ public class POP {
          return returner;
      }
     
-    public void addActions(Actions A) {
+    public void addActions(Action A) {
         actions.add(A);
     }
     
-    public boolean contains(Actions a) {
+    public boolean contains(Action a) {
         return actions.contains(a);
     }
     
@@ -136,9 +136,9 @@ public class POP {
         return linearPlan;
     }
     
-    private TOPlan findLinearization(Actions action, TOPlan plan) {
+    private TOPlan findLinearization(Action action, TOPlan plan) {
         TOPlan newPlan = plan;
-        for(Actions a : expand(action)) {
+        for(Action a : expand(action)) {
             if(this.debug)
                 System.out.println("Adding expanded: " + a.name);
             plan = findLinearization(a, plan.append(a));
@@ -147,8 +147,8 @@ public class POP {
         return newPlan;
     }
     
-    private ArrayList<Actions> expand(Actions A) {
-        ArrayList<Actions> actionsRet = new ArrayList<Actions>();
+    private ArrayList<Action> expand(Action A) {
+        ArrayList<Action> actionsRet = new ArrayList<Action>();
         ArrayList<OrderingConstraint> removers = new ArrayList<OrderingConstraint>();
         if(this.debug)
             System.out.println("   Expanding: " + A.name);
@@ -180,11 +180,11 @@ public class POP {
         return actionsRet;
     }
     
-    public Actions getStart() {
+    public Action getStart() {
         return startAction;
     }
     
-    public Actions getFinish() {
+    public Action getFinish() {
         return finishAction;
     }
 

@@ -4,19 +4,19 @@
  */
 package Planner.POP;
 
-import Planner.Actions;
+import Planner.Action;
 
 /**
  *
  * @author Dan True
  */
 class CausalLink {
-    public Actions A;
-    public Actions B;
+    public Action A;
+    public Action B;
     public String p;
     
     // Read as "A achieves p for B"
-    CausalLink(Actions A, Actions B, String p) {
+    CausalLink(Action A, Action B, String p) {
         this.A = A;
         this.B = B;
         this.p = p;

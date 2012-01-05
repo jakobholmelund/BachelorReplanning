@@ -4,18 +4,18 @@
  */
 package Planner.POP;
 
-import Planner.Actions;
+import Planner.Action;
 
 /**
  *
  * @author Dan True
  */
 class OrderingConstraint {
-    public Actions A;
-    public Actions B;
+    public Action A;
+    public Action B;
     
     // Read as "A before B"
-    OrderingConstraint(Actions A, Actions B) {
+    OrderingConstraint(Action A, Action B) {
         this.A = A;
         this.B = B;
     }
