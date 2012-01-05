@@ -53,63 +53,6 @@ public class POPProblem {
         return goal;
     }
     
-    /*
-     * Calculates the heuristik for the state.
-     *
-     * @param s1
-     * @param a
-     * @param node 
-     * @return
-     */
-
-    public double heuristik(State s1, Action a, Node node) {
-        try {
-            setState(s1);
-            double agentToBox;
-            double boxToGoal;
-
-            Solution n = logic.solve("agentAt(" + agent + ", N).");
-            Solution g = logic.solve("goalAt("+currentBoxGoalPos+", G).");
-            Solution b = logic.solve("boxAt("+currentBoxGoalPos+", B).");
-            String N = "" + n.getBinding("N"); //[1,3]
-            String G = "" + g.getBinding("G"); //[1,3]
-            String B = "" + b.getBinding("B"); //[1,3]
-            N = N.replace("[", "");
-            N = N.replace("]", "");
-            G = G.replace("[", "");
-            G = G.replace("]", "");
-            B = B.replace("[", "");
-            B = B.replace("]", "");
-            String[] nxa = N.split(",");
-            String[] goala = G.split(",");
-            String[] boxa = B.split(",");
-            double nx = Double.parseDouble(nxa[0]);
-            double ny = Double.parseDouble(nxa[1]);
-            double goalx = Double.parseDouble(goala[0]);
-            double goaly = Double.parseDouble(goala[1]);
-            double boxx = Double.parseDouble(boxa[0]);
-            double boxy = Double.parseDouble(boxa[1]);
-            //System.out.println("AgentAt: " + nx + "," + ny + " boxat: " + boxx + "," + boxy);
-            agentToBox = (Math.abs(nx - boxx) + Math.abs(ny - boxy));
-            boxToGoal = (Math.abs(boxx - goalx) + Math.abs(boxy - goaly));
-
-            double h = agentToBox + boxToGoal;
-            //System.err.println("AgentToBox: " + agentToBox + "   BoxToGoal: " + boxToGoal + " h: " + h);
-            if (h < 0) {
-                h *= -1;
-            }
-            return h;
-        } catch (Exception ex) {
-            //System.out.println(ex.);
-            ex.printStackTrace();
-            return 1;
-        }
-    }
-
-    public double cost(State s1, Action a) {
-        return 1;
-    }
-
     private void setState(State s) {
         //System.err.println("State size: " + s.state.length());
         if (s != null) {
@@ -118,14 +61,12 @@ public class POPProblem {
             //System.err.println("real state: " + engine.getTheoryAsString());
         }
     }
+    
+    /*
+    public double cost(State s1, Action a) {
+        return 1;
+    }
 
-    /**
-     * Returns the actions applicable from this state. Needs to be made more general to allow for a parsed action set.
-     *
-     *
-     * @param s
-     * @return The actions applicable from this state
-     */
     public ArrayList<Action> actions(State s) {
         setState(s);
         //System.err.println("agent: " + agent);
@@ -173,7 +114,7 @@ public class POPProblem {
 
         return new State(logicClone);
     }
-
+*/
     public void setGoal(String goal) {
         this.goal = goal;
     }
