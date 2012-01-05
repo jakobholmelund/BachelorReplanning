@@ -32,8 +32,8 @@ public class Main {
         //goals.add("agentAt(0,[1;1])");
         //goals.add("agentAt(0,[13;13])");
         //goals.add("agentAt(0,[13;4])");
-        //POPlanner planner = new POPlanner(world, 0, goals); // at(a,[5;5]) // agentAt(0,[5;5]) //null
-        NFSPlanner planner = new NFSPlanner(world, 0, goals.getFirst(), null); // at(a,[5;5]) // agentAt(0,[5;5])
+        POPlanner planner = new POPlanner(world, 0, goals); // at(a,[5;5]) // agentAt(0,[5;5]) //null
+        //NFSPlanner planner = new NFSPlanner(world, 0, goals.getFirst(), null); // at(a,[5;5]) // agentAt(0,[5;5])
         Thread init = new Thread(planner);
         init.start();
         //planner.run();//findAction(p, "boxAt(a,[5;5])");
