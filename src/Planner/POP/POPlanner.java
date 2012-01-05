@@ -162,10 +162,15 @@ public class POPlanner implements Runnable { //  implements Runnable
                         System.out.println(" -- which is atomic");
                         
                         // If action succeeded
+                        //boolean result = world.act(next.name);
+                        
                         if(!world.act(next.name)) {
+                            System.out.println("Action succeeded: " + false);
                             // Replan. Later on, try to introduce new open preconditions to popPlan instead and refine it further.
                             plan = null;
                             popPlan = null; 
+                        }else{
+                            System.out.println("Action succeeded: " + true);
                         }
                     }else{
                        System.out.println(" -- which is not atomic");
