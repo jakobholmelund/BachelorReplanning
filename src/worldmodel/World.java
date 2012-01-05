@@ -134,9 +134,13 @@ public class World {
             if(mobjects != null){
                 for(int i=0;i<mobjects.length;i++){
                     MapObject mobject = (MapObject)mobjects[i];
+                    
+                    //Check if field i naibour
                     if(mobject instanceof Wall || mobject instanceof MapAgent || !map.neighborsFor(key).contains(mo)){
                         return false;
                     }
+                    
+                    //Check if oilpud
                     if(mobject instanceof Oil){
                         System.out.println("OILPUUUUUUUUD");
                         ArrayList<Long> neighbors = map.emptyNeighborsKeysFor(key);

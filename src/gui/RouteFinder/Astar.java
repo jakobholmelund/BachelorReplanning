@@ -16,7 +16,7 @@ import worldmodel.World;
  * @author jakobsuper
  */
 public class Astar {
-    private int movecost = 1;
+    final private int movecost = 1;
     private ArrayList<Long> map;
     private long agent;
     
@@ -34,6 +34,7 @@ public class Astar {
         
         int states = 0;
         while (true) {
+            System.out.println(frontier);
             if (frontier.isEmpty()) {
                 return null;
             }
@@ -42,6 +43,8 @@ public class Astar {
             if (n.curPosition == goal) {
                 return makeSolution(n);
             }
+            
+            
             for (long position : actions(n.curPosition)) {
                 long s1 = position;
                 frontier.add(new Node(s1, n, n.g + movecost, heuristik(s1,goal)));
