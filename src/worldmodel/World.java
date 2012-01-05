@@ -150,14 +150,17 @@ public class World {
                         int test = random.nextInt(neighbors.size());
                         key = neighbors.get(test);
                     }
-                    /*
-                    if(mobject instanceof MapBox){
-                        Random random = new Random();
-                        int randtest = random.nextInt(100);
-                        if(randtest>50){
-                            return false;
+                    
+                    if(mobject instanceof MapBox && mo instanceof MapAgent){
+                        MapAgent mamo = (MapAgent)mo;
+                        if(mamo.carying != null){
+                            Random random = new Random();
+                            int randtest = random.nextInt(100);
+                            if(randtest>50){
+                                return false;
+                            }
                         }
-                    }*/
+                    }
                 }
                 
             }
