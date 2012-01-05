@@ -27,9 +27,9 @@ public class Node implements Comparable<Node> {
             return Double.compare(this.h, other.h);
         }else if (this.curPosition != other.curPosition) { //!this.equals(other.h)){
             //System.err.println("COMPARE TO: 3");
-            return Double.compare(this.curPosition, other.curPosition);
+            return 1;
         }else{
-            System.err.println("PRUUUUUUUUUN");
+           System.err.println("PRUUUUUUUUUN");
            return 0; 
         }
         

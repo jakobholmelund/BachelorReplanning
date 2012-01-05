@@ -34,7 +34,7 @@ public class Astar {
         
         int states = 0;
         while (true) {
-            System.out.println(frontier);
+            System.out.println(frontier.size());
             if (frontier.isEmpty()) {
                 return null;
             }
