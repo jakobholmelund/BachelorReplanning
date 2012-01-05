@@ -129,13 +129,7 @@ public class World {
     
     public boolean moveObject(MapObject mo, long key){
         synchronized(this){
-            /*
-            if(map.get(key) instanceof Oil){
-                System.out.println("OILPUUUUUUUUD");
-                ArrayList<Long> neighbors = map.emptyNeighborsKeysFor(key);
-                Random random = new Random();
-                key = neighbors.get(random.nextInt(neighbors.size()-1));
-            }*/
+            //Checks ir there is objects on field and if objects interfierce with plan.
             Object[] mobjects = map.get(key);
             if(mobjects != null){
                 for(int i=0;i<mobjects.length;i++){
