@@ -92,7 +92,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         //System.out.println(this.state.toString());
         long time2 = System.currentTimeMillis();
                 
-       System.out.println("Percepts gotten in: " + (time2 - time1) + " ms");
+       //System.out.println("Percepts gotten in: " + (time2 - time1) + " ms");
     }
 
     public String getStatics() {
@@ -111,8 +111,11 @@ public class POPlanner implements Runnable { //  implements Runnable
                 //get percepts and update current state description
                 getPercepts();
                 if(this.goal == null || this.goal.equals("")) {
+                    
                     this.goal = goals.pop();
+                    System.out.println("NEW GOAL: " + this.goal);
                 }
+                
                 //check if plan is still valid
                 boolean valid = false;
                 if(this.plan != null && this.plan.list.isEmpty()) {
@@ -134,16 +137,22 @@ public class POPlanner implements Runnable { //  implements Runnable
                     // Plan is good but goal is not fulfilled
                     }else if(planSucceed == -2) {
                         valid = false;
+                        System.out.println("REPLAN REPLAN REPLAN REPLAN REPLAN REPLAN");
+                        this.plan = null;
+                        this.popPlan = null;
                     // Plan is broken
                     }else{
+                        System.out.println("REPLAN REPLAN REPLAN REPLAN REPLAN REPLAN");
                         valid = false;
+                        this.plan = null;
+                        this.popPlan = null;
                     }
-                    System.out.println("PLAN VALID: " + planSucceed + "  which is: " + valid);
+                    //System.out.println("PLAN VALID: " + planSucceed + "  which is: " + valid);
                 }
 
                 //System.err.println("Free: " + state.state.solveboolean("f([1,3])"));
                 if(this.plan != null && !this.plan.isEmpty() && valid) { // this.plan != null) {//
-                    System.out.println("Go --->\n");
+                    System.out.println("Go --->");
                     // If it is, do the next action
                     Action next = plan.pop();
                     System.out.print("Take Next Action: " + next.name);
@@ -153,7 +162,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                         System.out.println(" -- which is atomic");
                         
                         // If action succeeded
-                        if(world.act(next.name)) {
+                        if(!world.act(next.name)) {
                             // Replan. Later on, try to introduce new open preconditions to popPlan instead and refine it further.
                             plan = null;
                             popPlan = null; 
@@ -171,7 +180,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                     if(this.plan != null) {
                         System.out.println("Replan: " + !valid);
                     }else{
-                        System.out.println("Started planning: ");
+                        System.out.println("Started planning for goal: " + this.goal + " -->");
                     }
                     // Else, make a new plan ( and perform the first action ? )
 
