@@ -29,7 +29,7 @@ public class Node implements Comparable<Node> {
             //System.err.println("COMPARE TO: 3");
             return 1;
         }else{
-           System.err.println("PRUUUUUUUUUN");
+           //System.err.println("PRUUUUUUUUUN");
            return 0; 
         }
         
