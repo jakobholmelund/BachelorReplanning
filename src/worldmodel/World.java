@@ -148,7 +148,7 @@ public class World {
                         int test = random.nextInt(neighbors.size());
                         key = neighbors.get(test);
                     }
-                    /*
+                    
                     if(mobject instanceof MapBox && mo instanceof MapAgent){
                         MapAgent mamo = (MapAgent)mo;
                         if(mamo.carying != null){
@@ -158,7 +158,7 @@ public class World {
                                 return false;
                             }
                         }
-                    }*/
+                    }
                 }
                 
             }

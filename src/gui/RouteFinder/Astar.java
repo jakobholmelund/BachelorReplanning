@@ -44,7 +44,6 @@ public class Astar {
                 return makeSolution(n);
             }
             
-            
             for (long position : actions(n.curPosition)) {
                 long s1 = position;
                 frontier.add(new Node(s1, n, n.g + movecost, heuristik(s1,goal)));
