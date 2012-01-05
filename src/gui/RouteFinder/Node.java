@@ -22,12 +22,9 @@ public class Node implements Comparable<Node> {
         if (this.f != other.f) {
             //System.err.println("COMPARE TO: 2");
             return Double.compare(this.f, other.f);
-        } else if (this.h != other.h) { //!this.equals(other.h)){
+        }else if (this.h != other.h) { //!this.equals(other.h)){
             //System.err.println("COMPARE TO: 3");
             return Double.compare(this.h, other.h);
-        }else if (this.g != other.g) { //!this.equals(other.h)){
-            //System.err.println("COMPARE TO: 3");
-            return Double.compare(this.g, other.g);
         }else{
             return 0;
         }
@@ -41,6 +38,13 @@ public class Node implements Comparable<Node> {
 
     @Override
     public String toString() {
-        return "Newpos: " + curPosition + " g: " + g + " h: " + h + " f: " + f;
+        int[] coords = coordsFor(curPosition);
+        return "Newpos: (" + coords[0] + "," + coords[1] + ") g: " + g + " h: " + h + " f: " + f;
+    }
+    
+    private int[] coordsFor(long k) {
+        int x = (int)(k & 0xFFFFFFFF) - 1000000000;
+        int y = (int)((k >>> 32) & 0xFFFFFFFF) - 1000000000;
+        return new int[]{x,y};
     }
 }
