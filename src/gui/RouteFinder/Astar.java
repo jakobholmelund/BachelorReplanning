@@ -4,7 +4,7 @@
  */
 package gui.RouteFinder;
 
-import Planner.Actions;
+import Planner.Action;
 import Planner.TOPlan;
 import java.util.ArrayList;
 import java.util.Map;
@@ -78,7 +78,7 @@ public class Astar {
         while (node != null && node.parent != null) {
             int[] cords = coordsFor(node.curPosition);
             int[] cordsParent = coordsFor(node.parent.curPosition);
-            Actions action = new Actions("moveAtomic(" + this.agent + ", [" + cords[0] + "," + cords[1] + "])", true, true);
+            Action action = new Action("moveAtomic(" + this.agent + ", [" + cords[0] + "," + cords[1] + "])", true, true);
             action.addEffect("agentAt(" + this.agent + ",[" + cords[0] + "," + cords[1] + "])");
             action.addEffect("!agentAt(" + this.agent + ",[" + cordsParent[0] + "," + cordsParent[1] + "])");
             //p.add(node.curPosition);

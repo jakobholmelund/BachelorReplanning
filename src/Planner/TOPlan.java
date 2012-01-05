@@ -7,15 +7,15 @@ import java.util.logging.Level;
 public class TOPlan {
 
     public State s;
-    public ArrayList<Actions> list;
+    public ArrayList<Action> list;
     private String goal;
     
     public TOPlan() {
-        list = new ArrayList<Actions>();
+        list = new ArrayList<Action>();
     }
     
     public TOPlan(String goal) {
-        list = new ArrayList<Actions>();
+        list = new ArrayList<Action>();
         this.goal = goal.replaceAll("\\[([0-9]*);([0-9]*)\\]", "[$1,$2]");
     }
     
@@ -37,54 +37,54 @@ public class TOPlan {
         return this;
     }
     
-    public TOPlan addAll(int index, ArrayList<Actions> list) {
+    public TOPlan addAll(int index, ArrayList<Action> list) {
         this.list.addAll(index, list);
         return this;
     }
     
-    public TOPlan appendAll(ArrayList<Actions> list) {
+    public TOPlan appendAll(ArrayList<Action> list) {
         this.list.addAll(list);
         return this;
     }
     
-    public TOPlan prependAll(ArrayList<Actions> list) {
+    public TOPlan prependAll(ArrayList<Action> list) {
         this.list.addAll(0, list);
         return this;
     }
     
-    public TOPlan append(Actions act) {
+    public TOPlan append(Action act) {
         this.list.add(act);
         return this;
     }
     
-    public TOPlan prepend(Actions act) {
+    public TOPlan prepend(Action act) {
         this.list.add(0, act);
         return this;
     }
 
-    public TOPlan add(int index, Actions a) {
+    public TOPlan add(int index, Action a) {
         list.add(index, a);
         return this;
     }
     
-    public TOPlan add(Actions a) {
+    public TOPlan add(Action a) {
         list.add(0, a);
         return this;
     }
     
-    public Actions pop() {
-        Actions ret = list.get(0);
+    public Action pop() {
+        Action ret = list.get(0);
         list.remove(0);
         return ret;
     }
 
-    public List<Actions> getSolution() {
+    public List<Action> getSolution() {
         return this.list;
     }
 
     public void printSolution() {
         System.err.print("THIS: ");
-        for (Actions a : list) {
+        for (Action a : list) {
             System.err.print(a.toString() + " , ");
         }
         System.err.println("Is a solution");
@@ -93,7 +93,7 @@ public class TOPlan {
     @Override
     public String toString() {
         String ret = "Solution: \n";
-        for (Actions a : list) {
+        for (Action a : list) {
             ret += "  " + a.toString() + "\n";
         }
         return ret;
@@ -116,7 +116,7 @@ public class TOPlan {
         long time1 = System.currentTimeMillis();
 
         for(int i = 0; i < list.size(); i++) {
-            Actions action = list.get(i);
+            Action action = list.get(i);
             //System.out.println("   PREQ: " + action.preqToString());
             
             for(String preq : action.prerequisites) {
@@ -155,7 +155,7 @@ public class TOPlan {
         long time1 = System.currentTimeMillis();
 
         for(int i = 0; i < list.size(); i++) {
-            Actions action = list.get(i);
+            Action action = list.get(i);
             //System.out.println("   PREQ: " + action.preqToString());
             
             for (String effect : action.effects) {

@@ -28,16 +28,16 @@ public class POPlanner implements Runnable { //  implements Runnable
     String goal;
     String missionId;
     Astar routeFinder;
-    private ArrayList<ActionStruct> actions;
+    private ArrayList<ActionSchema> actions;
     
-    public POPlanner(World world, int aid, LinkedList<String> goals, String mid) {
+    public POPlanner(World world, int aid, LinkedList<String> goals) { //String mid
         iteration = 0;
         this.plan = null;
         this.world = world;
         statics = createStatics();
         done = false;
         this.agentId = aid;
-        this.missionId = mid;
+        //this.missionId = mid;
         this.goals = goals;
         routeFinder = new Astar();
         actions = this.setActions();
@@ -106,7 +106,7 @@ public class POPlanner implements Runnable { //  implements Runnable
             System.out.println("\n");
             iteration++;
             
-            Problem p;
+            POPProblem p;
             try {
                 //get percepts and update current state description
                 getPercepts();
@@ -145,7 +145,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                 if(this.plan != null && !this.plan.isEmpty() && valid) { // this.plan != null) {//
                     System.out.println("Go --->\n");
                     // If it is, do the next action
-                    Actions next = plan.pop();
+                    Action next = plan.pop();
                     System.out.print("Take Next Action: " + next.name);
 
                     // Apply next - act() ?
@@ -175,7 +175,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                     }
                     // Else, make a new plan ( and perform the first action ? )
 
-                    p = new Problem(agentId,"", this.actions);
+                    p = new POPProblem(agentId,"", this.actions);
                     p.setInitial(this.state);
                     //System.out.println(this.state);
                     p.setGoal(this.goal);
@@ -229,14 +229,14 @@ public class POPlanner implements Runnable { //  implements Runnable
         return pop.getLinearization();
     }
     
-    public POP findPlan(Problem p, String goal) { 
+    public POP findPlan(POPProblem p, String goal) { 
         // Fix format to avoid prolog-collisions. 
         goal = goal.replaceAll("\\[\\s*([0-9]*)\\s*,\\s*([0-9]*)\\s*\\]", "[$1;$2]");
         POP pop = new POP(goal);
         return refinePlan(p, pop);
     }
     
-    private POP refinePlan(Problem p, final POP pop) {
+    private POP refinePlan(POPProblem p, final POP pop) {
         // PARTIAL-ORDER PLAN-SPACE SEARCHING
         if(pop == null) {
             return null;
@@ -256,13 +256,13 @@ public class POPlanner implements Runnable { //  implements Runnable
         
         //System.out.println("OP: " + oP.toString());
         try {
-            ArrayList<Actions> gottenActions = findAction(p, oP.condition);
+            ArrayList<Action> gottenActions = findAction(p, oP.condition);
             //System.out.println("p:");
             //System.out.println("   " + actions.toString());
-            for(Actions A : gottenActions) {
+            for(Action A : gottenActions) {
                 boolean newlyAdded = false;
                 // Enforce Consistency 
-                Actions B = oP.action;
+                Action B = oP.action;
                 CausalLink link = pop.addAndGetCausalLink(A, B, oP.condition);
                 pop.addOrderingConstraint(A, B);
                 if(!pop.contains(A)) {
@@ -285,7 +285,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                 // Resolve conflicts
                 //System.out.println("\nResolve - Between the new causal link and all existing actions");
                 // Between the new causal link and all existing actions
-                for(Actions C : pop.actions) {
+                for(Action C : pop.actions) {
                     // If there is a (potential?) conclict between oA and link, resolve it:
                     if(conflict(link, C, pop)) {
 
@@ -313,7 +313,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                         //System.out.println(prop + " c? " + A.effectToString());
                         if(conflict(oL, A, pop)) {
                             // CONFLICT! Solve it
-                            Actions C = oL.A;
+                            Action C = oL.A;
                             //pop.addOrderingConstraint(C, A);
                             POP newPlan1 = refinePlan(p, pop.addOrderingConstraint(B, C));
                             if(newPlan1 != null) {
@@ -338,7 +338,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         
     }
     
-    private boolean conflict(CausalLink aToB, Actions C, POP pop) {
+    private boolean conflict(CausalLink aToB, Action C, POP pop) {
         String lookFor = "";
         String lookForall = "";
         String prop = aToB.p;
@@ -382,8 +382,8 @@ public class POPlanner implements Runnable { //  implements Runnable
             }
             // Unless C before A and B before C
             if(conflict) {
-                Actions A = aToB.A;
-                Actions B = aToB.B;
+                Action A = aToB.A;
+                Action B = aToB.B;
                 if(pop.hasOrderingConstraint(C, A) || pop.hasOrderingConstraint(B, C)) {
                     conflict = false;
                 }
@@ -398,13 +398,13 @@ public class POPlanner implements Runnable { //  implements Runnable
         return false;
     }
     
-    public ArrayList<Actions> findAction(Problem p, String goal) throws InterruptedException {
+    public ArrayList<Action> findAction(POPProblem p, String goal) throws InterruptedException {
         //System.out.print("FindAction: " + goal);
         goal = goal.replaceAll("\\[\\s*([0-9]*)\\s*,\\s*([0-9]*)\\s*\\]", "[$1;$2]");
         //System.out.println("   --  " + goal);
-        ArrayList<Actions> actionsReturn = new ArrayList<Actions>();
+        ArrayList<Action> actionsReturn = new ArrayList<Action>();
         boolean go;
-        for(ActionStruct a : p.actions) {
+        for(ActionSchema a : p.actions) {
             if(!a.expanded) {
                 go = false;
                 //System.out.println("Action: " + a.name);
@@ -456,7 +456,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         return new Node(initial, null, null, 0, 0);
     }
 
-    private TOPlan makeSolution(Node n, Problem p) {
+    private TOPlan makeSolution(Node n, POPProblem p) {
         TOPlan s = new TOPlan();
         s.s = n.s;
         Node node = n;
@@ -498,7 +498,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         return done;
     }
     
-    public ArrayList<ActionStruct> setActions() {
+    public ArrayList<ActionSchema> setActions() {
         /* Move  */
 	ArrayList<String> argse1 = new ArrayList<String>();
 	argse1.add("Agent");
@@ -516,7 +516,7 @@ public class POPlanner implements Runnable { //  implements Runnable
 	//ArrayList<String> requirements1 = new ArrayList<String>();
 	//requirements1.add("f(MovePos)");
 
-	ActionStruct move = new ActionStruct("move", prerequisites1, "move(Agent,MovePos)", argse1, effects1, false, false);
+	ActionSchema move = new ActionSchema("move", prerequisites1, "move(Agent,MovePos)", argse1, effects1, false, false);
 	
 	/* MoveAtomic  */
 	ArrayList<String> argse2 = new ArrayList<String>();
@@ -535,7 +535,7 @@ public class POPlanner implements Runnable { //  implements Runnable
 	//ArrayList<String> requirements2 = new ArrayList<String>();
 	//requirements2.add("f(MovePos)");
 
-	ActionStruct moveAtomic = new ActionStruct("moveAtomic", prerequisites2, "moveAtomic(Agent,MovePos)", argse2, effects2, true, true);
+	ActionSchema moveAtomic = new ActionSchema("moveAtomic", prerequisites2, "moveAtomic(Agent,MovePos)", argse2, effects2, true, true);
 	
 	// object(Object) :- box(Object).
 	// object(Object) :- bomb(Object).	
@@ -561,7 +561,7 @@ public class POPlanner implements Runnable { //  implements Runnable
 	//ArrayList<String> requirements3 = new ArrayList<String>();
 	//requirements3.add("at(Object,ObjPos)");
 	
-	ActionStruct pickUp = new ActionStruct("pickUp", prerequisites3, "pickUp(Agent,Object)", argse3, effects3, false, true);
+	ActionSchema pickUp = new ActionSchema("pickUp", prerequisites3, "pickUp(Agent,Object)", argse3, effects3, false, true);
 	
 	/* Place  */
 	ArrayList<String> argse4 = new ArrayList<String>();
@@ -583,7 +583,7 @@ public class POPlanner implements Runnable { //  implements Runnable
 	//requirements4.add("f(AgPos)");
 	//requirements4.add("carries(Agent,Object)");
 	
-	ActionStruct place = new ActionStruct("place", prerequisites4, "place(Agent,Object)", argse4, effects4, false, true);
+	ActionSchema place = new ActionSchema("place", prerequisites4, "place(Agent,Object)", argse4, effects4, false, true);
 
 	/* Use Teleporter  */
 	ArrayList<String> argse5 = new ArrayList<String>();
@@ -605,9 +605,9 @@ public class POPlanner implements Runnable { //  implements Runnable
 	
 	//ArrayList<String> requirements5 = new ArrayList<String>();
 	
-	ActionStruct useTeleporter = new ActionStruct("useTeleporter", prerequisites5, "useTeleporter(Agent,Teleporter)", argse5, effects5, false, true);
+	ActionSchema useTeleporter = new ActionSchema("useTeleporter", prerequisites5, "useTeleporter(Agent,Teleporter)", argse5, effects5, false, true);
 	
-        ArrayList<ActionStruct> actions = new ArrayList<ActionStruct>();
+        ArrayList<ActionSchema> actions = new ArrayList<ActionSchema>();
         actions.add(move);
         actions.add(moveAtomic);
         actions.add(pickUp);

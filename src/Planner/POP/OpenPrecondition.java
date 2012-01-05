@@ -4,7 +4,7 @@
  */
 package Planner.POP;
 
-import Planner.Actions;
+import Planner.Action;
 
 /**
  *
@@ -12,9 +12,9 @@ import Planner.Actions;
  */
 public class OpenPrecondition {
     public String condition;
-    public Actions action;
+    public Action action;
     
-    OpenPrecondition(String condition, Actions action) {
+    OpenPrecondition(String condition, Action action) {
         this.condition = condition;
         this.action = action;
     }

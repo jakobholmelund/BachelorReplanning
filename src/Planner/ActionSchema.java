@@ -17,7 +17,7 @@ import jTrolog.errors.InvalidTermException;
  *
  * @author Dan True
  */
-public class ActionStruct {
+public class ActionSchema {
     public String name;
     public String format;
     public String prerequsiteString;
@@ -28,7 +28,7 @@ public class ActionStruct {
     public boolean expanded;
     public boolean atomic;
     
-    public ActionStruct(String name, ArrayList<String> prerequsite, String format, ArrayList<String> args, ArrayList<String> effects, boolean expanded, boolean atomic) {
+    public ActionSchema(String name, ArrayList<String> prerequsite, String format, ArrayList<String> args, ArrayList<String> effects, boolean expanded, boolean atomic) {
         this.name = name.toLowerCase();
         this.args = args;
         this.prerequisites = prerequsite; // "move(Agent, MoveDirAgent, C0, C1) :- 
@@ -49,7 +49,7 @@ public class ActionStruct {
             }
         }
         
-        prerequsiteString += ") :-";
+        prerequsiteString += ") :- ";
         
         boolean first2 = true;
         for(String s : prerequsite) {
@@ -65,12 +65,12 @@ public class ActionStruct {
         //System.out.println(prerequsiteString);
     }
     
-    public ArrayList<Actions> getSpecificActions(Logic logic, HashMap<String,String> arguments) {
+    public ArrayList<Action> getSpecificActions(Logic logic, HashMap<String,String> arguments) {
         //System.out.println("Get specific action: " + this.name);
         //System.out.println("Args: " + arguments.toString());
         //System.out.println("STATE");
         //System.out.println(logic.getTheoryAsString());
-        ArrayList<Actions> possibleActions = new ArrayList<Actions>();
+        ArrayList<Action> possibleActions = new ArrayList<Action>();
         ArrayList<String> openPreconditions = new ArrayList<String>();
         boolean error = false;
          // push(Agent, MoveDir, MovePush, C0, C1, C2, Box) :- agentAt(Agent, C0), neighbour(C0, C1, MoveDir), boxAt(Box, C1), neighbour(C1, C2, MovePush), f(C2). 
@@ -113,7 +113,7 @@ public class ActionStruct {
             }
             //System.out.println("Args: " + arguments.toString() + "\n");
         }
-        Actions a = createInstance(arguments);
+        Action a = createInstance(arguments);
         for(String s : openPreconditions) {
             s = s.replace('\\', ' ');
             s = s.replace('+', '!');
@@ -124,11 +124,11 @@ public class ActionStruct {
         return possibleActions;
     }
     
-    public ArrayList<Actions> get(Logic logic, HashMap<String,String> arguments) throws PrologException {
-       //System.err.println("Get called on action: " + this.name + "  with arguments: " + arguments.toString());
-       //System.err.println(logic.getTheoryAsString());
+    public ArrayList<Action> get(Logic logic, HashMap<String,String> arguments) throws PrologException {
+       //System.out.println("            Get called on action: " + this.name + "  with arguments: " + arguments.toString());
+       //System.out.println(logic.getTheoryAsString());
        
-        ArrayList<Actions> actionsReturn = new ArrayList<Actions>();
+        ArrayList<Action> actionsReturn = new ArrayList<Action>();
         
         String query = this.name + "(";
         for(int i = 0; i < this.args.size(); i++) {
@@ -146,10 +146,10 @@ public class ActionStruct {
             query = query.substring(0, query.length()-1);
         }
         query += "). ";
-        //System.err.println("Query:" + query);
+        //System.out.println("            Query:" + query);
         
         ArrayList<Solution> sol = logic.solveAll(query);
-        //System.err.println("Solution:" + sol.toString());
+        //System.out.println("            Solution:" + sol.toString());
         for (Solution si : sol) {
             try {
                 if(si.success()) {
@@ -163,7 +163,7 @@ public class ActionStruct {
         return actionsReturn;
      }
     
-    public Actions createInstanceFromSolution(HashMap<String, String> arguments, Solution si) {
+    public Action createInstanceFromSolution(HashMap<String, String> arguments, Solution si) {
         String format = this.format;
         
         ArrayList<String> effectsProp = (ArrayList<String>) this.effects.clone();
@@ -191,7 +191,7 @@ public class ActionStruct {
             }
         }
 
-        Actions act = new Actions(format, this.expanded, this.atomic);
+        Action act = new Action(format, this.expanded, this.atomic);
 
         for(int i = 0; i < effectsProp.size(); i++) {
             act.addEffect(effectsProp.get(i));
@@ -205,7 +205,7 @@ public class ActionStruct {
         return act;
     }
     
-    public Actions createInstance(HashMap<String, String> arguments) {
+    public Action createInstance(HashMap<String, String> arguments) {
         String format = this.format;
         
         ArrayList<String> effectsProp = (ArrayList<String>) this.effects.clone();
@@ -232,7 +232,7 @@ public class ActionStruct {
             //System.out.println("\n");
         }
 
-        Actions act = new Actions(format, this.expanded, this.atomic);
+        Action act = new Action(format, this.expanded, this.atomic);
 
         for(int i = 0; i < effectsProp.size(); i++) {
             act.addEffect(effectsProp.get(i));

@@ -4,12 +4,12 @@ public class Node implements Comparable<Node> {
 
     public State s;
     public Node parent;
-    public Actions a; // The action taken to reach this state
+    public Action a; // The action taken to reach this state
     public double g; // The cost of the path that leads to this node, from  the starting node.
     public double h; // The heuristics
     public double f; // h + g
 
-    public Node(State s, Node n, Actions a, double g, double h) {
+    public Node(State s, Node n, Action a, double g, double h) {
         this.s = s;
         this.parent = n;
         this.a = a;

@@ -19,7 +19,7 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
     String goal;
     String missionId;
     Astar routeFinder;
-    private ArrayList<ActionStruct> actions;
+    private ArrayList<ActionSchema> actions;
     
     public NFSPlanner(World world,int aid,String goal,String mid) {
         iteration = 0;
@@ -30,7 +30,7 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
         this.missionId = mid;
         this.goal = goal;
         routeFinder = new Astar();
-        actions = this.setActions();
+        this.actions = this.setActions();
     }
 
     private void getPercepts() throws PrologException {
@@ -38,63 +38,29 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
        String domain = "";
        
        // add to percepts            
-        for(int i = 0; i < world.getX(); i++) {
+       for(int i = 0; i < world.getX(); i++) {
             for(int j = 0; j < world.getY(); j++) {
                 long key = world.getMap().keyFor(j, i);
                 Object o = world.getMap().get(key);
-                if(o == null){
+                if(!(o instanceof Wall)){
                     domain += "f([" + i + "," + j + "]). ";
-                }else if(o instanceof MapAgent) {
-                    //System.err.println("Agent found");
-                    MapAgent agent = (MapAgent) o;
-                    domain += "agentAt(" + agent.getNumber() + ",[" + agent.x + "," + agent.y + "]). ";
-                }else if(o instanceof MapBox) {
-                    //System.err.println("Box found");
-                    MapBox obs = (MapBox) o;
-                    domain += "boxAt(" + obs.getName() + ",[" + obs.x + "," + obs.y + "]). "; 
-                }else if(o instanceof Goal) {
-                    //System.err.println("goal found");
-                    Goal obs = (Goal) o;
-                    domain += "goalAt(" + obs.getName() + ",[" + obs.x + "," + obs.y + "]). "; 
-                }else if(o instanceof Wall) {
-                    //System.err.println("wall found");
-                    Wall w = (Wall) o;
-                    domain += "w([" + w.x + "," + w.y + "]). "; 
                 }
             }
-        }
-        /*
-        for(Object o : world.getObjects()) {    
-            if(o instanceof MapAgent) {
+       }
+       
+       for(MapObject o : world.getObjects()) {
+           if(o instanceof MapAgent) {
                 //System.err.println("Agent found");
                 MapAgent agent = (MapAgent) o;
                 domain += "agentAt(" + agent.getNumber() + ",[" + agent.x + "," + agent.y + "]). ";
+                if(agent.getCarying() != null) {
+                    domain += "carries(" + agent.getNumber() + "," + agent.getCarying().getId() + "). ";
+                }
             }else if(o instanceof MapBox) {
                 //System.err.println("Box found");
                 MapBox obs = (MapBox) o;
-                domain += "boxAt(" + obs.getName() + ",[" + obs.x + "," + obs.y + "]). "; 
-            }else if(o instanceof Goal) {
-                //System.err.println("goal found");
-                Goal obs = (Goal) o;
-                domain += "goalAt(" + obs.getName() + ",[" + obs.x + "," + obs.y + "]). "; 
-            }else if(o instanceof Wall) {
-                //System.err.println("wall found");
-                Wall w = (Wall) o;
-                domain += "w([" + w.x + "," + w.y + "]). "; 
-            }*/
-            /*if(o instanceof MapAgent) {
-                //System.err.println("Agent found");
-                MapAgent agent = (MapAgent) o;
-                domain += "agentAt(" + agent.getNumber() + ",[" + agent.x + "," + agent.y + "]). ";
-            }else if(o instanceof Bomb) {
-                //System.err.println("Agent found");
-                Bomb bomb = (Bomb) o;
-                domain += "At(" + bomb.getNumber() + ",[" + bomb.x + "," + bomb.y + "]). ";
-            }else if(o instanceof MapBox) {
-                //System.err.println("Box found");
-                MapBox obs = (MapBox) o;
-                domain += "at(" + obs.getName() + ",[" + obs.x + "," + obs.y + "]). "; 
-                domain += "object(" + obs.getName() + "). ";
+                domain += "at(" + obs.getId() + ",[" + obs.x + "," + obs.y + "]). "; 
+                domain += "object(" + obs.getId() + "). ";
             }else if(o instanceof Goal) {
                 //System.err.println("goal found");
                 Goal obs = (Goal) o;
@@ -104,8 +70,8 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
                 Wall w = (Wall) o;
                 domain += "w([" + w.x + "," + w.y + "]). "; 
             }
-        }*/
-        
+       }
+
         String theory = getStatics() + domain;
         //System.out.println("statics:\n " + statics);
         //System.out.println("objects:\n " + world.getObjects().toString());
@@ -126,10 +92,10 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
 
     @Override
     public void run() {
-        Problem p;
+        NFSPProblem p;
         try {
-            p = new Problem(agentId,missionId, this.actions);
             statics = createStatics();
+            p = new NFSPProblem(agentId,missionId, this.actions);
         } catch (PrologException ex) {
             Logger.getLogger(NFSPlanner.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -171,16 +137,17 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
             if(this.plan != null && !this.plan.isEmpty() && valid) {
 
                 // If it is, do the next action
-                Actions next = plan.pop();
+                Action next = plan.pop();
                 System.err.println("Take Next Action: " + next.name);
                 
                 // Apply next - act() ?
                 if(next.atomic) {
-                    world.agentActionParse(next.name);
+                    world.act(next.name);
+                    //world.agentActionParse(next.name);
                 }else{
                    TOPlan subPlan = routeFinder.findPlan(world,next.name);
-                   subPlan.printSolution();
-                   this.plan = subPlan;
+                   //subPlan.printSolution();
+                   this.plan.prependAll(subPlan);
                 }
                 //world.agentActionParse(next.name);
                 
@@ -191,7 +158,7 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
                     //System.out.println("Started planning: ");
                 }
                 // Else, make a new plan ( and perform the first action ? )
-                p = new Problem(agentId,missionId, this.actions);
+                p = new NFSPProblem(agentId,missionId, this.actions);
                 statics = createStatics();
                 p.setInitial(this.state);
                 //System.out.println(this.state);
@@ -223,7 +190,7 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
         }
     }
     
-    public TOPlan findPlan(Problem p) throws InterruptedException {
+    public TOPlan findPlan(NFSPProblem p) throws InterruptedException {
         TreeSet<Node> frontier = new TreeSet<Node>();
         Node init = makeInitialNode(p.getInitial());
         frontier.add(init);
@@ -240,8 +207,11 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
                 //System.out.println("State Space Size: " + states);
                 return makeSolution(n, p);
             }
-            System.err.println("# Actions: " + p.actions(n.s).size());
-            for (Actions a : p.actions(n.s)) {
+            System.out.println("# Actions: " + frontier.toString());
+            ArrayList<Action> actionsGotten = p.actions(n.s);
+            
+            
+            for (Action a : actionsGotten) {
                 //System.err.println("ACTION!!!!: " + a.name);
                 State s1 = p.result(n.s, a);
                 frontier.add(new Node(s1, n, a, n.g + p.cost(s1, a), p.heuristik(s1, a, n)));
@@ -254,7 +224,7 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
         return new Node(initial, null, null, 0, 0);
     }
 
-    private TOPlan makeSolution(Node n, Problem p) {
+    private TOPlan makeSolution(Node n, NFSPProblem p) {
         TOPlan s = new TOPlan(this.goal);
         s.s = n.s;
         Node node = n;
@@ -287,19 +257,21 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
         //String pull = "pull(Agent, MoveDirAgent, CurrDirBox, C0, C1, C2, Box) :- agentAt(Agent, C0), neighbour(C0, C1, MoveDirAgent), boxAt(Box, C2), neighbour(C0, C2, CurrDirBox), f(C1). ";
         
         String actions = "";
-        for(ActionStruct a : this.actions) {
+        for(ActionSchema a : this.actions) {
+            //System.out.println(a.prerequsiteString);
             actions += a.prerequsiteString;
         }
+        //System.out.println(actions);
         
         //String goal = "goalAt(a, [6,11]). ";
-        String free = "f(C0) :- \\+w(C0), \\+agentAt(Agent, C0), \\+boxAt(Box, C0). ";
+        //String free = "f(C0) :- \\+w(C0), \\+agentAt(Agent, C0), \\+at(Box, C0). ";
         
-        //String neighbours = "";
-        //    neighbours += "neighbour([X1,Y1], [X2,Y2], n) :- B is Y1 - 1, Y2 = B, X1 = X2. ";
-        //    neighbours += "neighbour([X1,Y1], [X2,Y2], s) :- B is Y1 + 1, Y2 = B, X2 = X1. ";
-        //    neighbours += "neighbour([X1,Y1], [X2,Y2], e) :- B is X1 + 1, X2 = B, Y1 = Y2. ";
-        //    neighbours += "neighbour([X1,Y1], [X2,Y2], w) :- B is X1 - 1, X2 = B, Y1 = Y2. ";
-        String rules = actions + free; //neighbours;
+        String neighbours = "";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], n) :- B is Y1 - 1, Y2 = B, X1 = X2. ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], s) :- B is Y1 + 1, Y2 = B, X2 = X1. ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], e) :- B is X1 + 1, X2 = B, Y1 = Y2. ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], w) :- B is X1 - 1, X2 = B, Y1 = Y2. ";
+        String rules = actions + neighbours;
         
         return rules;
     }
@@ -309,28 +281,30 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
     }
  
     
-public ArrayList<ActionStruct> setActions() {
+public ArrayList<ActionSchema> setActions() {
         /* Move  */
-	ArrayList<String> argse1 = new ArrayList<String>();
-	argse1.add("Agent");
-	argse1.add("CurPos");
-	argse1.add("MovePos");
-	
-	ArrayList<String> prerequisites1 = new ArrayList<String>();
-	prerequisites1.add("agentAt(Agent,CurPos)");
-	prerequisites1.add("f(MovePos)");
-	
-	ArrayList<String> effects1 = new ArrayList<String>();
-	effects1.add("agentAt(Agent,MovePos)");
-	effects1.add("!agentAt(Agent,CurPos)");
-	
-	//ArrayList<String> requirements1 = new ArrayList<String>();
-	//requirements1.add("f(MovePos)");
+        ArrayList<String> argse1 = new ArrayList<String>();
+        argse1.add("Agent");
+        argse1.add("MoveDir");
+        argse1.add("From");
+        argse1.add("To");
+        
+        ArrayList<String> effects1 = new ArrayList<String>();
+        effects1.add("agentAt(Agent,To)");
+        effects1.add("!agentAt(Agent,From)");
+        
+        ArrayList<String> requirements1 = new ArrayList<String>();
+        requirements1.add("f(To)");
+        
+        ArrayList<String> prerequisites1 = new ArrayList<String>();
+        prerequisites1.add("agentAt(Agent, From)");
+        prerequisites1.add("neighbour(From, To, MoveDir)");
+        prerequisites1.add("f(To)");
 
-	ActionStruct move = new ActionStruct("move", prerequisites1, "move(Agent,MovePos)", argse1, effects1, false, false);
+	ActionSchema move = new ActionSchema("move", prerequisites1, "move(Agent,To)", argse1, effects1, false, true);
 	
 	/* MoveAtomic  */
-	ArrayList<String> argse2 = new ArrayList<String>();
+	/*ArrayList<String> argse2 = new ArrayList<String>();
 	argse2.add("Agent");
 	argse2.add("CurPos");
 	argse2.add("MovePos");
@@ -346,8 +320,8 @@ public ArrayList<ActionStruct> setActions() {
 	//ArrayList<String> requirements2 = new ArrayList<String>();
 	//requirements2.add("f(MovePos)");
 
-	ActionStruct moveAtomic = new ActionStruct("moveAtomic", prerequisites2, "moveAtomic(Agent,MovePos)", argse2, effects2, true, true);
-	
+	ActionSchema moveAtomic = new ActionSchema("moveAtomic", prerequisites2, "moveAtomic(Agent,MovePos)", argse2, effects2, true, true);
+	*/
 	// object(Object) :- box(Object).
 	// object(Object) :- bomb(Object).	
 	
@@ -372,7 +346,7 @@ public ArrayList<ActionStruct> setActions() {
 	//ArrayList<String> requirements3 = new ArrayList<String>();
 	//requirements3.add("at(Object,ObjPos)");
 	
-	ActionStruct pickUp = new ActionStruct("pickUp", prerequisites3, "pickUp(Agent,Object)", argse3, effects3, false, true);
+	ActionSchema pickUp = new ActionSchema("pickUp", prerequisites3, "pickUp(Agent,Object)", argse3, effects3, false, true);
 	
 	/* Place  */
 	ArrayList<String> argse4 = new ArrayList<String>();
@@ -394,7 +368,7 @@ public ArrayList<ActionStruct> setActions() {
 	//requirements4.add("f(AgPos)");
 	//requirements4.add("carries(Agent,Object)");
 	
-	ActionStruct place = new ActionStruct("place", prerequisites4, "place(Agent,Object)", argse4, effects4, false, true);
+	ActionSchema place = new ActionSchema("place", prerequisites4, "place(Agent,Object)", argse4, effects4, false, true);
 
 	/* Use Teleporter  */
 	ArrayList<String> argse5 = new ArrayList<String>();
@@ -416,11 +390,11 @@ public ArrayList<ActionStruct> setActions() {
 	
 	//ArrayList<String> requirements5 = new ArrayList<String>();
 	
-	ActionStruct useTeleporter = new ActionStruct("useTeleporter", prerequisites5, "useTeleporter(Agent,Teleporter)", argse5, effects5, false, true);
+	ActionSchema useTeleporter = new ActionSchema("useTeleporter", prerequisites5, "useTeleporter(Agent,Teleporter)", argse5, effects5, false, true);
 	
-        ArrayList<ActionStruct> actions = new ArrayList<ActionStruct>();
+        ArrayList<ActionSchema> actions = new ArrayList<ActionSchema>();
         actions.add(move);
-        actions.add(moveAtomic);
+        //actions.add(moveAtomic);
         actions.add(pickUp);
         actions.add(place);
         //actions.add(useTeleporter);

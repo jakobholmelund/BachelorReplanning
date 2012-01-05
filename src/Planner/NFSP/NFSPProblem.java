@@ -2,11 +2,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package Planner.POP;
+package Planner.NFSP;
 
-import Planner.Node;
-import Planner.State;
-import Planner.*;
 import jTrolog.engine.Solution;
 import jTrolog.errors.PrologException;
 import java.util.ArrayList;
@@ -14,8 +11,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-public class Problem {
+import Planner.*;
+/**
+ *
+ * @author jakobsuper
+ */
+public class NFSPProblem {
     State initial;
     String goal;
     Logic logic;
@@ -23,9 +24,9 @@ public class Problem {
     LinkedList<State> futureGoals = new LinkedList<State>();
     String currentBox;
     String currentBoxGoalPos;
-    public ArrayList<ActionStruct> actions;
+    ArrayList<ActionSchema> actions;
     
-    public Problem(int aid,String missionId, ArrayList<ActionStruct> actions) throws PrologException {
+    public NFSPProblem(int aid,String missionId, ArrayList<ActionSchema> actions) throws PrologException {
         this.logic = new Logic();
         agent=aid;
         currentBox = missionId;
@@ -33,44 +34,39 @@ public class Problem {
         this.actions = actions;
         // move to world or agent definition.
     }
-    
+
     @Override
     public String toString() {
         return "Initial: " + initial.toString() + " Goal: " + goal.toString();
     }
-    
+
     public boolean goalTest(State s) {
         setState(s);
         boolean bol = logic.solveboolean(getGoal());
+        System.out.println("Goal: " + getGoal() + " is: " + bol);
         return bol;
     }
-    
+
     public State getInitial() {
         return initial;
     }
-    
+
     public String getGoal() {
         return goal;
     }
-    
-    /*
-     * Calculates the heuristik for the state.
-     *
-     * @param s1
-     * @param a
-     * @param node 
-     * @return
-     */
 
-    public double heuristik(State s1, Actions a, Node node) {
+    public double heuristik(State s1, Action a, Node node) {
+        /*
         try {
             setState(s1);
+            //System.out.println(s1.toString());
             double agentToBox;
             double boxToGoal;
-
+            //System.out.println("\n\n\n" + s1.toString() + "\n\n\n");
+            //System.out.println("Query: " + "agentAt(" + agent + ", N).");
             Solution n = logic.solve("agentAt(" + agent + ", N).");
-            Solution g = logic.solve("goalAt("+currentBoxGoalPos+", G).");
-            Solution b = logic.solve("boxAt("+currentBoxGoalPos+", B).");
+            Solution g = logic.solve("goalAt(" + currentBoxGoalPos + ", G).");
+            Solution b = logic.solve("at(" + currentBoxGoalPos + ", B).");
             String N = "" + n.getBinding("N"); //[1,3]
             String G = "" + g.getBinding("G"); //[1,3]
             String B = "" + b.getBinding("B"); //[1,3]
@@ -80,6 +76,7 @@ public class Problem {
             G = G.replace("]", "");
             B = B.replace("[", "");
             B = B.replace("]", "");
+            //System.out.println("N: " + N + "  G: " + G + "  B:" + B);
             String[] nxa = N.split(",");
             String[] goala = G.split(",");
             String[] boxa = B.split(",");
@@ -95,6 +92,10 @@ public class Problem {
 
             double h = agentToBox + boxToGoal;
             //System.err.println("AgentToBox: " + agentToBox + "   BoxToGoal: " + boxToGoal + " h: " + h);
+            
+            if(a.name.contains("pickUp(" + agent + "," + currentBoxGoalPos + "") || (a.name.contains("place(" + agent + "," + currentBoxGoalPos + "") && boxToGoal == 0)) {
+                return 0;
+            }
             if (h < 0) {
                 h *= -1;
             }
@@ -103,10 +104,11 @@ public class Problem {
             //System.out.println(ex.);
             ex.printStackTrace();
             return 1;
-        }
+        }*/
+        return 1;
     }
 
-    public double cost(State s1, Actions a) {
+    public double cost(State s1, Action a) {
         return 1;
     }
 
@@ -126,35 +128,37 @@ public class Problem {
      * @param s
      * @return The actions applicable from this state
      */
-    public ArrayList<Actions> actions(State s) {
+    public ArrayList<Action> actions(State s) {
+        long time1 = System.currentTimeMillis();
         setState(s);
         //System.err.println("agent: " + agent);
         HashMap arguments = new HashMap<String,String>();
         arguments.put("Agent", "" + agent);
         //System.out.println("actions called!!!!!");
-        //System.err.println("state: \n" + s.toString());
-        ArrayList<Actions> actionsReturn = new ArrayList<Actions>();
-        for(ActionStruct a : this.actions) {
-           if(!a.expanded) {
+        //System.out.println("state: \n" + s.toString());
+        ArrayList<Action> actionsReturn = new ArrayList<Action>();
+        //System.out.println("    # action schemas : " + this.actions.size());
+        for(ActionSchema a : this.actions) {
+            if(!a.expanded) {
+                //System.out.println("       action: " + a.name);
+                //System.out.println("       is not expanded");
                 try {
-                    ArrayList<Actions> acs = a.get(logic, arguments);
+                    ArrayList<Action> acs = a.get(logic, arguments);
+                    //System.out.println("       got: " + acs.toString());
                     //System.err.println("Gotten: " + acs.toString());
                     actionsReturn.addAll(acs);
                 } catch (PrologException ex) {
-                    Logger.getLogger(Problem.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(NFSPProblem.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
-        
-        //System.err.println("!!Getting Actions!");
-        //System.err.println("!!Actions: ");
-        for(Actions a : actionsReturn) {
-            //System.out.println("action: " + a.toString());
-        }
+        long time2 = System.currentTimeMillis();
+        //System.out.println("Got actions in: " + (time2-time1) + " ms");
+        //System.out.println(actionsReturn);
         return actionsReturn;
     }
 
-    public State result(State s, Actions a) {
+    public State result(State s, Action a) {
         //setState(s);
         Logic logicClone = s.state.clone();
         //System.err.println("Action : " + a.name);
@@ -165,7 +169,7 @@ public class Problem {
                 logicClone.set(string);
                 //System.out.println("EFFECT: " + string);
             } catch (Throwable ex) {
-                Logger.getLogger(Problem.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(NFSPProblem.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         //String s2 = logic.engine.getTheory().toString();

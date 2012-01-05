@@ -149,9 +149,18 @@ public class Logic {
         try {
             Solution info = engine.solve(q + ". ");
             return info; //eval(info);
-        } catch (Throwable ex) {
+        }
+        catch (PrologException e) {
+            try {
+                return engine.solve("fail.");
+            } catch (Throwable ex) {
+                Logger.getLogger(Logic.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        catch (Throwable ex) {
             ex.printStackTrace();
         }
+        
         return null;
     }
 
@@ -178,7 +187,7 @@ public class Logic {
             try {
                 Solution info = engine.solve(q + ". ");
                 //System.out.println("         --> succes for: " + q + "  ? " + !info.success());
-                System.out.println("      Solve Bool: " + q + " success: " + info.success());
+                //System.out.println("      Solve Bool: " + q + " success: " + info.success());
                 return info.success();
             } catch (Throwable ex) {
                 return false;
