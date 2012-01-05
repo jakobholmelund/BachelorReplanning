@@ -36,29 +36,29 @@ public class WorldPanel extends JPanel {
     }
 
     public void update(final World world){
-     System.out.println("AFTER INITIATE");
-            for(MapObject mo:fields){
-                Object[] worldobjects = world.getMap().get(mo.getPosition());
-                //if(worldobject == null && mo.getComponentCount() > 0){
-                //    mo.repaint();
-                //}
-                if(worldobjects != null){
-                    MapObject test = (MapObject)worldobjects[0];
-                    if(mo.getComponentCount() == 0 && test instanceof Wall){
+        //System.out.println("AFTER INITIATE");
+        for(MapObject mo:fields){
+            Object[] worldobjects = world.getMap().get(mo.getPosition());
+            //if(worldobject == null && mo.getComponentCount() > 0){
+            //    mo.repaint();
+            //}
+            if(worldobjects != null){
+                MapObject test = (MapObject)worldobjects[0];
+                if(mo.getComponentCount() == 0 && test instanceof Wall){
+                    mo.add(test);
+                    mo.repaint();
+                }else if(mo.getComponentCount() == 0 || (mo.getComponentCount() > 0 && !mo.getComponent(0).equals(test))){
+                        Tile parent = (Tile)test.getParent();
+                        if(parent != null){
+                            parent.removeAll();
+                            parent.repaint();
+                        }
+                        mo.removeAll();
                         mo.add(test);
                         mo.repaint();
-                    }else if(mo.getComponentCount() == 0 || (mo.getComponentCount() > 0 && !mo.getComponent(0).equals(test))){
-                            Tile parent = (Tile)test.getParent();
-                            if(parent != null){
-                                parent.removeAll();
-                                parent.repaint();
-                            }
-                            mo.removeAll();
-                            mo.add(test);
-                            mo.repaint();
-                       }
-                }
+                   }
             }
+        }
     }
     
     public void draw(final World world){

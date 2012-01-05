@@ -141,7 +141,7 @@ public class TOPlan {
         boolean bol = s.solveboolean(getGoal());
         
         long time2 = System.currentTimeMillis();
-        System.out.println("Plan monitoring took: " + (time2-time1) + " ms  -- goal is: " + bol);
+        //System.out.println("Plan monitoring took: " + (time2-time1) + " ms  -- goal is: " + bol);
         //System.out.println("Goal: " + getGoal() + " - valid: " + bol);
         if(bol) {
             return -1;
@@ -170,7 +170,7 @@ public class TOPlan {
         boolean bol = s.solveboolean(getGoal());
         
         long time2 = System.currentTimeMillis();
-        System.out.println("Plan monitoring took: " + (time2-time1) + " ms  -- goal is: " + bol);
+        //System.out.println("Plan monitoring took: " + (time2-time1) + " ms  -- goal is: " + bol);
         //System.out.println("Goal: " + getGoal() + " - valid: " + bol);
         if(bol) {
             return -1;
