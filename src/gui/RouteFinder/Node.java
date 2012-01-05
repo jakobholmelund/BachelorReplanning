@@ -25,9 +25,14 @@ public class Node implements Comparable<Node> {
         }else if (this.h != other.h) { //!this.equals(other.h)){
             //System.err.println("COMPARE TO: 3");
             return Double.compare(this.h, other.h);
+        }else if (this.curPosition != other.curPosition) { //!this.equals(other.h)){
+            //System.err.println("COMPARE TO: 3");
+            return Double.compare(this.curPosition, other.curPosition);
         }else{
-            return 0;
+            System.err.println("PRUUUUUUUUUN");
+           return 0; 
         }
+        
         /*
          *  else if(this.parent != null && other.parent != null && this.parent.equals(other.parent)) {
             //System.err.println("ZERO ZERO ZERO ZERO!!!!!!!!!!!!!!!!!!!!!!!!");
