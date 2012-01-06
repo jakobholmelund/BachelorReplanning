@@ -137,12 +137,12 @@ public class POPlanner implements Runnable { //  implements Runnable
                     // Plan is good but goal is not fulfilled
                     }else if(planSucceed == -2) {
                         valid = false;
-                        System.out.println("REPLAN REPLAN REPLAN REPLAN REPLAN REPLAN");
-                        this.plan = null;
+                        System.out.println("REPLAN -> Get new Linearization!");
+                        this.plan = getTotalOrderPlan(popPlan, world);
                         this.popPlan = null;
                     // Plan is broken
                     }else{
-                        System.out.println("REPLAN REPLAN REPLAN REPLAN REPLAN REPLAN");
+                        System.out.println("Recieved: " + planSucceed + " -> REPLAN -> From Scratch!");
                         valid = false;
                         this.plan = null;
                         this.popPlan = null;
