@@ -27,7 +27,7 @@ public class POPlanner implements Runnable { //  implements Runnable
     LinkedList<String> goals;
     String goal;
     String missionId;
-    Astar routeFinder;
+    //Astar routeFinder;
     private ArrayList<ActionSchema> actions;
     
     public POPlanner(World world, int aid, LinkedList<String> goals) { //String mid
@@ -39,7 +39,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         this.agentId = aid;
         //this.missionId = mid;
         this.goals = goals;
-        routeFinder = new Astar();
+        //routeFinder = new Astar();
         actions = this.setActions();
     }
     
@@ -172,13 +172,13 @@ public class POPlanner implements Runnable { //  implements Runnable
                         }else{
                             System.out.println("Action succeeded: " + true);
                         }
-                    }else{
+                    }/*else{
                        System.out.println(" -- which is not atomic");
                        TOPlan subPlan = routeFinder.findPlan(world,next.name);
                        //subPlan.printSolution();
                        this.plan.prependAll(subPlan);
                        System.out.println("New plan:\n" + this.plan);
-                    }
+                    }*/
                     //world.agentActionParse(next.name);
                     //world.agentActionParse(next.name);
                 }else{
@@ -195,10 +195,10 @@ public class POPlanner implements Runnable { //  implements Runnable
                     p.setGoal(this.goal);
 
                     //System.out.println("Problem: " + p.toString());
-
+                    
                     long time1 = System.currentTimeMillis();
                     this.popPlan = findPlan(p, this.goal);;
-                    this.plan = getTotalOrderPlan(popPlan);
+                    this.plan = getTotalOrderPlan(popPlan, world);
                     long time2 = System.currentTimeMillis();
 
                     System.out.println("Plan found in: " + (time2 - time1) + " ms");
@@ -239,8 +239,8 @@ public class POPlanner implements Runnable { //  implements Runnable
         return null;
     }
     
-    public TOPlan getTotalOrderPlan(POP pop) { 
-        return pop.getLinearization();
+    public TOPlan getTotalOrderPlan(POP pop, World world) { 
+        return pop.getLinearization(world);
     }
     
     public POP findPlan(POPProblem p, String goal) { 
@@ -503,7 +503,9 @@ public class POPlanner implements Runnable { //  implements Runnable
         //String free = "f(C0) :- \\+w(C0), \\+agentAt(Agent, C0), \\+boxAt(Box, C0). ";
         //String equals = "equals(A, B) :- B = A. ";
         
-        String rules = ""; //equals; //  move + push + pull + neighbours + 
+        // To avoid unknwon predicate errors
+        //String carries = "carries(none, object). "; 
+        String rules = ""; // + carries; //equals; //  move + push + pull + neighbours + 
 
         return rules;
     }
@@ -531,7 +533,7 @@ public class POPlanner implements Runnable { //  implements Runnable
 	//requirements1.add("f(MovePos)");
 
 	ActionSchema move = new ActionSchema("move", prerequisites1, "move(Agent,MovePos)", argse1, effects1, false, false);
-	
+	//CurPos
 	/* MoveAtomic  */
 	ArrayList<String> argse2 = new ArrayList<String>();
 	argse2.add("Agent");
@@ -599,28 +601,6 @@ public class POPlanner implements Runnable { //  implements Runnable
 	
 	ActionSchema place = new ActionSchema("place", prerequisites4, "place(Agent,Object)", argse4, effects4, false, true);
 
-	/* Use Teleporter  */
-	ArrayList<String> argse5 = new ArrayList<String>();
-	argse5.add("Agent");
-	argse5.add("AgPos");
-	argse5.add("TeleporterPos");
-	argse5.add("Teleporter");
-	argse5.add("To");
-	
-	ArrayList<String> prerequisites5 = new ArrayList<String>();
-	prerequisites5.add("agentAt(Agent,TeleporterPos)");
-	//prerequisites5.add("equals(AgPos,TeleporterPos)");
-	// prerequisites5.add("at(Teleporter, TeleporterPos)"); // ? Necessary ?
-	prerequisites5.add("teleporter(Teleporter,TeleporterPos, To)");
-	
-	ArrayList<String> effects5 = new ArrayList<String>();
-	effects5.add("agentAt(Agent,To)");
-	effects5.add("!agentAt(Agent,TeleporterPos)");
-	
-	//ArrayList<String> requirements5 = new ArrayList<String>();
-	
-	ActionSchema useTeleporter = new ActionSchema("useTeleporter", prerequisites5, "useTeleporter(Agent,Teleporter)", argse5, effects5, false, true);
-	
         ArrayList<ActionSchema> actions = new ArrayList<ActionSchema>();
         actions.add(move);
         actions.add(moveAtomic);

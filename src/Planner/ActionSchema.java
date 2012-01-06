@@ -38,7 +38,7 @@ public class ActionSchema {
         this.expanded = expanded;
         this.atomic = atomic;
         
-        prerequsiteString = name + "(";
+        prerequsiteString = this.name + "(";
         boolean first1 = true;
         for(String s : args) {
             if(first1) {
@@ -99,7 +99,7 @@ public class ActionSchema {
     
                 Map bindings = solutions.get(0).getBindings();    
                 
-                //System.out.println("Bindings: " + bindings.toString());
+                System.out.println("Query: " + s + "  Bindings: " + bindings.toString());
                 for(Object o : bindings.keySet()) {
                     String key = (String) o;
                     if(!arguments.containsKey(key)) {
@@ -125,7 +125,7 @@ public class ActionSchema {
     }
     
     public ArrayList<Action> get(Logic logic, HashMap<String,String> arguments) throws PrologException {
-       //System.out.println("            Get called on action: " + this.name + "  with arguments: " + arguments.toString());
+       //System.out.println("         Got called on action: " + this.name + "  with arguments: " + arguments.toString());
        //System.out.println(logic.getTheoryAsString());
        
         ArrayList<Action> actionsReturn = new ArrayList<Action>();
@@ -146,7 +146,7 @@ public class ActionSchema {
             query = query.substring(0, query.length()-1);
         }
         query += "). ";
-        //System.out.println("            Query:" + query);
+        //System.out.println("         Query: " + query);
         
         ArrayList<Solution> sol = logic.solveAll(query);
         //System.out.println("            Solution:" + sol.toString());

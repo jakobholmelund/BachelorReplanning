@@ -272,7 +272,9 @@ public class Logic {
                     Struct gotten = parse(q + ".");
                     Clause clause = BuiltIn.convertTermToClause(gotten);
                     engine.assertA(clause);
+                    //System.out.println("      " + q + " set");
                 } else {
+                    //System.out.println("      " + q + " was already asserted");
                     // Do Nothing - predicate already asserted.
                 }
             }

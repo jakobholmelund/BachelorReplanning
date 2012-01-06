@@ -202,15 +202,15 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
             
             Node n = frontier.pollFirst();
             //frontier.clear();
-            System.out.println("First action: " + n.toString());
+            System.out.println("Take action: " + n.toString());
             if (p.goalTest(n.s)) {
                 //System.out.println("State Space Size: " + states);
                 return makeSolution(n, p);
             }
-            System.out.println("# Actions: " + frontier.toString());
+            //System.out.println("# Actions: " + frontier.toString());
             ArrayList<Action> actionsGotten = p.actions(n.s);
             
-            
+            System.out.println("   Actions Gotten: " + actionsGotten.toString() + "\n");
             for (Action a : actionsGotten) {
                 //System.err.println("ACTION!!!!: " + a.name);
                 State s1 = p.result(n.s, a);
@@ -271,7 +271,12 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
             neighbours += "neighbour([X1,Y1], [X2,Y2], s) :- B is Y1 + 1, Y2 = B, X2 = X1. ";
             neighbours += "neighbour([X1,Y1], [X2,Y2], e) :- B is X1 + 1, X2 = B, Y1 = Y2. ";
             neighbours += "neighbour([X1,Y1], [X2,Y2], w) :- B is X1 - 1, X2 = B, Y1 = Y2. ";
-        String rules = actions + neighbours;
+        // To avoid unknown-predicate errors
+        String carries = "carries(none, object). ";    
+        String at = "at(none, nowhere). ";
+        String agentAt = "agentAt(none, nowhere). ";
+                
+        String rules = actions + neighbours + carries + at + agentAt;
         
         return rules;
     }
@@ -370,34 +375,12 @@ public ArrayList<ActionSchema> setActions() {
 	
 	ActionSchema place = new ActionSchema("place", prerequisites4, "place(Agent,Object)", argse4, effects4, false, true);
 
-	/* Use Teleporter  */
-	ArrayList<String> argse5 = new ArrayList<String>();
-	argse5.add("Agent");
-	argse5.add("AgPos");
-	argse5.add("TeleporterPos");
-	argse5.add("Teleporter");
-	argse5.add("To");
-	
-	ArrayList<String> prerequisites5 = new ArrayList<String>();
-	prerequisites5.add("agentAt(Agent,TeleporterPos)");
-	//prerequisites5.add("equals(AgPos,TeleporterPos)");
-	// prerequisites5.add("at(Teleporter, TeleporterPos)"); // ? Necessary ?
-	prerequisites5.add("teleporter(Teleporter,TeleporterPos, To)");
-	
-	ArrayList<String> effects5 = new ArrayList<String>();
-	effects5.add("agentAt(Agent,To)");
-	effects5.add("!agentAt(Agent,TeleporterPos)");
-	
-	//ArrayList<String> requirements5 = new ArrayList<String>();
-	
-	ActionSchema useTeleporter = new ActionSchema("useTeleporter", prerequisites5, "useTeleporter(Agent,Teleporter)", argse5, effects5, false, true);
 	
         ArrayList<ActionSchema> actions = new ArrayList<ActionSchema>();
         actions.add(move);
         //actions.add(moveAtomic);
         actions.add(pickUp);
         actions.add(place);
-        //actions.add(useTeleporter);
         
         return actions;
     }    
