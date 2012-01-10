@@ -28,7 +28,7 @@ public class Main {
         mainWindow.loadNewWorld(world);
         LinkedList<String> goals = new LinkedList<String>();
         //goals.add("at(a,[6,11])");
-        goals.add("at(a,[15;15])");
+        goals.add("at(1,[15;15])");
         goals.add("agentAt(0,[1;1])");
         goals.add("agentAt(0,[13;13])");
         goals.add("agentAt(0,[13;4])");

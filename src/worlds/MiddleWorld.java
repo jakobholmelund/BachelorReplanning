@@ -258,7 +258,7 @@ public class MiddleWorld extends World{
         
         // Boxes
         this.addObject(new MapBox("a", 6,12));
-        
+        this.addObject(new Bomb(1, 6,8));
         // Goals
         this.addObject(new Goal("a",6,11));
         
