@@ -6,11 +6,17 @@ package Planner.POP;
 
 import Planner.Action;
 import Planner.TOPlan;
+import gui.RouteFinder.Astar;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import worldmodel.World;
 
 /**
  *
@@ -20,17 +26,18 @@ public class POP {
     HashSet<OpenPrecondition> openPreconditions;
     HashSet<CausalLink> causalLinks;
     HashSet<OrderingConstraint> orderingConstraints;
-    HashSet<Action> actions;
+    Collection<Action> actions;
     String goal;
     Action startAction;
     Action finishAction;
     boolean debug = false;
+    Astar routeFinder;
     
     public POP(String goal) {
         this.openPreconditions = new HashSet<OpenPrecondition>();
         this.causalLinks = new HashSet<CausalLink>();
         this.orderingConstraints = new HashSet<OrderingConstraint>();
-        this.actions = new HashSet<Action>();
+        this.actions = Collections.synchronizedList(new ArrayList<Action>());//Collections.synchronizedSet(new HashSet<Action>());
 
         this.startAction = new Action("Start", false, false);
         this.actions.add(this.startAction);
@@ -41,14 +48,17 @@ public class POP {
         
         this.goal = goal;
         this.addOpenPrecondition(goal, finishAction);
+        
+        routeFinder = new Astar();
     }
     
-    public POP clone() {
+    @Override
+    public synchronized POP clone() {
         POP newPoP = new POP(goal);
         newPoP.openPreconditions = (HashSet<OpenPrecondition>) this.openPreconditions.clone();
         newPoP.causalLinks = (HashSet<CausalLink>) this.causalLinks.clone();
         newPoP.orderingConstraints = (HashSet<OrderingConstraint>) this.orderingConstraints.clone();
-        newPoP.actions = (HashSet<Action>) this.actions.clone();
+        newPoP.actions = Collections.synchronizedList((ArrayList<Action>)((ArrayList<Action>)this.actions).clone());
         return newPoP;
     }
     
@@ -114,11 +124,11 @@ public class POP {
          return returner;
      }
     
-    public void addActions(Action A) {
+    public synchronized void addActions(Action A) {
         actions.add(A);
     }
     
-    public boolean contains(Action a) {
+    public synchronized boolean contains(Action a) {
         return actions.contains(a);
     }
     
@@ -126,25 +136,26 @@ public class POP {
         return openPreconditions.isEmpty();
     }
     
-    public TOPlan getLinearization() {
+    public TOPlan getLinearization(World world) {
         TOPlan plan = new TOPlan(this.goal);
         final HashSet<OrderingConstraint> backup = this.orderingConstraints;
         
-        TOPlan linearPlan = findLinearization(startAction, plan);
+        TOPlan linearPlan = findLinearization(startAction, plan, world);
         
         this.orderingConstraints = backup;
         return linearPlan;
     }
     
-    private TOPlan findLinearization(Action action, TOPlan plan) {
+    private TOPlan findLinearization(Action action, TOPlan plan, World world) {
         TOPlan newPlan = plan;
         for(Action a : expand(action)) {
             if(this.debug)
                 System.out.println("Adding expanded: " + a.name);
-            plan = findLinearization(a, plan.append(a));
+            plan = findLinearization(a, plan.append(a), world);
             //System.out.println("PREQ ADDED: " + a.preqToString());
         }
-        return newPlan;
+        
+        return expandToAtomic(newPlan, world);
     }
     
     private ArrayList<Action> expand(Action A) {
@@ -217,4 +228,27 @@ public class POP {
         }
         return false;
     }
+
+    private TOPlan expandToAtomic(TOPlan newPlan, World world) {
+        for(int i = 0; i < newPlan.list.size(); i++) {
+            Action next = newPlan.list.get(i);
+            if(!next.atomic) {
+               newPlan.list.remove(i);
+               System.out.println(" -- which is not atomic");
+               TOPlan subPlan = null;
+                try {
+                    subPlan = routeFinder.findPlan(world,next.name);
+                    newPlan.addAll(i, subPlan);
+                } catch (InterruptedException ex) {
+                    //Logger.getLogger(POP.class.getName()).log(Level.SEVERE, null, ex);
+                    return null;
+                }
+               //subPlan.printSolution();
+                // prependAll(subPlan);
+               //System.out.println("New plan:\n" + this.plan);
+            }
+        }
+        return newPlan;
+    }
+        
 }

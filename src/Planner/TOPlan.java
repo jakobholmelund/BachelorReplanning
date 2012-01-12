@@ -42,6 +42,11 @@ public class TOPlan {
         return this;
     }
     
+    public TOPlan addAll(int index, TOPlan plan) {
+        this.list.addAll(index, plan.list);
+        return this;
+    }
+    
     public TOPlan appendAll(ArrayList<Action> list) {
         this.list.addAll(list);
         return this;

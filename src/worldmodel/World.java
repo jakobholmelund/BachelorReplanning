@@ -2,6 +2,7 @@
 package worldmodel;
 
 import Planner.NFSP.NFSPlanner;
+import Planner.POP.POPlanner;
 import gui.WorldPanel;
 import java.awt.FileDialog;
 import java.awt.Frame;
@@ -14,6 +15,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
 import java.util.regex.*;
@@ -56,29 +58,28 @@ public class World {
     }
     
     public void startAgents() throws InterruptedException{
-        System.out.println("WTF !");
+        synchronized(this){
+        LinkedList<String> goals = new LinkedList<String>();
+        int agentid = 0;
         for(MapObject mo:objects){
             if(mo instanceof MapAgent){
-                System.out.println("Starting agent");
-                NFSPlanner agent = null;
-                //BSPlanner agent = null;
-                if(((MapAgent)mo).getNumber()==1){
-                    agent = new NFSPlanner(this,((MapAgent)mo).getNumber(),"at(a,[13,18]). ","a");
-                    //agent = new BSPlanner(this,((MapAgent)mo).getNumber(),"at(a,[13,18]). ","a");
-                }else if(((MapAgent)mo).getNumber()==2){
-                    agent = new NFSPlanner(this,((MapAgent)mo).getNumber(),"at(b,[13,1]). ","b");
-                    //agent = new BSPlanner(this,((MapAgent)mo).getNumber(),"at(b,[13,1]). ","b");
-                }
-                Thread init = new Thread(agent);
-                    init.start();
-                    runningAgents.add(init);
-                
+                agentid = Integer.parseInt(mo.getId());
+            }
+            if(mo instanceof Goal){
+                Goal g = (Goal)mo;
+                int[] coords = map.coordsFor(g.getPosition());
+                goals.add("at(" + g.getName() + ",["+coords[0]+","+coords[1]+"])");
             }
         }
         
-        for(Thread t:runningAgents){
-            //t.join();
+                POPlanner planner = new POPlanner(this, agentid, goals);
+                Thread init = new Thread(planner);
+                init.start();
+                    //runningAgents.add(init);
         }
+        //for(Thread t:runningAgents){
+            //t.join();
+        //}
         /*
         while(!agent.done()) {
             //if(agent.iteration == 3) {

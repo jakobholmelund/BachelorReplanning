@@ -15,13 +15,13 @@ import java.awt.Graphics;
 public class Oil extends MapObject{
     public Oil(String name,long position){
         super(position);
-        setBackground(Color.GREEN);
+        setBackground(Color.BLACK);
         super.id=name;
     }
 
     public Oil(String name, int x, int y){
         super(x,y);
-        setBackground(Color.GREEN);
+        setBackground(Color.BLACK);
         super.id=name;
     }
     
