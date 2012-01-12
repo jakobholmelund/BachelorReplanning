@@ -112,7 +112,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                 //get percepts and update current state description
                 getPercepts();
                 
-                if(this.goal == null || this.goal.equals("")) {
+                if(this.goal == null || this.goal.equals("") && goals.size() > 0) {
                     this.goal = goals.pop();
                     this.plan = null;
                     System.out.println("NEW GOAL: " + this.goal);
