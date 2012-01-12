@@ -305,7 +305,10 @@ public class POPlanner implements Runnable { //  implements Runnable
 
                 while(it.hasNext()){
                     System.out.println("TRYING TO IT" + pop.actions);
-                    Action C = (Action)it.next();
+                    Action C = null;
+                    synchronized(this){
+                        C = (Action)it.next();
+                    }
                     if(conflict(link, C, pop)) {
                         POP newPlan1 = refinePlan(p, pop.addOrderingConstraint(B, C));
                             if(newPlan1 != null) {
