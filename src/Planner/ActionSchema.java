@@ -21,17 +21,17 @@ public class ActionSchema {
     public String name;
     public String format;
     public String prerequsiteString;
-    public ArrayList<String> prerequisites;
+    public ArrayList<String> preconditions;
     public ArrayList<String> args;
     public ArrayList<String> effects;
     //public ArrayList<String> requirements;
     public boolean expanded;
     public boolean atomic;
     
-    public ActionSchema(String name, ArrayList<String> prerequsite, String format, ArrayList<String> args, ArrayList<String> effects, boolean expanded, boolean atomic) {
+    public ActionSchema(String name, ArrayList<String> preconditions, String format, ArrayList<String> args, ArrayList<String> effects, boolean expanded, boolean atomic) {
         this.name = name.toLowerCase();
         this.args = args;
-        this.prerequisites = prerequsite; // "move(Agent, MoveDirAgent, C0, C1) :- 
+        this.preconditions = preconditions; // "move(Agent, MoveDirAgent, C0, C1) :- 
         this.format = format;           //  agentAt(Agent, C0), neighbour(C0, C1, MoveDirAgent), f(C1). ";
         this.effects = effects;         // REMEMBER TO BUILD THE PREREQUISITE STRING
         //this.requirements = requirements;
@@ -52,7 +52,7 @@ public class ActionSchema {
         prerequsiteString += ") :- ";
         
         boolean first2 = true;
-        for(String s : prerequsite) {
+        for(String s : preconditions) {
             if(first2) {
                 prerequsiteString += s;
                 first2 = false;
@@ -75,8 +75,8 @@ public class ActionSchema {
         boolean error = false;
          // push(Agent, MoveDir, MovePush, C0, C1, C2, Box) :- agentAt(Agent, C0), neighbour(C0, C1, MoveDir), boxAt(Box, C1), neighbour(C1, C2, MovePush), f(C2). 
         // For each preconditions
-        for(int i = prerequisites.size()-1; i >= 0; i--) {
-            String s = prerequisites.get(i);
+        for(int i = preconditions.size()-1; i >= 0; i--) {
+            String s = preconditions.get(i);
             for(String arg : arguments.keySet()) {
                 s = s.replaceAll(arg, arguments.get(arg));
             }
@@ -167,7 +167,7 @@ public class ActionSchema {
         String format = this.format;
         
         ArrayList<String> effectsProp = (ArrayList<String>) this.effects.clone();
-        ArrayList<String> prerequisitesProp = (ArrayList<String>) this.prerequisites.clone();
+        ArrayList<String> prerequisitesProp = (ArrayList<String>) this.preconditions.clone();
 
         for(String arg : this.args) {
             //System.err.print("Check for: " + arg);
@@ -197,7 +197,7 @@ public class ActionSchema {
             act.addEffect(effectsProp.get(i));
         }
         for(int i = 0; i < prerequisitesProp.size(); i++) {
-            act.addPrerequisites(prerequisitesProp.get(i));
+            act.addPrecondition(prerequisitesProp.get(i));
         }
 
         //System.err.println("Action: " + act.toString());
@@ -209,7 +209,7 @@ public class ActionSchema {
         String format = this.format;
         
         ArrayList<String> effectsProp = (ArrayList<String>) this.effects.clone();
-        ArrayList<String> prerequisitesProp = (ArrayList<String>) this.prerequisites.clone();
+        ArrayList<String> prerequisitesProp = (ArrayList<String>) this.preconditions.clone();
         //System.out.println("args:" + arguments.toString());
         
         for(String arg : this.args) {
@@ -238,7 +238,7 @@ public class ActionSchema {
             act.addEffect(effectsProp.get(i));
         }
         for(int i = 0; i < prerequisitesProp.size(); i++) {
-            act.addPrerequisites(prerequisitesProp.get(i));
+            act.addPrecondition(prerequisitesProp.get(i));
         }
 
         //System.err.println("Action Created: " + act.toString());

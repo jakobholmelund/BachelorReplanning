@@ -124,7 +124,7 @@ public class TOPlan {
             Action action = list.get(i);
             //System.out.println("   PREQ: " + action.preqToString());
             
-            for(String preq : action.prerequisites) {
+            for(String preq : action.preconditions) {
                 Boolean result =  s.solveboolean(preq);
                 System.out.println("   Checking for: " + preq + "  Result: " + result);
                 
