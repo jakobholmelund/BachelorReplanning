@@ -306,7 +306,8 @@ public class POPlanner implements Runnable { //  implements Runnable
                 // Resolve conflicts
                 //System.out.println("\nResolve - Between the new causal link and all existing actions");
                 // Between the new causal link and all existing actions
-                Iterator it = pop.actions.iterator(); 
+                /*
+                 * Iterator it = pop.actions.iterator(); 
 
                 while(it.hasNext()){
                     System.out.println("TRYING TO IT" + pop.actions);
@@ -325,26 +326,26 @@ public class POPlanner implements Runnable { //  implements Runnable
                             }
                     }
                 }
+                */
                 
-                /*
-                    for(Action C : pop.actions) {
-                        // If there is a (potential?) conclict between oA and link, resolve it:
-                        if(conflict(link, C, pop)) {
+                for(Action C : pop.actions) {
+                    // If there is a (potential?) conclict between oA and link, resolve it:
+                    if(conflict(link, C, pop)) {
 
-                            // CONFLICT! Solve it
+                        // CONFLICT! Solve it
 
-                            POP newPlan1 = refinePlan(p, pop.addOrderingConstraint(B, C));
-                            if(newPlan1 != null) {
-                                return newPlan1;
-                            }
+                        POP newPlan1 = refinePlan(p, pop.addOrderingConstraint(B, C));
+                        if(newPlan1 != null) {
+                            return newPlan1;
+                        }
 
-                            POP newPlan2 = refinePlan(p, pop.addOrderingConstraint(C, A));
-                            if(newPlan2 != null) {
-                                return newPlan2;
-                            }
+                        POP newPlan2 = refinePlan(p, pop.addOrderingConstraint(C, A));
+                        if(newPlan2 != null) {
+                            return newPlan2;
                         }
                     }
-             */
+                }
+             
                 if(newlyAdded) {
                     // Between action A and all existing causal links      
                     //System.out.println("\nResolve - Between action A and all existing causal links");
