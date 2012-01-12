@@ -53,7 +53,7 @@ public class POPlanner implements Runnable { //  implements Runnable
             for(int j = 0; j < world.getY(); j++) {
                 long key = world.getMap().keyFor(j, i);
                 Object o = world.getMap().get(key);
-                if(!(o instanceof Wall)){
+                if(o != null && !(o instanceof Wall)){
                     domain += "f([" + i + "," + j + "]). ";
                 }
             }
@@ -70,6 +70,11 @@ public class POPlanner implements Runnable { //  implements Runnable
             }else if(o instanceof MapBox) {
                 //System.err.println("Box found");
                 MapBox obs = (MapBox) o;
+                domain += "at(" + obs.getId() + ",[" + obs.x + "," + obs.y + "]). "; 
+                domain += "item(" + obs.getId() + "). ";
+            }else if(o instanceof Bomb) {
+                //System.err.println("Box found");
+                Bomb obs = (Bomb) o;
                 domain += "at(" + obs.getId() + ",[" + obs.x + "," + obs.y + "]). "; 
                 domain += "item(" + obs.getId() + "). ";
             }else if(o instanceof Goal) {
