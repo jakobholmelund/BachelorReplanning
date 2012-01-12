@@ -255,6 +255,12 @@ public class MiddleWorld extends World{
         this.addObject(new Wall(9,19));
         
         this.addObject(new Oil("oil1",2,12));
-
+        
+        // Boxes
+        this.addObject(new MapBox("a", 6,12));
+        this.addObject(new Bomb(1, 6,8));
+        // Goals
+        this.addObject(new Goal("a",6,11));
+        
     }
 }

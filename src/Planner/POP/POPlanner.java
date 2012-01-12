@@ -71,7 +71,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                 //System.err.println("Box found");
                 MapBox obs = (MapBox) o;
                 domain += "at(" + obs.getId() + ",[" + obs.x + "," + obs.y + "]). "; 
-                domain += "object(" + obs.getId() + "). ";
+                domain += "item(" + obs.getId() + "). ";
             }else if(o instanceof Goal) {
                 //System.err.println("goal found");
                 Goal obs = (Goal) o;
@@ -111,25 +111,27 @@ public class POPlanner implements Runnable { //  implements Runnable
             try {
                 //get percepts and update current state description
                 getPercepts();
-                if((this.goal == null || this.goal.equals("")) && goals.size()>0) {
-                    
+                
+                if(this.goal == null || this.goal.equals("")) {
                     this.goal = goals.pop();
+                    this.plan = null;
                     System.out.println("NEW GOAL: " + this.goal);
                 }
                 
                 //check if plan is still valid
                 boolean valid = false;
                 if(this.plan != null && this.plan.list.isEmpty()) {
-                    if(!this.goals.isEmpty()) {
-                        this.goal = this.goals.pop();
-                        this.plan = null;
-                    } else{
+                    if(this.goals.isEmpty()) {
                         this.done = true;
                         System.err.println("DONE! ");
                         Thread.currentThread().join();
-                        return; 
+                        return;
+                    } else{
+                        this.goal = this.goals.pop();
+                        this.plan = null;
                     }
                 }
+                
                 if(this.plan != null) {
                     int planSucceed = this.plan.validForPOP(state);
                     // Plan is good
@@ -527,6 +529,23 @@ public class POPlanner implements Runnable { //  implements Runnable
         //String carries = "carries(none, object). "; 
         String rules = ""; // + carries; //equals; //  move + push + pull + neighbours + 
 
+        /*
+       // Forward neighbours
+       String neighbours = "";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], n) :- B is Y1 - 1, Y2 = B, X1 = X2. ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], s) :- B is Y1 + 1, Y2 = B, X2 = X1. ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], e) :- B is X1 + 1, X2 = B, Y1 = Y2. ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], w) :- B is X1 - 1, X2 = B, Y1 = Y2. ";
+       */
+        // Backward neighbours
+        String neighbours = "";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], n) :- B is Y2 + 1, Y1 = B, X1 = X2. ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], s) :- B is Y2 - 1, Y1 = B, X2 = X1. ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], e) :- B is X2 - 1, X1 = B, Y1 = Y2. ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], w) :- B is X2 + 1, X1 = B, Y1 = Y2. ";
+
+        String rules = "" + neighbours; // + carries; //equals; //  move + push + pull + neighbours +     
+        
         return rules;
     }
     
@@ -562,6 +581,7 @@ public class POPlanner implements Runnable { //  implements Runnable
 	
 	ArrayList<String> prerequisites2 = new ArrayList<String>();
 	prerequisites2.add("agentAt(Agent,CurPos)");
+        prerequisites2.add("neighbour(CurPos, MovePos, _)");
 	prerequisites2.add("f(MovePos)");
 	
 	ArrayList<String> effects2 = new ArrayList<String>();
@@ -580,54 +600,53 @@ public class POPlanner implements Runnable { //  implements Runnable
 	ArrayList<String> argse3 = new ArrayList<String>();
 	argse3.add("Agent");
 	//argse3.add("AgPos");
-	argse3.add("ObjPos");
-	argse3.add("Object");
+	argse3.add("ItPos");
+	argse3.add("Item");
 	
 	ArrayList<String> prerequisites3 = new ArrayList<String>();
 	prerequisites3.add("\\+carries(Agent, _)");
-	prerequisites3.add("agentAt(Agent,ObjPos)"); // agentAt(Agent, AgPos)
+	prerequisites3.add("agentAt(Agent,ItPos)"); // agentAt(Agent, AgPos)
 	//prerequisites3.add("equals(ObjPos,AgPos)");
-	prerequisites3.add("at(Object,ObjPos)");
-	prerequisites3.add("object(Object)");
+	prerequisites3.add("at(Item,ItPos)");
+	prerequisites3.add("item(Item)");
 	
 	ArrayList<String> effects3 = new ArrayList<String>();
-	effects3.add("!at(Object,ObjPos)");
-	effects3.add("carries(Agent,Object)");
+	effects3.add("!at(Item,ItPos)");
+	effects3.add("carries(Agent,Item)");
 	
 	//ArrayList<String> requirements3 = new ArrayList<String>();
 	//requirements3.add("at(Object,ObjPos)");
 	
-	ActionSchema pickUp = new ActionSchema("pickUp", prerequisites3, "pickUp(Agent,Object)", argse3, effects3, false, true);
+	ActionSchema pickUp = new ActionSchema("pickUp", prerequisites3, "pickUp(Agent,Item)", argse3, effects3, false, true);
 	
 	/* Place  */
 	ArrayList<String> argse4 = new ArrayList<String>();
 	argse4.add("Agent");
 	argse4.add("AgPos");
 	//argse4.add("ObjPos");
-	argse4.add("Object");
+	argse4.add("Item");
 	
 	ArrayList<String> prerequisites4 = new ArrayList<String>();
 	prerequisites4.add("agentAt(Agent,AgPos)");
 	//prerequisites4.add("equals(ObjPos, AgPos)");
-	prerequisites4.add("carries(Agent,Object)");
+	prerequisites4.add("carries(Agent,Item)");
 	
 	ArrayList<String> effects4 = new ArrayList<String>();
-	effects4.add("at(Object,AgPos)");
-	effects4.add("!carries(Agent,Object)");
+	effects4.add("at(Item,AgPos)");
+	effects4.add("!carries(Agent,Item)");
 	
 	//ArrayList<String> requirements4 = new ArrayList<String>();
 	//requirements4.add("f(AgPos)");
 	//requirements4.add("carries(Agent,Object)");
 	
-	ActionSchema place = new ActionSchema("place", prerequisites4, "place(Agent,Object)", argse4, effects4, false, true);
+	ActionSchema place = new ActionSchema("place", prerequisites4, "place(Agent,Item)", argse4, effects4, false, true);
 
         ArrayList<ActionSchema> actions = new ArrayList<ActionSchema>();
         actions.add(move);
         actions.add(moveAtomic);
         actions.add(pickUp);
         actions.add(place);
-        //actions.add(useTeleporter);
         
         return actions;
-    }    
+    }
 }
