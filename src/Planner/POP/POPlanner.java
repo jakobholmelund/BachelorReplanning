@@ -215,7 +215,7 @@ public class POPlanner implements Runnable { //  implements Runnable
             }
             try {
                 world.draw();
-                Thread.sleep(250);
+                Thread.sleep(75);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             } catch(NullPointerException e) {
@@ -229,7 +229,6 @@ public class POPlanner implements Runnable { //  implements Runnable
         Matcher m = typeP.matcher(action);
         boolean matchFound = m.find();
         if (matchFound) {
-            
             String command = m.group(1);
             String arg1 = m.group(2);
             String arg2 = m.group(4);

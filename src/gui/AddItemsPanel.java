@@ -110,7 +110,7 @@ public class AddItemsPanel extends JPanel{
                             world.setMoveAbleObject(new MapBox(s,0,0));
                          }
                       });
-        Bomb bomb = new Bomb(0,0);
+        Bomb bomb = new Bomb("Q",0,0);
         this.add(bomb);
         bomb.addMouseListener(new MouseAdapter()
                       {
@@ -118,10 +118,17 @@ public class AddItemsPanel extends JPanel{
                        public void mouseClicked(MouseEvent me)
                          {
                             world.removeMovableObject();
-                            world.setMoveAbleObject(world.createBomb());
+                            String s = (String)JOptionPane.showInputDialog(
+                                parent,
+                                "Select letter for box\n",
+                                "Customized Dialog",
+                                JOptionPane.PLAIN_MESSAGE,
+                                null,
+                                null,
+                                "q");
+                            world.setMoveAbleObject(new Bomb(s,0,0));
                          }
                       });
-        
         Goal goal = new Goal("Q",0,0);
         this.add(goal);
         goal.addMouseListener(new MouseAdapter()

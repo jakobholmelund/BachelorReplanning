@@ -116,8 +116,10 @@ public class World {
             this.hasChanged = true;
                 if(mo instanceof MapAgent){
                 objectMap.put(""+((MapAgent)mo).id, mo);
-            }else if(mo instanceof MapBox || mo instanceof Bomb){
+            }else if(mo instanceof MapBox){
                 objectMap.put(""+((MapBox)mo).name, mo);
+            }else if(mo instanceof Bomb){
+                objectMap.put(""+((Bomb)mo).id, mo);
             }
                 mo.repaint=false;
         this.map.add(mo.getPosition(),mo);
@@ -215,15 +217,7 @@ public class World {
     }
     
     public Bomb createBomb(){
-        
-        int highestnum = 0;
-        for(MapObject mo:objects){
-            if(mo instanceof Bomb && ((Bomb)mo).getNumber() > highestnum){
-                highestnum = ((Bomb)mo).getNumber();
-            }
-        }
-        
-        return new Bomb(highestnum+1,0);
+        return new Bomb("q",0);
     }
      
     public void persistMoveableObject(int x,int y){

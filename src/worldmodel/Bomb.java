@@ -11,19 +11,19 @@ import java.awt.Graphics;
  * @author jakobenvy
  */
 public class Bomb extends MoveAble {
-    protected int id;
-    public Bomb(int id,long position){
+    String name;
+    public Bomb(String id,long position){
         super(position);
-        this.id=id;
-        super.id=String.valueOf(id);
     }
-    public Bomb(int id,int x, int y){
+    public Bomb(String name,int x, int y){
         super(x,y);
-        this.id=id;
-        super.id=String.valueOf(id);
+        this.name = name;
+        super.id=name;
     }
-    public int getNumber(){
-        return id;
+    
+    @Override
+    public String getName() {
+        return this.name;
     }
     @Override public void paintComponent(Graphics g) {
     //... Draw X on this panel
