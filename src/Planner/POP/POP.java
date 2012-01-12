@@ -37,7 +37,7 @@ public class POP {
         this.openPreconditions = new HashSet<OpenPrecondition>();
         this.causalLinks = new HashSet<CausalLink>();
         this.orderingConstraints = new HashSet<OrderingConstraint>();
-        this.actions = Collections.synchronizedList(new ArrayList<Action>());//Collections.synchronizedSet(new HashSet<Action>());
+        this.actions = new ArrayList<Action>();//Collections.synchronizedSet(new HashSet<Action>());
 
         this.startAction = new Action("Start", false, false);
         this.actions.add(this.startAction);
@@ -58,7 +58,7 @@ public class POP {
         newPoP.openPreconditions = (HashSet<OpenPrecondition>) this.openPreconditions.clone();
         newPoP.causalLinks = (HashSet<CausalLink>) this.causalLinks.clone();
         newPoP.orderingConstraints = (HashSet<OrderingConstraint>) this.orderingConstraints.clone();
-        newPoP.actions = Collections.synchronizedList((ArrayList<Action>)((ArrayList<Action>)this.actions).clone());
+        newPoP.actions = (ArrayList<Action>)((ArrayList<Action>)this.actions).clone();
         return newPoP;
     }
     

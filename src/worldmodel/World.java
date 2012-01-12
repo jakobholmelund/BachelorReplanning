@@ -119,7 +119,7 @@ public class World {
             }else if(mo instanceof MapBox){
                 objectMap.put(""+((MapBox)mo).name, mo);
             }else if(mo instanceof Bomb){
-                objectMap.put(""+((Bomb)mo).id, mo);
+                objectMap.put(""+((Bomb)mo).name, mo);
             }
                 mo.repaint=false;
         this.map.add(mo.getPosition(),mo);
