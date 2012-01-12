@@ -527,7 +527,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         
         // To avoid unknwon predicate errors
         //String carries = "carries(none, object). "; 
-        String rules = ""; // + carries; //equals; //  move + push + pull + neighbours + 
+        //String rules = ""; // + carries; //equals; //  move + push + pull + neighbours + 
 
         /*
        // Forward neighbours
