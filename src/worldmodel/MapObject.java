@@ -18,6 +18,7 @@ public class MapObject extends JPanel implements Serializable {
     public int x;
     public int y;
     public String id;
+    boolean repaint = false;
     
     public MapObject(){
         this.setLayout(new GridLayout(1,1));
@@ -78,5 +79,13 @@ public class MapObject extends JPanel implements Serializable {
         int x = (int)(k & 0xFFFFFFFF) - 1000000000;
         int y = (int)((k >>> 32) & 0xFFFFFFFF) - 1000000000;
         return new int[]{x,y};
+    }
+    
+    public boolean shouldRepaint(){
+        return this.repaint;
+    }
+    
+    public void setRepaint(boolean b){
+        this.repaint = b;
     }
 }

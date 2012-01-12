@@ -11,8 +11,10 @@ import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import worldmodel.MapAgent;
 import worldmodel.MapObject;
 import worldmodel.Tile;
 import worldmodel.Wall;
@@ -25,7 +27,8 @@ import worldmodel.World;
 public class WorldPanel extends JPanel {
         private int tileSize = 10;
         private boolean init = true;
-        private ArrayList<MapObject> fields = new ArrayList<MapObject>();
+        private ArrayList<Tile> fields = new ArrayList<Tile>();
+        private HashMap<Long,Tile> tileMap = new HashMap<Long,Tile>();
         
     WorldPanel(int width, int height) {
         FlowLayout boardlayout = new FlowLayout();//new GridLayout(1, 1, 0, 0);
@@ -35,9 +38,41 @@ public class WorldPanel extends JPanel {
         this.setBackground(Color.black);
     }
 
+    public void cleanTile(long key){
+        tileMap.get(key).removeAll();
+    }
+    
+    public void fillTile(long key,MapObject[] objects){
+        Tile t = tileMap.get(key);
+        for(int i=0;i<objects.length;i++){
+            t.add(objects[i]);
+        }
+        
+    }
+    
     public void update(final World world){
+        for(Tile t:fields){
+            Object[] worldobjects = world.getMap().get(t.getPosition());
+            if(worldobjects != null){
+            MapObject test = (MapObject)worldobjects[0];
+                if(test.shouldRepaint()||t.shouldRepaint()){
+                    test.setRepaint(false);
+                    t.removeAll();
+                    t.add(test);
+                    t.repaint();
+                }
+            }else if(t.shouldRepaint()){
+                t.setRepaint(false);
+                t.removeAll();
+                t.repaint();
+            }
+        }
+        
         //System.out.println("AFTER INITIATE");
+        /*
         for(MapObject mo:fields){
+            
+            
             Object[] worldobjects = world.getMap().get(mo.getPosition());
             //if(worldobject == null && mo.getComponentCount() > 0){
             //    mo.repaint();
@@ -59,9 +94,12 @@ public class WorldPanel extends JPanel {
                    }
             }
         }
+         * */
+         
     }
     
     public void draw(final World world){
+        fields.clear();
         GridLayout boardlayout = new GridLayout(world.getY(), world.getX(), 0, 0);
         this.setLayout(boardlayout);
         //this.removeAll();

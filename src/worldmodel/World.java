@@ -116,10 +116,10 @@ public class World {
             this.hasChanged = true;
                 if(mo instanceof MapAgent){
                 objectMap.put(""+((MapAgent)mo).id, mo);
-            }else if(mo instanceof MapBox){
+            }else if(mo instanceof MapBox || mo instanceof Bomb){
                 objectMap.put(""+((MapBox)mo).name, mo);
             }
-   
+                mo.repaint=false;
         this.map.add(mo.getPosition(),mo);
     }
     
@@ -130,14 +130,22 @@ public class World {
     
     public boolean moveObject(MapObject mo, long key){
         synchronized(this){
+            Tile oldParent = (Tile)mo.getParent();
+            if(oldParent != null){
+                oldParent.repaint = true;
+            }
             //Checks ir there is objects on field and if objects interfierce with plan.
             Object[] mobjects = map.get(key);
             if(mobjects != null){
                 for(int i=0;i<mobjects.length;i++){
                     MapObject mobject = (MapObject)mobjects[i];
                     
+                    
+                    
                     //Check if field i naibour
                     if(mobject instanceof Wall || mobject instanceof MapAgent || !map.neighborsFor(key).contains(mo)){
+                        
+                        System.out.println("Cant move here");
                         return false;
                     }
                     
@@ -160,6 +168,7 @@ public class World {
                             }
                         }
                     }
+                    
                 }
                 
             }
@@ -170,6 +179,8 @@ public class World {
                 map.update(mo.getPosition(), key, new MapObject[]{mo});
             }
             mo.setPosition(key);
+            mo.setRepaint(true);
+         
             this.hasChanged = true;
             return true;
         }

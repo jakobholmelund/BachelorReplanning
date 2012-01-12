@@ -11,6 +11,8 @@ import java.awt.Color;
  * @author jakobenvy
  */
 public class Tile extends MapObject{
+    
+    
     public Tile(long position){
         super(position);
         setBackground(Color.WHITE);
@@ -20,4 +22,5 @@ public class Tile extends MapObject{
         setBackground(Color.WHITE);
     }
 
+    
 }
