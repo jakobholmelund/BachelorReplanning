@@ -4,19 +4,10 @@
  */
 package bachelorreplanning;
 
-import Planner.POP.POPlanner;
-import Planner.NFSP.NFSPlanner;
 //import Planner.ReFSP.ReFSPlanner;
 import gui.MainWindow;
 import jTrolog.errors.PrologException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-import worldmodel.Goal;
-import worldmodel.MapBox;
 import worldmodel.World;
-import worlds.MiddleWorld;
-import worlds.SmallWorld;
 
 /**
  *

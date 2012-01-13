@@ -114,7 +114,20 @@ public class WorldPanel extends JPanel {
                 //System.out.println(world.getMap().get(j, i).toString());
                 Object[] worldobject = world.getMap().get(j, i);
                 if(worldobject != null){
-                    tile.add((MapObject)worldobject[0]);
+                    final MapObject mobject = (MapObject)worldobject[0];
+                    tile.add(mobject);
+                    ((MapObject)worldobject[0]).addMouseListener(new MouseAdapter()
+                      {
+                        @Override
+                       public void mouseClicked(MouseEvent me)
+                         {
+                             if(me.getButton() == MouseEvent.BUTTON3){
+                                 tile.removeAll();
+                                 mobject.setPosition(0);
+                                 world.setMoveAbleObject(mobject);
+                             }
+                         }
+                      });
                 }
                 fields.add(tile);
                 tile.addMouseListener(new MouseAdapter()
@@ -122,24 +135,27 @@ public class WorldPanel extends JPanel {
                         @Override
                        public void mouseClicked(MouseEvent me)
                          {
+                             if(me.getButton() == MouseEvent.BUTTON1){
                             if(tile.getComponent(0) != null && tile.getComponent(0) instanceof Wall){
-                                System.out.println(((Wall)tile.getComponent(0)).getPosition());
+                                //System.out.println(((Wall)tile.getComponent(0)).getPosition());
                             }
                             if(world.getMoveableObject() != null && tile.getComponent(0).equals(world.getMoveableObject())){
                                 world.persistMoveableObject(tile.x,tile.y);
+                                world.removeMovableObject();
                                 setBackground(Color.WHITE);
                                 tile.updateUI();
                             }
+                             }
                            }
                         @Override
                        public void mouseEntered(MouseEvent me) {
                             if(tile.getComponentCount()<1 && world.getMoveableObject() != null){
                                 tile.add(world.getMoveableObject());
-                                //tile.setBackground(Color.GREEN);
-                                updateUI();
+                                //tile.setBackground(Color.GREEN);                                
+                                tile.repaint();
                             }else if(world.getMoveableObject() != null){
                                 tile.setBackground(Color.RED);
-                                tile.updateUI();
+                                tile.repaint();
                             }
                         }
                         @Override
