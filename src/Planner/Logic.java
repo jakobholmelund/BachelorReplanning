@@ -177,7 +177,7 @@ public class Logic {
                 q = q.substring(1, q.length());
                 Solution info = engine.solve(q + ". ");
                 //System.out.println("         !--> succes for: " + q + "  ? " + !info.success());
-                System.out.println("      Solve NOT Bool: " + q + " success: " + info.success());
+                //System.out.println("      Solve NOT Bool: " + q + " success: " + info.success());
                 return !info.success();
             } catch (Throwable ex) {
                 return true;
@@ -279,8 +279,8 @@ public class Logic {
                 }
             }
         } catch (Exception e) {
-            //System.err.println("Exception when handling: " + q + ". Malformed predicate");
-            //e.printStackTrace();
+            System.err.println("Exception when handling: " + q + ". Malformed predicate");
+            e.printStackTrace();
         }
     }
 

@@ -118,28 +118,42 @@ public class TOPlan {
      */
     public int valid(State state) {
         Logic s = state.state.clone();
+        //System.out.println("Initial check state: \n " + s.getTheoryAsString());
         long time1 = System.currentTimeMillis();
 
         for(int i = 0; i < list.size(); i++) {
             Action action = list.get(i);
-            //System.out.println("   PREQ: " + action.preqToString());
-            
-            for(String preq : action.preconditions) {
-                Boolean result =  s.solveboolean(preq);
-                System.out.println("   Checking for: " + preq + "  Result: " + result);
-                
-                if(!result) {
-                    System.out.println("   State failed at:\n " + s.getTheoryAsString());
-                    return i;
-                }
-            }
-            
-            for (String effect : action.effects) {
-                try {
-                    //System.out.println("Setting: " + string);
-                    s.set(effect);
-                } catch (Throwable ex) {
+            //System.out.println("   Action: " + action.toString());
+            if(action.atomic) {
+                //System.out.println("   -> Atomic");
+                for(String preq : action.preconditions) {
+                    Boolean result =  s.solveboolean(preq);
+                    //System.out.println("      Checking for: " + preq + "  Result: " + result);
 
+                    if(!result) {
+                        //System.out.println("      >>> Plan failed at number " + i + "\n" + action.toString());
+                        //System.out.println("State when fail: \n " + s.getTheoryAsString());
+                        return i;
+                    }
+                }
+                
+                for (String effect : action.effects) {
+                    try {
+                        s.set(effect);
+                        //System.out.println("      Added: " + effect);
+                    } catch (Throwable ex) {
+                        //System.out.println("      Failed at adding: " + effect);
+                    }
+                }
+            }else{
+                //System.out.println("   -> Non-Atomic");
+                for (String effect : action.effects) {
+                    try {
+                        s.set(effect);
+                        //System.out.println("      Added: " + effect);
+                    } catch (Throwable ex) {
+                        //System.out.println("      Failed at adding: " + effect);
+                    }
                 }
             }
         }
@@ -158,10 +172,11 @@ public class TOPlan {
     public int validForPOP(State state) {
         Logic s = state.state.clone();
         long time1 = System.currentTimeMillis();
-
+        
         for(int i = 0; i < list.size(); i++) {
             Action action = list.get(i);
-            //System.out.println("   PREQ: " + action.preqToString());
+            System.out.println("   Action: " + action.toString());
+            System.out.println("      PREQ: " + action.preqToString());
             
             for (String effect : action.effects) {
                 try {

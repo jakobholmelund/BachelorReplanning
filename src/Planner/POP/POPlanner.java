@@ -28,7 +28,7 @@ public class POPlanner implements Runnable { //  implements Runnable
     LinkedList<String> goals;
     String goal;
     String missionId;
-    //Astar routeFinder;
+    Astar routeFinder;
     private ArrayList<ActionSchema> actions;
     
     public POPlanner(World world, int aid, LinkedList<String> goals) { //String mid
@@ -40,25 +40,85 @@ public class POPlanner implements Runnable { //  implements Runnable
         this.agentId = aid;
         //this.missionId = mid;
         this.goals = goals;
-        //routeFinder = new Astar();
+        routeFinder = new Astar();
         actions = this.setActions();
     }
     
     private void getPercepts() throws PrologException {
        long time1 = System.currentTimeMillis();
        String domain = "";
-       
-       // add to percepts            
+       System.out.println("Get percepts --->");
+       // add to percepts
        for(int i = 0; i < world.getX(); i++) {
             for(int j = 0; j < world.getY(); j++) {
                 long key = world.getMap().keyFor(j, i);
-                Object o = world.getMap().get(key);
-                if(o != null && !(o instanceof Wall)){
-                    domain += "f([" + i + "," + j + "]). ";
+                Object[] o = world.getMap().get(key);
+                
+                if(o == null || o.length == 0){
+                    domain += "f([" + j + "," + i + "]). ";
+                    //if(i == 3 && j == 2) {
+                    //    System.out.println("   At 2,3 THERE IS FREE 1");
+                    //}
+                }else{
+                    for(int k = 0; k < o.length; k++) {
+                        MapObject obj = (MapObject) o[k];
+                        //if(i == 3 && j == 2) {
+                        //    System.out.println("   At 2,3 THERE IS SOMETHING: " + obj.toString());
+                        //}
+                        if(obj instanceof MapAgent) {
+                            //System.err.println("Agent found");
+                            MapAgent agent = (MapAgent) obj;
+                            domain += "agentAt(" + agent.getNumber() + ",[" + agent.x + "," + agent.y + "]). ";
+                            if(agent.getCarying() != null) {
+                                domain += "carries(" + agent.getNumber() + "," + agent.getCarying().getId() + "). ";
+                            }
+                            //if(i == 3 && j == 2) {
+                            //    System.out.println("   At 2,3 THERE IS AN AGENT");
+                            //}
+                        }else if(obj instanceof MapBox) {
+                            //System.err.println("Box found");
+                            MapBox obs = (MapBox) obj;
+                            domain += "at(" + obs.getId() + ",[" + obs.x + "," + obs.y + "]). "; 
+                            domain += "f([" + obs.x + "," + obs.y + "]). ";
+                            domain += "item(" + obs.getId() + "). ";
+                            //if(i == 3 && j == 2) {
+                            //    System.out.println("   At 2,3 THERE IS A BOX");
+                            //}
+                        }else if(obj instanceof Bomb) {
+                            //System.err.println("Box found");
+                            Bomb obs = (Bomb) obj;
+                            domain += "at(" + obs.getId() + ",[" + obs.x + "," + obs.y + "]). ";
+                            domain += "f([" + obs.x + "," + obs.y + "]). ";
+                            domain += "item(" + obs.getId() + "). ";
+                            //if(i == 3 && j == 2) {
+                            //    System.out.println("   At 2,3 THERE IS A BOMB");
+                            //}
+                        }else if(obj instanceof Goal) {
+                            //System.err.println("goal found");
+                            Goal obs = (Goal) obj;
+                            domain += "goalAt(" + obs.getId() + ",[" + obs.x + "," + obs.y + "]). ";
+                            domain += "f([" + obs.x + "," + obs.y + "]). ";
+                            //if(i == 3 && j == 2) {
+                            //    System.out.println("   At 2,3 THERE IS A GOAL");
+                            //}
+                        }else if(obj instanceof Wall) {
+                            //System.err.println("wall found");
+                            Wall w = (Wall) obj;
+                            domain += "w([" + w.x + "," + w.y + "]). "; 
+                            //if(i == 3 && j == 2) {
+                            //    System.out.println("   At 2,3 THERE IS WALL");
+                            //}
+                        }else{
+                            domain += "f([" + i + "," + j + "]). ";
+                            if(i == 3 && j == 2) {
+                                System.out.println("   At 2,3 THERE IS FREE 1");
+                            }
+                        }
+                    }
                 }
             }
        }
-       
+       /*
        for(MapObject o : world.getObjects()) {
            if(o instanceof MapAgent) {
                 //System.err.println("Agent found");
@@ -85,9 +145,12 @@ public class POPlanner implements Runnable { //  implements Runnable
                 //System.err.println("wall found");
                 Wall w = (Wall) o;
                 domain += "w([" + w.x + "," + w.y + "]). "; 
+                if(w.x == 2 && w.y == 3) {
+                    System.out.println("   At 2,3 THERE IS WALL");
+                }
             }
-       }
-
+        }*/
+       
         String theory = getStatics() + domain;
         //System.out.println("statics:\n " + statics);
         //System.out.println("objects:\n " + world.getObjects().toString());
@@ -95,7 +158,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         //System.out.println(theory);
         //System.err.println(theory);
         this.state = new State(theory);
-        //System.out.println(this.state.toString());
+        //System.out.println("Got these percepts: \n" + this.state.toString());
         long time2 = System.currentTimeMillis();
                 
        //System.out.println("Percepts gotten in: " + (time2 - time1) + " ms");
@@ -138,7 +201,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                 }
                 
                 if(this.plan != null) {
-                    int planSucceed = this.plan.validForPOP(state);
+                    int planSucceed = this.plan.valid(state);
                     // Plan is good
                     if(planSucceed == -1) {
                         valid = true;
@@ -180,13 +243,13 @@ public class POPlanner implements Runnable { //  implements Runnable
                         }else{
                             System.out.println("Action succeeded: " + true);
                         }
-                    }/*else{
+                    }else{
                        System.out.println(" -- which is not atomic");
                        TOPlan subPlan = routeFinder.findPlan(world,next.name);
                        //subPlan.printSolution();
                        this.plan.prependAll(subPlan);
                        System.out.println("New plan:\n" + this.plan);
-                    }*/
+                    }
                     //world.agentActionParse(next.name);
                     //world.agentActionParse(next.name);
                 }else{
@@ -206,11 +269,14 @@ public class POPlanner implements Runnable { //  implements Runnable
                     
                     long time1 = System.currentTimeMillis();
                     this.popPlan = findPlan(p, this.goal);;
+                    System.out.println("Pop Plan: \n");
+                    //this.popPlan.printToConsole();
                     this.plan = getTotalOrderPlan(popPlan, world);
                     long time2 = System.currentTimeMillis();
 
                     System.out.println("Plan found in: " + (time2 - time1) + " ms");
-                    System.out.println("Plan: \n" + this.plan.toString());
+                    
+                    System.out.println("\nPlan: \n" + this.plan.toString());
                     //System.out.println("Done...");
                 }
             } catch (InterruptedException ex) {
@@ -304,30 +370,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                 }
 
                 // Resolve conflicts
-                //System.out.println("\nResolve - Between the new causal link and all existing actions");
                 // Between the new causal link and all existing actions
-                /*
-                 * Iterator it = pop.actions.iterator(); 
-
-                while(it.hasNext()){
-                    System.out.println("TRYING TO IT" + pop.actions);
-                    Action C = null;
-                    C = (Action)it.next();
-                 
-                    if(conflict(link, C, pop)) {
-                        POP newPlan1 = refinePlan(p, pop.addOrderingConstraint(B, C));
-                            if(newPlan1 != null) {
-                                return newPlan1;
-                            }
-
-                            POP newPlan2 = refinePlan(p, pop.addOrderingConstraint(C, A));
-                            if(newPlan2 != null) {
-                                return newPlan2;
-                            }
-                    }
-                }
-                */
-                
                 for(Action C : pop.actions) {
                     // If there is a (potential?) conclict between oA and link, resolve it:
                     if(conflict(link, C, pop)) {
@@ -475,7 +518,7 @@ public class POPlanner implements Runnable { //  implements Runnable
 
                 if(go && !arguments.isEmpty()) {
                     //try {
-                        actionsReturn.addAll(a.getSpecificActions(this.state.state, arguments));
+                    actionsReturn.addAll(a.getSpecificActions(this.state.state, arguments));
                         //actionsReturn.addAll(a.get(this.state.state, arguments));
                     //} catch (PrologException ex) {
                     //    Logger.getLogger(BSPlanner.class.getName()).log(Level.SEVERE, null, ex);
@@ -515,6 +558,7 @@ public class POPlanner implements Runnable { //  implements Runnable
 
     private String createStatics() {
         String staticsMk = getRules();
+        /*
         for(Object o : world.getObjects()) {
             if(o instanceof Wall) {
                 //System.err.println("Wall found");
@@ -522,7 +566,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                 staticsMk += "w([" + wall.x + "," + wall.y + "]). ";
             }
         }
-
+        */
         return staticsMk;
     }
 
@@ -532,10 +576,11 @@ public class POPlanner implements Runnable { //  implements Runnable
         //String free = "f(C0) :- \\+w(C0), \\+agentAt(Agent, C0), \\+boxAt(Box, C0). ";
         //String equals = "equals(A, B) :- B = A. ";
         
-        // To avoid unknwon predicate errors
-        //String carries = "carries(none, object). "; 
+        
         //String rules = ""; // + carries; //equals; //  move + push + pull + neighbours + 
-
+        
+        // To avoid unknwon predicate errors
+        String failsafes = "carries(none, object). at(none, nowhere). "; //carries(none, object). at(none, nowhere).
         /*
        // Forward neighbours
        String neighbours = "";
@@ -551,7 +596,7 @@ public class POPlanner implements Runnable { //  implements Runnable
             neighbours += "neighbour([X1,Y1], [X2,Y2], e) :- B is X2 - 1, X1 = B, Y1 = Y2. ";
             neighbours += "neighbour([X1,Y1], [X2,Y2], w) :- B is X2 + 1, X1 = B, Y1 = Y2. ";
 
-        String rules = "" + neighbours; // + carries; //equals; //  move + push + pull + neighbours +     
+        String rules = "" + neighbours + failsafes; //equals; //  move + push + pull + neighbours +     
         
         return rules;
     }
@@ -577,7 +622,7 @@ public class POPlanner implements Runnable { //  implements Runnable
 	
 	//ArrayList<String> requirements1 = new ArrayList<String>();
 	//requirements1.add("f(MovePos)");
-
+        
 	ActionSchema move = new ActionSchema("move", prerequisites1, "move(Agent,MovePos)", argse1, effects1, false, false);
 	//CurPos
 	/* MoveAtomic  */
@@ -607,18 +652,18 @@ public class POPlanner implements Runnable { //  implements Runnable
 	ArrayList<String> argse3 = new ArrayList<String>();
 	argse3.add("Agent");
 	//argse3.add("AgPos");
-	argse3.add("ItPos");
+	argse3.add("CurPos");
 	argse3.add("Item");
 	
 	ArrayList<String> prerequisites3 = new ArrayList<String>();
 	prerequisites3.add("\\+carries(Agent, _)");
-	prerequisites3.add("agentAt(Agent,ItPos)"); // agentAt(Agent, AgPos)
+	prerequisites3.add("agentAt(Agent,CurPos)"); // agentAt(Agent, AgPos)
 	//prerequisites3.add("equals(ObjPos,AgPos)");
-	prerequisites3.add("at(Item,ItPos)");
+	prerequisites3.add("at(Item,CurPos)");
 	prerequisites3.add("item(Item)");
 	
 	ArrayList<String> effects3 = new ArrayList<String>();
-	effects3.add("!at(Item,ItPos)");
+	effects3.add("!at(Item,CurPos)");
 	effects3.add("carries(Agent,Item)");
 	
 	//ArrayList<String> requirements3 = new ArrayList<String>();
@@ -629,17 +674,17 @@ public class POPlanner implements Runnable { //  implements Runnable
 	/* Place  */
 	ArrayList<String> argse4 = new ArrayList<String>();
 	argse4.add("Agent");
-	argse4.add("AgPos");
+	argse4.add("CurPos");
 	//argse4.add("ObjPos");
 	argse4.add("Item");
 	
 	ArrayList<String> prerequisites4 = new ArrayList<String>();
-	prerequisites4.add("agentAt(Agent,AgPos)");
+	prerequisites4.add("agentAt(Agent,CurPos)");
 	//prerequisites4.add("equals(ObjPos, AgPos)");
 	prerequisites4.add("carries(Agent,Item)");
 	
 	ArrayList<String> effects4 = new ArrayList<String>();
-	effects4.add("at(Item,AgPos)");
+	effects4.add("at(Item,CurPos)");
 	effects4.add("!carries(Agent,Item)");
 	
 	//ArrayList<String> requirements4 = new ArrayList<String>();

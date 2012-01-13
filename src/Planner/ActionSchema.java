@@ -99,11 +99,15 @@ public class ActionSchema {
     
                 Map bindings = solutions.get(0).getBindings();    
                 
-                System.out.println("Query: " + s + "  Bindings: " + bindings.toString());
+                //System.out.println("Query: " + s + "  Bindings: " + bindings.toString());
                 for(Object o : bindings.keySet()) {
                     String key = (String) o;
+                    //System.out.println("   key: " + key);
                     if(!arguments.containsKey(key)) {
-                        arguments.put(key, bindings.get(key).toString());
+                        Object bindedKey = bindings.get(key);
+                        if(bindedKey != null) {
+                            arguments.put(key, bindedKey.toString());
+                        }
                     }
                 }
             }else{
@@ -111,7 +115,7 @@ public class ActionSchema {
                 //System.out.println("Is empty: " + s);
                 openPreconditions.add(s);
             }
-            //System.out.println("Args: " + arguments.toString() + "\n");
+            //System.out.println("   Args: " + arguments.toString() + "\n");
         }
         Action a = createInstance(arguments);
         for(String s : openPreconditions) {

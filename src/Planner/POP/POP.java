@@ -155,7 +155,7 @@ public class POP {
             //System.out.println("PREQ ADDED: " + a.preqToString());
         }
         
-        return expandToAtomic(newPlan, world);
+        return newPlan; //expandToAtomic(newPlan, world);
     }
     
     private ArrayList<Action> expand(Action A) {

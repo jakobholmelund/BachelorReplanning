@@ -20,5 +20,4 @@ public class Wall extends Obstacle {
         super(x,y);
         setBackground(Color.YELLOW);
     }
- 
 }
