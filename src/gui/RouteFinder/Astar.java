@@ -7,7 +7,6 @@ package gui.RouteFinder;
 import Planner.Action;
 import Planner.TOPlan;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.TreeSet;
 import worldmodel.World;
 

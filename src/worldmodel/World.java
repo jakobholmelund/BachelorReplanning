@@ -223,11 +223,7 @@ public class World {
     public void persistMoveableObject(int x,int y){
         activeObject.setPosition(x,y);
         this.addObject(activeObject);
-        if(activeObject instanceof Wall){
-            this.setMoveAbleObject(new Wall(0));
-        }else{
-            this.removeMovableObject();
-        }
+        this.removeMovableObject();
         
     }
     
