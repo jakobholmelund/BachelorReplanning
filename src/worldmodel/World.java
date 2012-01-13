@@ -306,15 +306,24 @@ public class World {
     }
     
     public long[] parseAction(String action){
-        Pattern typeP = Pattern.compile("(^\\w+)\\((\\w*)\\,\\[(\\d+\\,\\d+)\\]"); //(\\,(\\w+))?
+        Pattern typeP = Pattern.compile("(^\\w+)\\((\\w*)\\,\\[(\\d+\\,\\d+)\\](,\\[(\\d+\\,\\d+)\\])?\\)"); //(\\,(\\w+))?
         Matcher m = typeP.matcher(action);
         m.find();
-        System.out.println(m);
+        System.out.println(m.group(1));
+        System.out.println(m.group(2));
+        System.out.println(m.group(3));
+        System.out.println(m.group(4));
+        System.out.println(m.group(5));
+        
+        
         String command = m.group(1);
         String agent = m.group(2);
-        String pos = m.group(3);
-        String[] coords = pos.split(",");
-        return new long[]{((MapAgent)objectMap.get(agent)).getPosition(),map.keyFor(Integer.parseInt(coords[0]), Integer.parseInt(coords[1])),Long.parseLong(agent)};
+        String pos1 = m.group(3);
+        String pos2 = m.group(5);
+        String[] coords1 = pos1.split(",");
+        String[] coords2 = pos2.split(",");
+        
+        return new long[]{((MapAgent)objectMap.get(agent)).getPosition(),map.keyFor(Integer.parseInt(coords1[0]), Integer.parseInt(coords1[1])),map.keyFor(Integer.parseInt(coords2[0]), Integer.parseInt(coords2[1])),Long.parseLong(agent)};
     }
     
     public boolean pickUp(MapAgent ma,MapObject mo){

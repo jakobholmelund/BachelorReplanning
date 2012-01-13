@@ -28,6 +28,7 @@ public class Main {
         World world = new World(20,20);
         MainWindow mainWindow = new MainWindow();
         mainWindow.loadNewWorld(world);
+        //world.parseAction("move(a,[1,1])");
         //LinkedList<String> goals = new LinkedList<String>();
         //world.addObject(new MapBox("a", 18,13));
         //world.addObject(new MapBox("b", 15,4));

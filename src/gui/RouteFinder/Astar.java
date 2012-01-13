@@ -24,8 +24,8 @@ public class Astar {
         map = w.simpleMap();
         
         long[] startogoal = w.parseAction(action);
-        long current = startogoal[0];//w.getAgentPos(agent);
-        long goal = startogoal[1];//w.getAgentPos(agent);
+        long current = startogoal[1];//w.getAgentPos(agent);
+        long goal = startogoal[2];//w.getAgentPos(agent);
         agent = startogoal[2];
         TreeSet<Node> frontier = new TreeSet<Node>();
         Node init = makeInitialNode(current);
