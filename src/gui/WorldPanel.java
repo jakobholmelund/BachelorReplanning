@@ -123,7 +123,6 @@ public class WorldPanel extends JPanel {
                          {
                              if(me.getButton() == MouseEvent.BUTTON3){
                                  tile.removeAll();
-                                 mobject.setPosition(0);
                                  world.removeObject(mobject);
                                  world.setMoveAbleObject(mobject);
                              }

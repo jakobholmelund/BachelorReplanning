@@ -195,6 +195,12 @@ public class World {
         this.hasChanged = true;
     }
     
+    public void removeObjectSpecial(MapObject mo){
+        map.removeObjects(mo.getPosition(), new MapObject[]{mo});
+        objectMap.remove(mo.getId());
+        this.hasChanged = true;
+    }
+    
     public boolean hasChanged(){
         this.hasChanged = !this.hasChanged;
         return !hasChanged;
