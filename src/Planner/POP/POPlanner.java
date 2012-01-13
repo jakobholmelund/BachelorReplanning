@@ -30,6 +30,7 @@ public class POPlanner implements Runnable { //  implements Runnable
     String missionId;
     Astar routeFinder;
     private ArrayList<ActionSchema> actions;
+    Action lastAtomicOnSubPlan = null;
     
     public POPlanner(World world, int aid, LinkedList<String> goals) { //String mid
         iteration = 0;
@@ -47,7 +48,7 @@ public class POPlanner implements Runnable { //  implements Runnable
     private void getPercepts() throws PrologException {
        long time1 = System.currentTimeMillis();
        String domain = "";
-       System.out.println("Get percepts --->");
+       //System.out.println("Get percepts --->");
        // add to percepts
        for(int i = 0; i < world.getX(); i++) {
             for(int j = 0; j < world.getY(); j++) {
@@ -207,16 +208,26 @@ public class POPlanner implements Runnable { //  implements Runnable
                         valid = true;
                     // Plan is good but goal is not fulfilled
                     }else if(planSucceed == -2) {
-                        valid = false;
+                        //valid = false;
                         System.out.println("REPLAN -> Get new Linearization!");
                         this.plan = getTotalOrderPlan(popPlan, world);
-                        this.popPlan = null;
+                        valid = true;
+                        if(this.plan == null) {
+                            this.popPlan = null;  
+                            valid = false;
+                        }
                     // Plan is broken
                     }else{
                         System.out.println("Recieved: " + planSucceed + " -> REPLAN -> From Scratch!");
-                        valid = false;
-                        this.plan = null;
-                        this.popPlan = null;
+                        //valid = false;
+                        this.plan = getTotalOrderPlan(popPlan, world);
+                        valid = true;
+                        if(this.plan == null) {
+                            this.popPlan = null;  
+                            valid = false;
+                        }
+                        //this.plan = null;
+                        //this.popPlan = null;
                     }
                     //System.out.println("PLAN VALID: " + planSucceed + "  which is: " + valid);
                 }
@@ -225,9 +236,10 @@ public class POPlanner implements Runnable { //  implements Runnable
                 if(this.plan != null && !this.plan.isEmpty() && valid) { // this.plan != null) {//
                     System.out.println("Go --->");
                     // If it is, do the next action
-                    Action next = plan.pop();
+                    Action next = plan.peep();
+                    
                     System.out.print("Take Next Action: " + next.name);
-
+                    
                     // Apply next - act() ?
                     if(next.atomic) {
                         System.out.println(" -- which is atomic");
@@ -241,11 +253,16 @@ public class POPlanner implements Runnable { //  implements Runnable
                             plan = null;
                             popPlan = null; 
                         }else{
+                            plan.pop();
+                            if(next.equals(lastAtomicOnSubPlan)) {
+                                popPlan.actions.remove(next);
+                            }
                             System.out.println("Action succeeded: " + true);
                         }
                     }else{
                        System.out.println(" -- which is not atomic");
                        TOPlan subPlan = routeFinder.findPlan(world,next.name);
+                       lastAtomicOnSubPlan = subPlan.peepLast();
                        //subPlan.printSolution();
                        this.plan.prependAll(subPlan);
                        System.out.println("New plan:\n" + this.plan);

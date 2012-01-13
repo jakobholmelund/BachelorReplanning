@@ -82,6 +82,16 @@ public class TOPlan {
         list.remove(0);
         return ret;
     }
+    
+    public Action peep() {
+        Action ret = list.get(0);
+        return ret;
+    }
+    
+    public Action peepLast() {
+        Action ret = list.get(list.size()-1);
+        return ret;
+    }
 
     public List<Action> getSolution() {
         return this.list;
