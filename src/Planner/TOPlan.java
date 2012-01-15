@@ -89,7 +89,11 @@ public class TOPlan {
     }
     
     public Action peepLast() {
-        Action ret = list.get(list.size()-1);
+        int last = list.size() - 1;
+        if(last < 0) {
+            return null;
+        }
+        Action ret = list.get(last);
         return ret;
     }
 
@@ -126,7 +130,7 @@ public class TOPlan {
      *  -1 if the plan is valid
      *  -2 if the plan is valid but does not fulfill the goal
      */
-    public int valid(State state) {
+    public ReturnInfo valid(State state) {
         Logic s = state.state.clone();
         //System.out.println("Initial check state: \n " + s.getTheoryAsString());
         long time1 = System.currentTimeMillis();
@@ -139,11 +143,11 @@ public class TOPlan {
                 for(String preq : action.preconditions) {
                     Boolean result =  s.solveboolean(preq);
                     //System.out.println("      Checking for: " + preq + "  Result: " + result);
-
+                    
                     if(!result) {
                         //System.out.println("      >>> Plan failed at number " + i + "\n" + action.toString());
                         //System.out.println("State when fail: \n " + s.getTheoryAsString());
-                        return i;
+                        return new ReturnInfo(i, preq);
                     }
                 }
                 
@@ -173,12 +177,12 @@ public class TOPlan {
         //System.out.println("Plan monitoring took: " + (time2-time1) + " ms  -- goal is: " + bol);
         //System.out.println("Goal: " + getGoal() + " - valid: " + bol);
         if(bol) {
-            return -1;
+            return new ReturnInfo(-1, "");
         }else{
-            return -2;
+            return new ReturnInfo(-2, "");
         }
     }
-    
+    /*
     public int validForPOP(State state) {
         Logic s = state.state.clone();
         long time1 = System.currentTimeMillis();
@@ -207,5 +211,5 @@ public class TOPlan {
         }else{
             return -2;
         }
-    }
+    }*/
 }

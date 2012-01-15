@@ -228,6 +228,10 @@ public class POP {
         }
         return false;
     }
+    
+    boolean isEmpty() {
+        return (actions.size() == 2);
+    }
 
     private TOPlan expandToAtomic(TOPlan newPlan, World world) {
         for(int i = 0; i < newPlan.list.size(); i++) {
