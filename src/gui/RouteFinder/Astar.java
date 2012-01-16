@@ -84,6 +84,7 @@ public class Astar {
             action.addEffect("agentAt(" + this.agent + ",[" + cords[0] + "," + cords[1] + "])");
             action.addEffect("!agentAt(" + this.agent + ",[" + cordsParent[0] + "," + cordsParent[1] + "])");
             action.addPrecondition("f([" + cords[0] + "," + cords[1] + "])");
+            action.addPrecondition("agentAt(" + this.agent + ",[" + cordsParent[0] + "," + cordsParent[1] + "])");
             //p.add(node.curPosition);
             p.add(action);
             node = node.parent;

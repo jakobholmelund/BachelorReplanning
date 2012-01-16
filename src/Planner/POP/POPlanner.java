@@ -30,6 +30,7 @@ public class POPlanner implements Runnable { //  implements Runnable
     String missionId;
     Astar routeFinder;
     private ArrayList<ActionSchema> actions;
+    Action lastAtomicOnSubPlan = null;
     
     public POPlanner(World world, int aid, LinkedList<String> goals) { //String mid
         iteration = 0;
@@ -47,7 +48,7 @@ public class POPlanner implements Runnable { //  implements Runnable
     private void getPercepts() throws PrologException {
        long time1 = System.currentTimeMillis();
        String domain = "";
-       System.out.println("Get percepts --->");
+       //System.out.println("Get percepts --->");
        // add to percepts
        for(int i = 0; i < world.getX(); i++) {
             for(int j = 0; j < world.getY(); j++) {
@@ -174,8 +175,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         while(!this.done){
             System.out.println("\n");
             iteration++;
-            
-            POPProblem p;
+
             try {
                 //get percepts and update current state description
                 getPercepts();
@@ -201,33 +201,50 @@ public class POPlanner implements Runnable { //  implements Runnable
                 }
                 
                 if(this.plan != null) {
-                    int planSucceed = this.plan.valid(state);
+                    ReturnInfo retInfo = this.plan.valid(state);
+                    int planSucceed = retInfo.info;
                     // Plan is good
                     if(planSucceed == -1) {
                         valid = true;
-                    // Plan is good but goal is not fulfilled
                     }else if(planSucceed == -2) {
-                        valid = false;
-                        System.out.println("REPLAN -> Get new Linearization!");
-                        this.plan = getTotalOrderPlan(popPlan, world);
-                        this.popPlan = null;
-                    // Plan is broken
-                    }else{
-                        System.out.println("Recieved: " + planSucceed + " -> REPLAN -> From Scratch!");
-                        valid = false;
+                        // Plan is good but goal is not fulfilled
+                        System.out.println("REPLAN -> From Scratch");
+
+                        this.popPlan = null;  
                         this.plan = null;
-                        this.popPlan = null;
+                        valid = false;
+                    }else{
+                        // Plan is broken
+                        Action failedAction = this.plan.list.get(planSucceed);
+                        System.out.println("   Recieved: " + planSucceed + " -> REPLAN -> Get new Linearization!");
+                        
+                        // Try to start over, to 
+                        this.plan = null; //getTotalOrderPlan(popPlan, world);
+                        
+                        if(this.plan == null) {
+                            this.popPlan = repairPlan(this.popPlan, failedAction, retInfo.precondition, this.state);
+                            if(this.popPlan == null || this.popPlan.isEmpty()) {
+                                System.out.println("      Could not repair plan!");
+                                valid = false;
+                                this.plan = null;
+                                this.popPlan = null;
+                            }else{
+                                System.out.println("      Plan repaired");
+                                this.plan = getTotalOrderPlan(popPlan, world);
+                            }
+                        }
                     }
                     //System.out.println("PLAN VALID: " + planSucceed + "  which is: " + valid);
                 }
-
+                
                 //System.err.println("Free: " + state.state.solveboolean("f([1,3])"));
                 if(this.plan != null && !this.plan.isEmpty() && valid) { // this.plan != null) {//
                     System.out.println("Go --->");
                     // If it is, do the next action
-                    Action next = plan.pop();
+                    Action next = plan.peep();
+                    
                     System.out.print("Take Next Action: " + next.name);
-
+                    
                     // Apply next - act() ?
                     if(next.atomic) {
                         System.out.println(" -- which is atomic");
@@ -239,19 +256,29 @@ public class POPlanner implements Runnable { //  implements Runnable
                             System.out.println("Action succeeded: " + false);
                             // Replan. Later on, try to introduce new open preconditions to popPlan instead and refine it further.
                             plan = null;
-                            popPlan = null; 
+                            popPlan = null;
                         }else{
+                            plan.pop();
+                            if(next.equals(lastAtomicOnSubPlan)) {
+                                popPlan.actions.remove(next);
+                            }
                             System.out.println("Action succeeded: " + true);
                         }
                     }else{
                        System.out.println(" -- which is not atomic");
+                       plan.pop();
+                       
                        TOPlan subPlan = routeFinder.findPlan(world,next.name);
-                       //subPlan.printSolution();
-                       this.plan.prependAll(subPlan);
-                       System.out.println("New plan:\n" + this.plan);
+                       if(subPlan == null || subPlan.list.isEmpty()) {
+                            System.out.println("IMPOSSIBLE GOAL FOUND! SKIPPING");
+                            this.goal = this.goals.pop();
+                       }else{
+                            lastAtomicOnSubPlan = subPlan.peepLast();
+                            //subPlan.printSolution();
+                            this.plan.prependAll(subPlan);
+                            System.out.println("Sub-plan:\n" + this.plan);
+                       }
                     }
-                    //world.agentActionParse(next.name);
-                    //world.agentActionParse(next.name);
                 }else{
                     if(this.plan != null) {
                         System.out.println("Replan: " + !valid);
@@ -260,24 +287,23 @@ public class POPlanner implements Runnable { //  implements Runnable
                     }
                     // Else, make a new plan ( and perform the first action ? )
 
-                    p = new POPProblem(agentId,"", this.actions);
-                    p.setInitial(this.state);
-                    //System.out.println(this.state);
-                    p.setGoal(this.goal);
-
-                    //System.out.println("Problem: " + p.toString());
-                    
                     long time1 = System.currentTimeMillis();
-                    this.popPlan = findPlan(p, this.goal);;
-                    System.out.println("Pop Plan: \n");
-                    //this.popPlan.printToConsole();
-                    this.plan = getTotalOrderPlan(popPlan, world);
-                    long time2 = System.currentTimeMillis();
+                    this.popPlan = findPlan(this.goal);
+                    if(this.popPlan == null || this.popPlan.isEmpty()) {
+                        System.out.println("IMPOSSIBLE GOAL FOUND! SKIPPING");
+                        this.goal = this.goals.pop();
+                    }else{
+                        //System.out.println("Pop Plan: \n");
+                        
+                        //this.popPlan.printToConsole();
+                        this.plan = getTotalOrderPlan(popPlan, world);
+                        long time2 = System.currentTimeMillis();
 
-                    System.out.println("Plan found in: " + (time2 - time1) + " ms");
-                    
-                    System.out.println("\nPlan: \n" + this.plan.toString());
-                    //System.out.println("Done...");
+                        System.out.println("Plan found in: " + (time2 - time1) + " ms");
+                        
+                        System.out.println("\nPlan: \n" + this.plan.toString());
+                        //System.out.println("Done...");
+                    }
                 }
             } catch (InterruptedException ex) {
                 Logger.getLogger(POPlanner.class.getName()).log(Level.SEVERE, null, ex);
@@ -316,14 +342,30 @@ public class POPlanner implements Runnable { //  implements Runnable
         return pop.getLinearization(world);
     }
     
-    public POP findPlan(POPProblem p, String goal) { 
+    public POP findPlan(String goal) { 
         // Fix format to avoid prolog-collisions. 
         goal = goal.replaceAll("\\[\\s*([0-9]*)\\s*,\\s*([0-9]*)\\s*\\]", "[$1;$2]");
         POP pop = new POP(goal);
-        return refinePlan(p, pop);
+        return refinePlan(pop);
+    }
+        
+    public POP repairPlan(POP pop, Action actionThatFailed, String preqThatFailed, State state) {
+        
+        //if(actionThatFailed == null) {
+        //    return findPlan(pop.goal);
+        //}
+        
+        // MUST COME FROM PLAN INSTEAD ? 
+        
+        // Find the preconditions of the action that are not fulfilled.
+
+         pop.addOpenPrecondition(preqThatFailed, actionThatFailed);
+         System.out.println("   New OP: " + preqThatFailed + " " + actionThatFailed);
+
+        return refinePlan(pop);
     }
     
-    private POP refinePlan(POPProblem p, final POP pop) {
+    private POP refinePlan(final POP pop) {
         // PARTIAL-ORDER PLAN-SPACE SEARCHING
         if(pop == null) {
             return null;
@@ -343,7 +385,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         
         //System.out.println("OP: " + oP.toString());
         try {
-            ArrayList<Action> gottenActions = findAction(p, oP.condition);
+            ArrayList<Action> gottenActions = findAction(oP.condition);
             //System.out.println("p:");
             //System.out.println("   " + actions.toString());
             for(Action A : gottenActions) {
@@ -377,12 +419,12 @@ public class POPlanner implements Runnable { //  implements Runnable
 
                         // CONFLICT! Solve it
 
-                        POP newPlan1 = refinePlan(p, pop.addOrderingConstraint(B, C));
+                        POP newPlan1 = refinePlan(pop.addOrderingConstraint(B, C));
                         if(newPlan1 != null) {
                             return newPlan1;
                         }
 
-                        POP newPlan2 = refinePlan(p, pop.addOrderingConstraint(C, A));
+                        POP newPlan2 = refinePlan(pop.addOrderingConstraint(C, A));
                         if(newPlan2 != null) {
                             return newPlan2;
                         }
@@ -401,12 +443,12 @@ public class POPlanner implements Runnable { //  implements Runnable
                             // CONFLICT! Solve it
                             Action C = oL.A;
                             //pop.addOrderingConstraint(C, A);
-                            POP newPlan1 = refinePlan(p, pop.addOrderingConstraint(B, C));
+                            POP newPlan1 = refinePlan(pop.addOrderingConstraint(B, C));
                             if(newPlan1 != null) {
                                 return newPlan1;
                             }
 
-                            POP newPlan2 = refinePlan(p, pop.addOrderingConstraint(C, A));
+                            POP newPlan2 = refinePlan(pop.addOrderingConstraint(C, A));
                             if(newPlan2 != null) {
                                 return newPlan2;
                             }
@@ -420,7 +462,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         }
         //System.out.println("Time spent so far: " + (System.currentTimeMillis() - time) + " ms. Is solution?= " + pop.isSolution() + "\n\n");
 
-        return refinePlan(p, pop);
+        return refinePlan(pop);
         
     }
     
@@ -484,13 +526,13 @@ public class POPlanner implements Runnable { //  implements Runnable
         return false;
     }
     
-    public ArrayList<Action> findAction(POPProblem p, String goal) throws InterruptedException {
+    public ArrayList<Action> findAction(String goal) throws InterruptedException {
         //System.out.print("FindAction: " + goal);
         goal = goal.replaceAll("\\[\\s*([0-9]*)\\s*,\\s*([0-9]*)\\s*\\]", "[$1;$2]");
         //System.out.println("   --  " + goal);
         ArrayList<Action> actionsReturn = new ArrayList<Action>();
         boolean go;
-        for(ActionSchema a : p.actions) {
+        for(ActionSchema a : this.actions) {
             if(!a.expanded) {
                 go = false;
                 //System.out.println("Action: " + a.name);
@@ -535,25 +577,6 @@ public class POPlanner implements Runnable { //  implements Runnable
         //System.out.println("Actions: " + actionsReturn.toString());
         
         return actionsReturn;
-    }
-
-    
-    private Node makeInitialNode(State initial) {
-        return new Node(initial, null, null, 0, 0);
-    }
-
-    private TOPlan makeSolution(Node n, POPProblem p) {
-        TOPlan s = new TOPlan();
-        s.s = n.s;
-        Node node = n;
-        while (node != null) {
-            if (node.a != null) {
-                s.add(node.a);
-            }
-
-            node = node.parent;
-        }
-        return s;
     }
 
     private String createStatics() {
