@@ -119,7 +119,8 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
                 return; 
             }
             if(this.plan != null) {
-                int planSucceed = this.plan.valid(state);
+                ReturnInfo retInfo = this.plan.valid(state); 
+                int planSucceed = retInfo.info;
                     // Plan is good
                     if(planSucceed == -1) {
                         valid = true;

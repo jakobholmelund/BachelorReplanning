@@ -70,6 +70,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                             //System.err.println("Agent found");
                             MapAgent agent = (MapAgent) obj;
                             domain += "agentAt(" + agent.getNumber() + ",[" + agent.x + "," + agent.y + "]). ";
+                            domain += "f([" + agent.x + "," + agent.y + "]). ";
                             if(agent.getCarying() != null) {
                                 domain += "carries(" + agent.getNumber() + "," + agent.getCarying().getId() + "). ";
                             }
@@ -80,8 +81,9 @@ public class POPlanner implements Runnable { //  implements Runnable
                             //System.err.println("Box found");
                             MapBox obs = (MapBox) obj;
                             domain += "at(" + obs.getId() + ",[" + obs.x + "," + obs.y + "]). "; 
-                            domain += "f([" + obs.x + "," + obs.y + "]). ";
-                            domain += "item(" + obs.getId() + "). ";
+                            domain += "box(" + obs.getId() + "). ";
+                            //domain += "f([" + obs.x + "," + obs.y + "]). ";
+                            //domain += "item(" + obs.getId() + "). ";
                             //if(i == 3 && j == 2) {
                             //    System.out.println("   At 2,3 THERE IS A BOX");
                             //}
@@ -156,9 +158,10 @@ public class POPlanner implements Runnable { //  implements Runnable
         //System.out.println("statics:\n " + statics);
         //System.out.println("objects:\n " + world.getObjects().toString());
         //System.out.println("Num objects: " + world.getObjects().size() + "\n Theory:");
-        //System.out.println(theory);
+        
         //System.err.println(theory);
         this.state = new State(theory);
+        //System.out.println("\n\n" + this.state.toString() + "\n\n");
         //System.out.println("Got these percepts: \n" + this.state.toString());
         long time2 = System.currentTimeMillis();
                 
@@ -172,7 +175,9 @@ public class POPlanner implements Runnable { //  implements Runnable
 
     @Override
     public void run() {
-        while(!this.done){
+        this.goals = new LinkedList<String>();
+        this.goals.add("f([1,4])");
+        while(!this.done) {
             System.out.println("\n");
             iteration++;
 
@@ -330,6 +335,14 @@ public class POPlanner implements Runnable { //  implements Runnable
             String arg1 = m.group(2);
             String arg2 = m.group(4);
             
+            if(arg1 != null) {
+                arg1 = arg1.replace(")", "");
+            }
+            
+            if(arg2 != null) {
+                arg2 = arg2.replace(")", "");
+            }
+
             //System.out.println(command);
             //System.out.println(arg1);
             //System.out.println(arg2);
@@ -543,21 +556,27 @@ public class POPlanner implements Runnable { //  implements Runnable
                     String[][] action = splitAction(e);
                     String[][] goalSplittet = splitAction(goal);
 
-                    //System.out.println("Effect : " + e);
-                    //System.out.println("Goal: " + goalSplittet[0][0] + " a: " + action[0][0]);
+                    //System.out.println("   Effect : " + e);
+                    //System.out.println("   Goal: " + goalSplittet[0][0] + " a: " + action[0][0]);
                     if(action[0][0].equals(goalSplittet[0][0])) {
                         go = true;
-                        //System.out.println("FOUND AN ACTION: " + a.name);
-                        //System.out.println("Head: " + action[0][0]);  
-
+                        //System.out.println("      FOUND AN ACTION: " + a.name);
+                        //System.out.println("      Head: " + action[0][0]);  
+                        //System.out.println("      a: " + action[1].length);
                         for(int i = 0; i < action[1].length; i++) {
-                            //System.out.print(action[1][i] + ",");
-                            arguments.put(action[1][i].trim(), goalSplittet[1][i].replaceAll(";", ","));   
+                            //System.out.println("         Contains: " + i + " -> " + action[1][i]);
+                        }
+                        
+                        for(int i = 0; i < action[1].length; i++) {
+                            if(action[1][i] != null) {
+                                //System.out.print("         " + action[1][i] + ",");
+                                arguments.put(action[1][i].trim(), goalSplittet[1][i].replaceAll(";", ","));
+                            }
                         }
                         //System.out.println("args: " + arguments.toString());
                     }
                 }
-
+                
                 if(go && !arguments.isEmpty()) {
                     //try {
                     actionsReturn.addAll(a.getSpecificActions(this.state.state, arguments));
@@ -605,19 +624,19 @@ public class POPlanner implements Runnable { //  implements Runnable
         // To avoid unknwon predicate errors
         String failsafes = "carries(none, object). at(none, nowhere). "; //carries(none, object). at(none, nowhere).
         /*
-       // Forward neighbours
-       String neighbours = "";
-            neighbours += "neighbour([X1,Y1], [X2,Y2], n) :- B is Y1 - 1, Y2 = B, X1 = X2. ";
-            neighbours += "neighbour([X1,Y1], [X2,Y2], s) :- B is Y1 + 1, Y2 = B, X2 = X1. ";
-            neighbours += "neighbour([X1,Y1], [X2,Y2], e) :- B is X1 + 1, X2 = B, Y1 = Y2. ";
-            neighbours += "neighbour([X1,Y1], [X2,Y2], w) :- B is X1 - 1, X2 = B, Y1 = Y2. ";
-       */
+        // Forward neighbours
+        String neighbours = "";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], n) :- B is Y1 - 1, Y2 = B, X1 = X2, f([X1,Y1]), f([X2,Y2]). ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], s) :- B is Y1 + 1, Y2 = B, X2 = X1, f([X1,Y1]), f([X2,Y2]). ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], e) :- B is X1 + 1, X2 = B, Y1 = Y2, f([X1,Y1]), f([X2,Y2]). ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], w) :- B is X1 - 1, X2 = B, Y1 = Y2, f([X1,Y1]), f([X2,Y2]). ";
+        */
         // Backward neighbours
         String neighbours = "";
-            neighbours += "neighbour([X1,Y1], [X2,Y2], n) :- B is Y2 + 1, Y1 = B, X1 = X2. ";
-            neighbours += "neighbour([X1,Y1], [X2,Y2], s) :- B is Y2 - 1, Y1 = B, X2 = X1. ";
-            neighbours += "neighbour([X1,Y1], [X2,Y2], e) :- B is X2 - 1, X1 = B, Y1 = Y2. ";
-            neighbours += "neighbour([X1,Y1], [X2,Y2], w) :- B is X2 + 1, X1 = B, Y1 = Y2. ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], n) :- B is Y2 + 1, Y1 = B, X1 = X2, \\+w([X1,Y1]), \\+w([X2,Y2]). ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], s) :- B is Y2 - 1, Y1 = B, X2 = X1, \\+w([X1,Y1]), \\+w([X2,Y2]). ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], e) :- B is X2 - 1, X1 = B, Y1 = Y2, \\+w([X1,Y1]), \\+w([X2,Y2]). ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], w) :- B is X2 + 1, X1 = B, Y1 = Y2, \\+w([X1,Y1]), \\+w([X2,Y2]). ";
 
         String rules = "" + neighbours + failsafes; //equals; //  move + push + pull + neighbours +     
         
@@ -715,12 +734,36 @@ public class POPlanner implements Runnable { //  implements Runnable
 	//requirements4.add("carries(Agent,Object)");
 	
 	ActionSchema place = new ActionSchema("place", prerequisites4, "place(Agent,Item)", argse4, effects4, false, true);
+        
+        
+        /* Smash  */
+	ArrayList<String> argse5 = new ArrayList<String>();
+	argse5.add("Agent");
+	argse5.add("AgPosition");
+	argse5.add("Object");
+        argse5.add("BoxPosition");
+        argse5.add("AnyDirection");
+	
+	ArrayList<String> prerequisites5 = new ArrayList<String>();
+        prerequisites5.add("agentAt(Agent,AgPosition)");
+        prerequisites5.add("f(AgPosition)");
+        prerequisites5.add("neighbour(AgPosition, BoxPosition, AnyDirection)");
+	prerequisites5.add("box(Object)");
+        prerequisites5.add("at(Object,BoxPosition)");
+	
+        ArrayList<String> effects5 = new ArrayList<String>();
+	effects5.add("f(BoxPosition)");
+	effects5.add("!at(Object, BoxPosition)");
+	effects5.add("!box(Object)");
+        
+	ActionSchema smash = new ActionSchema("smash", prerequisites5, "smash(Agent, Object)", argse5, effects5, false, true);
 
         ArrayList<ActionSchema> actions = new ArrayList<ActionSchema>();
         actions.add(move);
         actions.add(moveAtomic);
         actions.add(pickUp);
         actions.add(place);
+        actions.add(smash);
         
         return actions;
     }
