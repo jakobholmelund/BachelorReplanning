@@ -318,11 +318,38 @@ public class World {
         String[] coords = pos.split(",");
         return new long[]{((MapAgent)objectMap.get(agent)).getPosition(),map.keyFor(Integer.parseInt(coords[0]), Integer.parseInt(coords[1])),Long.parseLong(agent)};
     }
+    /*
+    public String[][] splitAction(String action) {
+        Pattern typeP = Pattern.compile("^(\\!?.*)\\((.[^),]*)\\)?(\\,(.*)\\))?");
+        Matcher m = typeP.matcher(action);
+        System.out.println(m);
+        boolean matchFound = m.find();
+        if (matchFound) {
+            System.out.println("MATCH FOUND");
+            String command = m.group(1);
+            String arg1 = m.group(2);
+            String arg2 = m.group(4);
+                        
+            System.out.println(command);
+            System.out.println(arg1);
+            System.out.println(m.group(3));
+            System.out.println(arg2);
+            return new String[][]{new String[]{command},new String[]{arg1,arg2}};
+        }
+        return null;
+    }*/
     
     public boolean pickUp(MapAgent ma,MapObject mo){
         ma.pickUp(mo);
         this.removeObject(mo);
         return true;
+    }
+    public boolean smash(MapAgent ma,MapObject mo){
+        if(map.neighborsFor(ma.getPosition()).contains(mo)){
+            this.removeObject(mo);
+            return true;
+        }
+        return false;
     }
     
     public boolean place(MapAgent ma){
@@ -352,6 +379,10 @@ public class World {
             }else if(m.group(1).equals("place")){
                 //MapObject object = objectMap.get(m.group(3));
                return this.place(agent);
+            }else if(m.group(1).equals("smash")){
+                //MapObject object = objectMap.get(m.group(3));
+               MapObject object = objectMap.get(m.group(3));
+               return this.smash(agent,object);
             }
         }
         return false;

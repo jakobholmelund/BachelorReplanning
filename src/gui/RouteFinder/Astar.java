@@ -21,7 +21,6 @@ public class Astar {
     
     public TOPlan findPlan(World w,String action) throws InterruptedException {
         map = w.simpleMap();
-        
         long[] startogoal = w.parseAction(action);
         long current = startogoal[0];//w.getAgentPos(agent);
         long goal = startogoal[1];//w.getAgentPos(agent);
@@ -41,6 +40,8 @@ public class Astar {
             Node n = frontier.pollFirst();
             if (n.curPosition == goal) {
                 return makeSolution(n);
+            }else if(n.f > map.size()){
+                return null;
             }
             
             for (long position : actions(n.curPosition)) {
