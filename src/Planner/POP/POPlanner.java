@@ -756,7 +756,7 @@ public class POPlanner implements Runnable { //  implements Runnable
 	effects5.add("!at(Object, BoxPosition)");
 	effects5.add("!box(Object)");
         
-	ActionSchema smash = new ActionSchema("smash", prerequisites5, "smash(Agent, Object)", argse5, effects5, false, true);
+	ActionSchema smash = new ActionSchema("smash", prerequisites5, "smash(Agent,Object)", argse5, effects5, false, true);
 
         ArrayList<ActionSchema> actions = new ArrayList<ActionSchema>();
         actions.add(move);
