@@ -176,7 +176,7 @@ public class POPlanner implements Runnable { //  implements Runnable
     @Override
     public void run() {
         this.goals = new LinkedList<String>();
-        this.goals.add("f([1,4])");
+        this.goals.add("agentAt(1,[1,7])");
         while(!this.done) {
             System.out.println("\n");
             iteration++;
@@ -276,7 +276,14 @@ public class POPlanner implements Runnable { //  implements Runnable
                        TOPlan subPlan = routeFinder.findPlan(world,next.name);
                        if(subPlan == null || subPlan.list.isEmpty()) {
                             System.out.println("IMPOSSIBLE GOAL FOUND! SKIPPING");
-                            this.goal = this.goals.pop();
+                            if(this.goals.isEmpty()) {
+                                this.goal = "";
+                                //System.err.println("DONE! ");
+                                //Thread.currentThread().join();
+                                //return;
+                            }else{
+                                this.goal = this.goals.pop();
+                            }
                        }else{
                             lastAtomicOnSubPlan = subPlan.peepLast();
                             //subPlan.printSolution();
