@@ -345,8 +345,10 @@ public class World {
         this.removeObject(mo);
         return true;
     }
+    
     public boolean smash(MapAgent ma,MapObject mo){
         if(map.neighborsFor(ma.getPosition()).contains(mo)){
+            System.out.println("SMAAAAAAAAAAAAAAAAAAAAAAASH");
             this.removeObject(mo);
             return true;
         }
@@ -365,11 +367,11 @@ public class World {
     }
     
    public boolean act(String action){
-        Pattern typeP = Pattern.compile("(^\\w+)\\((\\w*)\\,((\\w+)|\\s\\[((\\d+)\\,(\\d+))\\])\\)");
+        Pattern typeP = Pattern.compile("(^\\w+)\\((\\w*)\\,\\s?((\\w+)|\\s\\[((\\d+)\\,(\\d+))\\])\\)");
         Matcher m = typeP.matcher(action);
         boolean matchFound = m.find();
         if (matchFound) {
-            //System.out.println("FOUND MATCH");
+            System.out.println("FOUND MATCH");
             //System.out.println(m.group(1));
             MapAgent agent = (MapAgent)objectMap.get(m.group(2));
             if(m.group(1).equals("moveAtomic")){
@@ -381,6 +383,7 @@ public class World {
                 //MapObject object = objectMap.get(m.group(3));
                return this.place(agent);
             }else if(m.group(1).equals("smash")){
+                System.out.println("smash1");
                 //MapObject object = objectMap.get(m.group(3));
                MapObject object = objectMap.get(m.group(3));
                return this.smash(agent,object);

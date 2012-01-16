@@ -165,7 +165,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         //System.out.println("Got these percepts: \n" + this.state.toString());
         long time2 = System.currentTimeMillis();
                 
-       //System.out.println("Percepts gotten in: " + (time2 - time1) + " ms");
+       System.out.println("Percepts gotten in: " + (time2 - time1) + " ms");
     }
 
     public String getStatics() {

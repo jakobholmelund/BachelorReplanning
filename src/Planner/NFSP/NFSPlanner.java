@@ -270,8 +270,8 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
         String neighbours = "";
             neighbours += "neighbour([X1,Y1], [X2,Y2], n) :- B is Y1 - 1, Y2 = B, X1 = X2. ";
             neighbours += "neighbour([X1,Y1], [X2,Y2], s) :- B is Y1 + 1, Y2 = B, X2 = X1. ";
-            neighbours += "neighbour([X1,Y1], [X2,Y2], e) :- B is X1 + 1, X2 = B, Y1 = Y2. ";
-            neighbours += "neighbour([X1,Y1], [X2,Y2], w) :- B is X1 - 1, X2 = B, Y1 = Y2. ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], e) :- B is X1 + 1, X2 = B, Y1 = Y2, \\+w([X1,Y1]), \\+w([X2,Y2]). ";
+            neighbours += "neighbour([X1,Y1], [X2,Y2], w) :- B is X1 - 1, X2 = B, Y1 = Y2, \\+w([X1,Y1]), \\+w([X2,Y2]). ";
         // To avoid unknown-predicate errors
         String carries = "carries(none, object). ";    
         String at = "at(none, nowhere). ";
@@ -304,7 +304,7 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
 	
 	//ArrayList<String> requirements1 = new ArrayList<String>();
 	//requirements1.add("f(MovePos)");
-
+        
 	ActionSchema move = new ActionSchema("move", prerequisites1, "move(Agent,MovePos)", argse1, effects1, false, false);
 	//CurPos
 	/* MoveAtomic  */
@@ -315,7 +315,7 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
 	
 	ArrayList<String> prerequisites2 = new ArrayList<String>();
 	prerequisites2.add("agentAt(Agent,CurPos)");
-        prerequisites2.add("neighbour(CurPos, MovePos, MoveDir)");
+        prerequisites2.add("neighbour(CurPos, MovePos, _)");
 	prerequisites2.add("f(MovePos)");
 	
 	ArrayList<String> effects2 = new ArrayList<String>();
@@ -334,18 +334,18 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
 	ArrayList<String> argse3 = new ArrayList<String>();
 	argse3.add("Agent");
 	//argse3.add("AgPos");
-	argse3.add("ItPos");
+	argse3.add("CurPos");
 	argse3.add("Item");
 	
 	ArrayList<String> prerequisites3 = new ArrayList<String>();
 	prerequisites3.add("\\+carries(Agent, _)");
-	prerequisites3.add("agentAt(Agent,ItPos)"); // agentAt(Agent, AgPos)
+	prerequisites3.add("agentAt(Agent,CurPos)"); // agentAt(Agent, AgPos)
 	//prerequisites3.add("equals(ObjPos,AgPos)");
-	prerequisites3.add("at(Item,ItPos)");
+	prerequisites3.add("at(Item,CurPos)");
 	prerequisites3.add("item(Item)");
 	
 	ArrayList<String> effects3 = new ArrayList<String>();
-	effects3.add("!at(Object,Item)");
+	effects3.add("!at(Item,CurPos)");
 	effects3.add("carries(Agent,Item)");
 	
 	//ArrayList<String> requirements3 = new ArrayList<String>();
@@ -356,17 +356,17 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
 	/* Place  */
 	ArrayList<String> argse4 = new ArrayList<String>();
 	argse4.add("Agent");
-	argse4.add("AgPos");
+	argse4.add("CurPos");
 	//argse4.add("ObjPos");
 	argse4.add("Item");
 	
 	ArrayList<String> prerequisites4 = new ArrayList<String>();
-	prerequisites4.add("agentAt(Agent,AgPos)");
+	prerequisites4.add("agentAt(Agent,CurPos)");
 	//prerequisites4.add("equals(ObjPos, AgPos)");
 	prerequisites4.add("carries(Agent,Item)");
 	
 	ArrayList<String> effects4 = new ArrayList<String>();
-	effects4.add("at(Object,AgPos)");
+	effects4.add("at(Item,CurPos)");
 	effects4.add("!carries(Agent,Item)");
 	
 	//ArrayList<String> requirements4 = new ArrayList<String>();
@@ -374,12 +374,36 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
 	//requirements4.add("carries(Agent,Object)");
 	
 	ActionSchema place = new ActionSchema("place", prerequisites4, "place(Agent,Item)", argse4, effects4, false, true);
+        
+        
+        /* Smash  */
+	ArrayList<String> argse5 = new ArrayList<String>();
+	argse5.add("Agent");
+	argse5.add("AgPosition");
+	argse5.add("Object");
+        argse5.add("BoxPosition");
+        argse5.add("AnyDirection");
+	
+	ArrayList<String> prerequisites5 = new ArrayList<String>();
+        prerequisites5.add("agentAt(Agent,AgPosition)");
+        prerequisites5.add("f(AgPosition)");
+        prerequisites5.add("neighbour(AgPosition, BoxPosition, AnyDirection)");
+	prerequisites5.add("box(Object)");
+        prerequisites5.add("at(Object,BoxPosition)");
+	
+        ArrayList<String> effects5 = new ArrayList<String>();
+	effects5.add("f(BoxPosition)");
+	effects5.add("!at(Object, BoxPosition)");
+	effects5.add("!box(Object)");
+        
+	ActionSchema smash = new ActionSchema("smash", prerequisites5, "smash(Agent, Object)", argse5, effects5, false, true);
 
         ArrayList<ActionSchema> actions = new ArrayList<ActionSchema>();
         actions.add(move);
         actions.add(moveAtomic);
         actions.add(pickUp);
         actions.add(place);
+        actions.add(smash);
         
         return actions;
     }
