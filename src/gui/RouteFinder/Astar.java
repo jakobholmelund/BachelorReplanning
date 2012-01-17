@@ -80,11 +80,29 @@ public class Astar {
         while (node != null && node.parent != null) {
             int[] cords = coordsFor(node.curPosition);
             int[] cordsParent = coordsFor(node.parent.curPosition);
-            Action action = new Action("moveAtomic(" + this.agent + ", [" + cords[0] + "," + cords[1] + "])", true, true);
+            //Action action = new Action("moveAtomic(" + this.agent + ", [" + cords[0] + "," + cords[1] + "])", true, true);
+            String direction = "Error";
+            
+            if(cords[0] == cordsParent[0] && (cords[1] == cordsParent[1] - 1)) {
+                direction = "N";
+            }
+            if(cords[0] == cordsParent[0] && (cords[1] == cordsParent[1] + 1)) {
+                direction = "S";
+            }
+            if((cords[0] == cordsParent[0] + 1) && cords[1] == cordsParent[1]) {
+                direction = "E";
+            }
+            if((cords[0] == cordsParent[0] - 1) && cords[1] == cordsParent[1]) {
+                direction = "W";
+            }
+            
+            Action action = new Action("moveAtomic(" + this.agent + ", " + direction + ")", true, true);
             action.addEffect("agentAt(" + this.agent + ",[" + cords[0] + "," + cords[1] + "])");
             action.addEffect("!agentAt(" + this.agent + ",[" + cordsParent[0] + "," + cordsParent[1] + "])");
+            
             action.addPrecondition("f([" + cords[0] + "," + cords[1] + "])");
             action.addPrecondition("agentAt(" + this.agent + ",[" + cordsParent[0] + "," + cordsParent[1] + "])");
+            
             //p.add(node.curPosition);
             p.add(action);
             node = node.parent;
