@@ -3,15 +3,10 @@ package Planner.POP;
 import Planner.*;
 import gui.RouteFinder.Astar;
 import jTrolog.errors.PrologException;
-import java.util.ArrayList;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import worldmodel.*;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -185,10 +180,18 @@ public class POPlanner implements Runnable { //  implements Runnable
                 //get percepts and update current state description
                 getPercepts();
                 
-                if(this.goal == null || this.goal.equals("") && goals.size() > 0) {
-                    this.goal = goals.pop();
-                    this.plan = null;
-                    System.out.println("NEW GOAL: " + this.goal);
+                if(this.goal == null || this.goal.equals("") && !this.goals.isEmpty()) {
+                    try {
+                        this.goal = goals.pop();
+                        this.plan = null;
+                        System.out.println("NEW GOAL: " + this.goal);
+                    }
+                    catch(NoSuchElementException e) {
+                        this.done = true;
+                        System.err.println("DONE! ");
+                        Thread.currentThread().join();
+                        return;
+                    }
                 }
                 
                 //check if plan is still valid
@@ -678,10 +681,11 @@ public class POPlanner implements Runnable { //  implements Runnable
 	argse2.add("Agent");
 	argse2.add("CurPos");
 	argse2.add("MovePos");
-	
+	argse2.add("MoveDir");
+        
 	ArrayList<String> prerequisites2 = new ArrayList<String>();
 	prerequisites2.add("agentAt(Agent,CurPos)");
-        prerequisites2.add("neighbour(CurPos, MovePos, _)");
+        prerequisites2.add("neighbour(CurPos, MovePos, MoveDir)");
 	prerequisites2.add("f(MovePos)");
 	
 	ArrayList<String> effects2 = new ArrayList<String>();
@@ -691,7 +695,7 @@ public class POPlanner implements Runnable { //  implements Runnable
 	//ArrayList<String> requirements2 = new ArrayList<String>();
 	//requirements2.add("f(MovePos)");
 
-	ActionSchema moveAtomic = new ActionSchema("moveAtomic", prerequisites2, "moveAtomic(Agent,MovePos)", argse2, effects2, true, true);
+	ActionSchema moveAtomic = new ActionSchema("moveAtomic", prerequisites2, "moveAtomic(Agent,MoveDir)", argse2, effects2, true, true);
 	
 	// object(Object) :- box(Object).
 	// object(Object) :- bomb(Object).	
