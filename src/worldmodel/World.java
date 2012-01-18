@@ -378,13 +378,13 @@ public class World {
             MapAgent agent = (MapAgent)objectMap.get(m.group(2));
             if(m.group(1).equals("moveAtomic")){
                 String amovedir = m.group(3);
-                if("N".equals(amovedir)){
+                if("n".equals(amovedir)){
                     this.moveObject(agent, agent.x,agent.y-1);
-                }else if("S".equals(amovedir)){
+                }else if("s".equals(amovedir)){
                     this.moveObject(agent, agent.x, agent.y+1);
-                }else if("E".equals(amovedir)){
+                }else if("e".equals(amovedir)){
                     this.moveObject(agent, agent.x+1, agent.y);
-                }else if("W".equals(amovedir)){
+                }else if("w".equals(amovedir)){
                     this.moveObject(agent, agent.x-1, agent.y);
                 }
                 return this.moveObject(agent,Integer.parseInt(m.group(6)),Integer.parseInt(m.group(7)));
