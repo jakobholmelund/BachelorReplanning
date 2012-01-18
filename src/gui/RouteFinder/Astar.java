@@ -126,7 +126,10 @@ public class Astar {
                 MapBox box = (MapBox)tjek[0];
                 action = new Action("smash(" + this.agent + ", " + box.getId() + ")", true, true);
                 action.addEffect("!at(" + box.getId() + ",[" + cords[0] + "," + cords[1] + "])");
-                action.addPrecondition("f([" + cords[0] + "," + cords[1] + "])");
+                action.addEffect("f([" + cords[0] + "," + cords[1] + "])");
+                action.addEffect("!box(" + box.getId()+ ")");
+                
+                action.addPrecondition("agentAt(" + this.agent + ",[" + cordsParent[0] + "," + cordsParent[1] + "])");
                 //p.add(action);
                 pop.addAction(action);
                 pop.addOrderingConstraint(action, moveAction);

@@ -193,7 +193,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                         // Plan is broken
                         //Action failedAction = this.plan.list.get(planSucceed);
                         System.out.println("   Recieved: " + planSucceed + " -> REPLAN -> Try to repair plan! (in reality, replan from scratch)");
-                        
+                        System.out.println("   OP: " + retInfo.precondition.toString());
                         // Try to start over, to 
                         this.plan = null; //getTotalOrderPlan(popPlan, world);
                         this.popPlan = null; //repairPlan(this.popPlan, failedAction, retInfo.precondition, this.state);
