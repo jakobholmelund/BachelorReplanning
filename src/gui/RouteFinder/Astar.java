@@ -80,7 +80,7 @@ public class Astar {
     }
 
     private POP makeSolution(Node n, World w) {
-        TOPlan p = new TOPlan();
+        //TOPlan p = new TOPlan();
         POP pop = new POP("");
         pop.clearOpenPreconditions();
         Node node = n;
@@ -113,7 +113,7 @@ public class Astar {
             //action.addPrecondition("agentAt(" + this.agent + ",[" + cordsParent[0] + "," + cordsParent[1] + "])");
             
             //p.add(node.curPosition);
-            p.add(action);
+            //p.add(action);
             pop.addAction(action);
             //System.out.println("   Adding ordering: " + action.getAction() + " <<< " + laterAction.getAction());
             pop.addOrderingConstraint(action, laterAction);
@@ -122,13 +122,14 @@ public class Astar {
             //pop.addCausalLink(action, laterAction, direction);
             Object[] tjek = w.getMap().get(node.curPosition);
             if(w.getMap().get(node.curPosition) != null && (MapObject)tjek[0] instanceof MapBox){
+                Action moveAction = action;
                 MapBox box = (MapBox)tjek[0];
                 action = new Action("smash(" + this.agent + ", " + box.getId() + ")", true, true);
                 action.addEffect("!at(" + box.getId() + ",[" + cords[0] + "," + cords[1] + "])");
                 action.addPrecondition("f([" + cords[0] + "," + cords[1] + "])");
-                p.add(action);
+                //p.add(action);
                 pop.addAction(action);
-                pop.addOrderingConstraint(action, laterAction);
+                pop.addOrderingConstraint(action, moveAction);
             }
             
             laterAction = action;

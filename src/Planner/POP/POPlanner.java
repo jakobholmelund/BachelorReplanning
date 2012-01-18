@@ -191,14 +191,15 @@ public class POPlanner implements Runnable { //  implements Runnable
                         valid = false;
                     }else{
                         // Plan is broken
-                        Action failedAction = this.plan.list.get(planSucceed);
-                        System.out.println("   Recieved: " + planSucceed + " -> REPLAN -> Try to repair plan!");
+                        //Action failedAction = this.plan.list.get(planSucceed);
+                        System.out.println("   Recieved: " + planSucceed + " -> REPLAN -> Try to repair plan! (in reality, replan from scratch)");
                         
                         // Try to start over, to 
                         this.plan = null; //getTotalOrderPlan(popPlan, world);
-                        this.popPlan = repairPlan(this.popPlan, failedAction, retInfo.precondition, this.state);
+                        this.popPlan = null; //repairPlan(this.popPlan, failedAction, retInfo.precondition, this.state);
+                        valid = false;
                         //this.popPlan.printToConsole();
-                        System.out.println("      Plan attempted repaired!");
+                        /*System.out.println("      Plan attempted repaired!");
                         if(this.popPlan == null || this.popPlan.isEmpty()) {
                             System.out.println("      Could not repair plan!");
                             valid = false;
@@ -209,7 +210,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                             System.out.println("      Plan repaired");
                             this.plan = getTotalOrderPlan(this.popPlan, world);
                             System.out.println("      New Plan: " + this.plan + "\n");
-                        }
+                        }*/
                     }
                     //System.out.println("PLAN VALID: " + planSucceed + "  which is: " + valid);
                 }
@@ -232,8 +233,9 @@ public class POPlanner implements Runnable { //  implements Runnable
                         if(!world.act(next.name)) {
                             System.out.println("Action " + next.name + " succeeded: " + false);
                             // Replan. Later on, try to introduce new open preconditions to popPlan instead and refine it further.
-                            this.plan = null;
+                            this.plan = null; 
                             this.popPlan = null;
+                            valid = false;
                         }else{
                             this.plan.pop();
                             this.popPlan.safelyDeleteAction(next);
@@ -268,7 +270,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                             
                             //this.popPlan.printToConsole();
                             this.plan = getTotalOrderPlan(this.popPlan, this.world);
-                            //System.out.println("\nNew plan:\n" + this.plan + "\n");
+                            System.out.println("\nNew plan:\n" + this.plan + "\n");
                             //System.out.println("\n\n");
                             //lastAtomicOnSubPlan = subPlan.peepLast();
                             //subPlan.printSolution();
@@ -405,8 +407,8 @@ public class POPlanner implements Runnable { //  implements Runnable
                     
                     // Add new open preconditions
                     for(String P : A.openPreconditions) {
-                        boolean fulfilled = false;
-                        for(Action act : pop.actions) {
+                        //boolean fulfilled = false;
+                        /*for(Action act : pop.actions) {
                             for(String effect : act.effects) {
                                 //System.out.println(         "is " + P.replace(" ", "") + " =?= " + effect.replace(" ", ""));
                                 if(P.replace(" ", "").equals(effect.replace(" ", ""))) {
@@ -415,13 +417,13 @@ public class POPlanner implements Runnable { //  implements Runnable
                                     fulfilled = true;
                                 }
                             }
-                        }
-                        if(!fulfilled) {
-                            // Fix format to avoid prolog-collisions. 
-                            P = P.replaceAll("\\[\\s*([0-9]*)\\s*,\\s*([0-9]*)\\s*\\]", "[$1;$2]");
-                            //System.out.println("   Adding: " + P);
-                            pop.addOpenPrecondition(P, A);
-                        }
+                        }*/
+                        //if(!fulfilled) {
+                        // Fix format to avoid prolog-collisions. 
+                        P = P.replaceAll("\\[\\s*([0-9]*)\\s*,\\s*([0-9]*)\\s*\\]", "[$1;$2]");
+                        //System.out.println("   Adding: " + P);
+                        pop.addOpenPrecondition(P, A);
+                        //}
                     }
                 }
 
