@@ -130,7 +130,7 @@ public class TOPlan {
      *  -1 if the plan is valid
      *  -2 if the plan is valid but does not fulfill the goal
      */
-    public ReturnInfo planMonitoring(State state) {
+    public ReturnInfo monitorPlan(State state) {
         Logic s = state.state.clone();
         //System.out.println("Initial check state: \n " + s.getTheoryAsString());
         long time1 = System.currentTimeMillis();

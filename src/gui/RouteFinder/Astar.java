@@ -90,16 +90,16 @@ public class Astar {
             String direction = "Error";
             
             if(cords[0] == cordsParent[0] && (cords[1] == cordsParent[1] - 1)) {
-                direction = "N";
+                direction = "n";
             }
             if(cords[0] == cordsParent[0] && (cords[1] == cordsParent[1] + 1)) {
-                direction = "S";
+                direction = "s";
             }
             if((cords[0] == cordsParent[0] + 1) && cords[1] == cordsParent[1]) {
-                direction = "E";
+                direction = "e";
             }
             if((cords[0] == cordsParent[0] - 1) && cords[1] == cordsParent[1]) {
-                direction = "W";
+                direction = "w";
             }
             
             Action action = new Action("moveAtomic(" + this.agent + ", " + direction + ")", true, true);
@@ -119,6 +119,7 @@ public class Astar {
             firstAction = action;
             node = node.parent;
         }
+        
         pop.addOrderingConstraint(pop.getStart(), firstAction);
         //TOPlan top = pop.getLinearization(w);
         

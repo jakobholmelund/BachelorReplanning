@@ -120,7 +120,7 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
                 return; 
             }
             if(this.plan != null) {
-                ReturnInfo retInfo = this.plan.planMonitoring(state); 
+                ReturnInfo retInfo = this.plan.monitorPlan(state); 
                 int planSucceed = retInfo.info;
                     // Plan is good
                     if(planSucceed == -1) {

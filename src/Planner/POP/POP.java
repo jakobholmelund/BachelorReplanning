@@ -127,9 +127,21 @@ public class POP {
     public void clearOpenPreconditions() {
         openPreconditions.clear();
     }
-     
+    
+    public synchronized void setStart(Action A) {
+        this.startAction = A;
+    }
+    
+     public synchronized void setFinish(Action A) {
+        this.finishAction = A;
+    }
+    
     public synchronized void addAction(Action A) {
         actions.add(A);
+    }
+    
+    public synchronized void deleteAction(Action A) {
+        actions.remove(A);
     }
     
     public synchronized boolean contains(Action a) {
@@ -258,5 +270,109 @@ public class POP {
         }
         return newPlan;
     }*/
+
+    public void insertPOPAt(POP popSubPlan, Action insertAtAction) {
+        // Clean up the plan to be inserted. This mean deleting start and delete actions
+        ArrayList<Action> newStartList = new ArrayList<Action>();
+        ArrayList<Action> newEndList = new ArrayList<Action>();
+        ArrayList<OrderingConstraint> deleteOrderingConstraints = new ArrayList<OrderingConstraint>();
+        for(OrderingConstraint order : popSubPlan.orderingConstraints) {
+            if(order.A.equals(popSubPlan.startAction)) {
+                newStartList.add(order.B);
+            }
+            if(order.B.equals(popSubPlan.finishAction)) {
+                newEndList.add(order.A);
+            }
+        }
         
+        popSubPlan.deleteAction(popSubPlan.startAction);
+        popSubPlan.setStart(null);
+        popSubPlan.deleteAction(popSubPlan.finishAction);
+        popSubPlan.setFinish(null);
+        
+        for(OrderingConstraint order : deleteOrderingConstraints) {
+            popSubPlan.orderingConstraints.remove(order);
+        }
+        
+        // Now to merge
+        deleteOrderingConstraints = new ArrayList<OrderingConstraint>();
+        ArrayList<OrderingConstraint> addOrderingConstraints = new ArrayList<OrderingConstraint>();
+        for(OrderingConstraint order : this.orderingConstraints) {
+            // Any that lead to action to be removed, must now lead to the start of inserted plan
+            if(order.B.equals(insertAtAction)) {
+                deleteOrderingConstraints.add(order);
+                for(Action action : newStartList) {
+                    OrderingConstraint o = new OrderingConstraint(order.A, action);
+                    addOrderingConstraints.add(o);
+                }
+            }
+            
+            // Any that lead from action to be removed, must now lead from end of inserted plan
+            if(order.A.equals(insertAtAction)) {
+                deleteOrderingConstraints.add(order);
+                for(Action action : newEndList) {
+                    OrderingConstraint o = new OrderingConstraint(action, order.B);
+                    addOrderingConstraints.add(o);
+                }
+            }
+        }
+        
+        ArrayList<CausalLink> deleteCausalLinks = new ArrayList<CausalLink>();
+        ArrayList<CausalLink> addCausalLinks = new ArrayList<CausalLink>();
+        for(CausalLink link : this.causalLinks) {
+            // Any that lead to action to be removed, must now lead to the start of inserted plan
+            if(link.B.equals(insertAtAction)) {
+                deleteCausalLinks.add(link);
+                for(Action action : newStartList) {
+                    CausalLink l = new CausalLink(link.A, action, link.p);
+                    addCausalLinks.add(l);
+                }
+            }
+            
+            // Any that lead from action to be removed, must now lead from end of inserted plan
+            if(link.A.equals(insertAtAction)) {
+                deleteCausalLinks.add(link);
+                for(Action action : newStartList) {
+                    CausalLink l = new CausalLink(action, link.B, link.p);
+                    addCausalLinks.add(l);
+                }
+            }
+        }
+        
+        // Do the final adding an removal of elements        
+        for(Action action : popSubPlan.actions) {
+            this.addAction(action);
+        }
+        
+        for(OrderingConstraint order : deleteOrderingConstraints) {
+            this.deleteOrderingConstraint(order);
+        }
+        for(OrderingConstraint order : addOrderingConstraints) {
+            this.addOrderingConstraint(order);
+        }
+        
+        for(CausalLink link : deleteCausalLinks) {
+            this.deleteCausalLink(link);
+        }
+        for(CausalLink link : addCausalLinks) {
+            this.addCausalLink(link);
+        }
+    }
+
+    private void addOrderingConstraint(OrderingConstraint order) {
+        this.orderingConstraints.add(order);
+    }
+
+    private void deleteOrderingConstraint(OrderingConstraint order) {
+        this.orderingConstraints.remove(order);
+        
+    }
+
+    private void deleteCausalLink(CausalLink link) {
+        this.causalLinks.remove(link);
+    }
+    
+    private void addCausalLink(CausalLink link) {
+        this.causalLinks.add(link);
+    }    
 }
