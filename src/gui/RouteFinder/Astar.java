@@ -8,6 +8,7 @@ import Planner.Action;
 import Planner.POP.POP;
 import Planner.TOPlan;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.TreeSet;
 import worldmodel.World;
 
@@ -17,7 +18,7 @@ import worldmodel.World;
  */
 public class Astar {
     final private int movecost = 1;
-    private ArrayList<Long> map;
+    private HashSet<Long> map;
     private long agent;
     
     public POP findPlan(World w,String action) throws InterruptedException {

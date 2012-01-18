@@ -15,6 +15,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
@@ -89,7 +90,7 @@ public class World {
                 if(mo instanceof Goal){
                     Goal g = (Goal)mo;
                     int[] coords = map.coordsFor(g.getPosition());
-                    goals.add("at(" + g.getName() + ",["+coords[0]+","+coords[1]+"])");
+                    goals.add("at(" + g.getName() + ",["+coords[0]+", "+coords[1]+"])");
                 }
             }
         
@@ -296,8 +297,8 @@ public class World {
         
     }
    
-    public ArrayList<Long> simpleMap(){
-        ArrayList<Long> coords2value = new ArrayList<Long>();
+    public HashSet<Long> simpleMap(){
+        HashSet<Long> coords2value = new HashSet<Long>();
         for(int i = 0; i < cols; i++) {
             for(int j = 0; j < rows; j++) {
                 long key = map.keyFor(j, i);

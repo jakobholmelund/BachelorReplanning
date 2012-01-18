@@ -27,11 +27,9 @@ public class Node implements Comparable<Node> {
         } else if (this.h != other.h) { //!this.equals(other.h)){
             //System.err.println("COMPARE TO: 3");
             return Double.compare(this.h, other.h);
-        } else if (this.a == null || !this.a.name.equals(other.a.name)){
-            return 1;
         } else {
             //System.err.println("ZERO ZERO ZERO ZERO!!!!!!!!!!!!!!!!!!!!!!!!");
-            return 0;
+            return 1;
         }
     }
 

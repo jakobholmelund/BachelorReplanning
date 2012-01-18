@@ -42,6 +42,7 @@ public class NFSPProblem {
 
     public boolean goalTest(State s) {
         setState(s);
+        System.out.println(getGoal());
         boolean bol = logic.solveboolean(getGoal());
         //System.out.println("Goal: " + getGoal() + " is: " + bol);
         return bol;
