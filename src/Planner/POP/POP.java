@@ -124,7 +124,11 @@ public class POP {
          return returner;
      }
     
-    public synchronized void addActions(Action A) {
+    public void clearOpenPreconditions() {
+        openPreconditions.clear();
+    }
+     
+    public synchronized void addAction(Action A) {
         actions.add(A);
     }
     
@@ -199,7 +203,7 @@ public class POP {
         return finishAction;
     }
 
-    void printToConsole() {
+    public void printToConsole() {
         System.out.println("Open Preconditions: " + openPreconditions.size());
         System.out.println("Actions: ");
         for (int i = 0; i < actions.toArray().length; i++) {
@@ -233,13 +237,13 @@ public class POP {
         return (actions.size() == 2);
     }
 
-    private TOPlan expandToAtomic(TOPlan newPlan, World world) {
+    /*private TOPlan expandToAtomic(TOPlan newPlan, World world) {
         for(int i = 0; i < newPlan.list.size(); i++) {
             Action next = newPlan.list.get(i);
             if(!next.atomic) {
                newPlan.list.remove(i);
                System.out.println(" -- which is not atomic");
-               TOPlan subPlan = null;
+               POP subPlan = null;
                 try {
                     subPlan = routeFinder.findPlan(world,next.name);
                     newPlan.addAll(i, subPlan);
@@ -253,6 +257,6 @@ public class POP {
             }
         }
         return newPlan;
-    }
+    }*/
         
 }

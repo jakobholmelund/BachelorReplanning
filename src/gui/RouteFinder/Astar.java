@@ -5,6 +5,7 @@
 package gui.RouteFinder;
 
 import Planner.Action;
+import Planner.POP.POP;
 import Planner.TOPlan;
 import java.util.ArrayList;
 import java.util.TreeSet;
@@ -19,12 +20,13 @@ public class Astar {
     private ArrayList<Long> map;
     private long agent;
     
-    public TOPlan findPlan(World w,String action) throws InterruptedException {
+    public POP findPlan(World w,String action) throws InterruptedException {
         map = w.simpleMap();
         long[] startogoal = w.parseAction(action);
         long current = startogoal[0];//w.getAgentPos(agent);
         long goal = startogoal[1];//w.getAgentPos(agent);
         agent = startogoal[2];
+
         TreeSet<Node> frontier = new TreeSet<Node>();
         Node init = makeInitialNode(current);
         frontier.add(init);
@@ -39,7 +41,7 @@ public class Astar {
             
             Node n = frontier.pollFirst();
             if (n.curPosition == goal) {
-                return makeSolution(n);
+                return makeSolution(n, w);
             }else if(n.f > map.size()){
                 return null;
             }
@@ -74,9 +76,13 @@ public class Astar {
         return new Node(cp, null, 0, 0);
     }
 
-    private TOPlan makeSolution(Node n) {
+    private POP makeSolution(Node n, World w) {
         TOPlan p = new TOPlan();
+        POP pop = new POP("");
+        pop.clearOpenPreconditions();
         Node node = n;
+        Action laterAction = pop.getFinish();
+        Action firstAction = null;
         while (node != null && node.parent != null) {
             int[] cords = coordsFor(node.curPosition);
             int[] cordsParent = coordsFor(node.parent.curPosition);
@@ -105,10 +111,22 @@ public class Astar {
             
             //p.add(node.curPosition);
             p.add(action);
+            pop.addAction(action);
+            System.out.println("   Adding ordering: " + action.getAction() + " <<< " + laterAction.getAction());
+            pop.addOrderingConstraint(action, laterAction);
+            
+            laterAction = action;
+            firstAction = action;
             node = node.parent;
         }
+        pop.addOrderingConstraint(pop.getStart(), firstAction);
+        //TOPlan top = pop.getLinearization(w);
+        
         //p.printSolution();
-        return p;
+        //pop.printToConsole();
+        //System.out.println("\n\n");
+        //top.printSolution();
+        return pop;
     }
     
     private ArrayList<Long> neighborsFor(long k){    

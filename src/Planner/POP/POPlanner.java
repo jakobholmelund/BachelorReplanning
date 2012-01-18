@@ -276,8 +276,9 @@ public class POPlanner implements Runnable { //  implements Runnable
                     }else{
                        System.out.println(" -- which is not atomic");
                        plan.pop();
-                       
-                       TOPlan subPlan = routeFinder.findPlan(world,next.name);
+                       popPlan.
+                       POP popSubPlan = routeFinder.findPlan(world,next.name);
+                       TOPlan subPlan = popSubPlan.getLinearization(world);
                        if(subPlan == null || subPlan.list.isEmpty()) {
                             System.out.println("IMPOSSIBLE GOAL FOUND! SKIPPING");
                             if(this.goals.isEmpty()) {
@@ -476,7 +477,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                             }
                         }
                     }
-                    pop.addActions(A);
+                    pop.addAction(A);
                 }
             }
         } catch (InterruptedException ex) {

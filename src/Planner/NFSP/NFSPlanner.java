@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import worldmodel.*;
 import Planner.*;
+import Planner.POP.POP;
 import gui.RouteFinder.Astar;
 import java.util.ArrayList;
 public class NFSPlanner implements Runnable{ //  implements Runnable
@@ -146,7 +147,8 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
                     world.act(next.name);
                     //world.agentActionParse(next.name);
                 }else{
-                   TOPlan subPlan = routeFinder.findPlan(world,next.name);
+                   POP popSubPlan = routeFinder.findPlan(world,next.name);
+                   TOPlan subPlan = popSubPlan.getLinearization(world);
                    //subPlan.printSolution();
                    this.plan.prependAll(subPlan);
                 }

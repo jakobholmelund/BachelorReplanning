@@ -102,11 +102,11 @@ public class TOPlan {
     }
 
     public void printSolution() {
-        System.err.print("THIS: ");
+        System.out.print("THIS: ");
         for (Action a : list) {
-            System.err.print(a.toString() + " , ");
+            System.out.print(a.toString() + " \n");
         }
-        System.err.println("Is a solution");
+        System.out.println("Is a solution");
     }
 
     @Override
