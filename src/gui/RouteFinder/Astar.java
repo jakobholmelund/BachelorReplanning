@@ -10,6 +10,8 @@ import Planner.TOPlan;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.TreeSet;
+import worldmodel.MapBox;
+import worldmodel.MapObject;
 import worldmodel.World;
 
 /**
@@ -118,6 +120,16 @@ public class Astar {
             
             //pop.addCausalLink(action, laterAction, "agentAt(" + this.agent + ",[" + cords[0] + "," + cords[1] + "])");
             //pop.addCausalLink(action, laterAction, direction);
+            Object[] tjek = w.getMap().get(node.curPosition);
+            if(w.getMap().get(node.curPosition) != null && (MapObject)tjek[0] instanceof MapBox){
+                MapBox box = (MapBox)tjek[0];
+                action = new Action("smash(" + this.agent + ", " + box.getId() + ")", true, true);
+                action.addEffect("!at(" + box.getId() + ",[" + cords[0] + "," + cords[1] + "])");
+                action.addPrecondition("f([" + cords[0] + "," + cords[1] + "])");
+                p.add(action);
+                pop.addAction(action);
+                pop.addOrderingConstraint(action, laterAction);
+            }
             
             laterAction = action;
             firstAction = action;
@@ -125,6 +137,8 @@ public class Astar {
         }
         
         pop.addOrderingConstraint(pop.getStart(), firstAction);
+        
+        pop.printToConsole();
         //TOPlan top = pop.getLinearization(w);
         //System.out.println("Found route------>");
         //p.printSolution();
