@@ -13,8 +13,8 @@ public class Action implements Comparable<Action>{
     public Action(String s, boolean expanded, boolean atomic) {
         this.name = s;
         this.effects = new ArrayList<String>();
-        preconditions = new ArrayList<String>();
-        openPreconditions = new ArrayList<String>(); 
+        this.preconditions = new ArrayList<String>();
+        this.openPreconditions = new ArrayList<String>(); 
         this.expanded = expanded;
         this.atomic = atomic;
     }

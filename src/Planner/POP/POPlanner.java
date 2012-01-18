@@ -116,39 +116,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                 }
             }
        }
-       /*
-       for(MapObject o : world.getObjects()) {
-           if(o instanceof MapAgent) {
-                //System.err.println("Agent found");
-                MapAgent agent = (MapAgent) o;
-                domain += "agentAt(" + agent.getNumber() + ",[" + agent.x + "," + agent.y + "]). ";
-                if(agent.getCarying() != null) {
-                    domain += "carries(" + agent.getNumber() + "," + agent.getCarying().getId() + "). ";
-                }
-            }else if(o instanceof MapBox) {
-                //System.err.println("Box found");
-                MapBox obs = (MapBox) o;
-                domain += "at(" + obs.getId() + ",[" + obs.x + "," + obs.y + "]). "; 
-                domain += "item(" + obs.getId() + "). ";
-            }else if(o instanceof Bomb) {
-                //System.err.println("Box found");
-                Bomb obs = (Bomb) o;
-                domain += "at(" + obs.getId() + ",[" + obs.x + "," + obs.y + "]). "; 
-                domain += "item(" + obs.getId() + "). ";
-            }else if(o instanceof Goal) {
-                //System.err.println("goal found");
-                Goal obs = (Goal) o;
-                domain += "goalAt(" + obs.getId() + ",[" + obs.x + "," + obs.y + "]). "; 
-            }else if(o instanceof Wall) {
-                //System.err.println("wall found");
-                Wall w = (Wall) o;
-                domain += "w([" + w.x + "," + w.y + "]). "; 
-                if(w.x == 2 && w.y == 3) {
-                    System.out.println("   At 2,3 THERE IS WALL");
-                }
-            }
-        }*/
-       
+     
         String theory = getStatics() + domain;
         //System.out.println("statics:\n " + statics);
         //System.out.println("objects:\n " + world.getObjects().toString());
@@ -239,7 +207,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                         }else{
                             valid = true;
                             System.out.println("      Plan repaired");
-                            this.plan = getTotalOrderPlan(popPlan, world);
+                            this.plan = getTotalOrderPlan(this.popPlan, world);
                             System.out.println("      New Plan: " + this.plan + "\n");
                         }
                     }
@@ -268,12 +236,13 @@ public class POPlanner implements Runnable { //  implements Runnable
                             this.popPlan = null;
                         }else{
                             this.plan.pop();
-                            this.popPlan.deleteAction(next);
+                            this.popPlan.safelyDeleteAction(next);
+                            //this.popPlan.printToConsole();
                             //if(next.equals(lastAtomicOnSubPlan)) {
                                 //popPlan.actions.remove(next);
                             //}
                             System.out.println("Action " + next.name + " succeeded: " + true);
-                            //System.out.println(popPlan.actions.toString());
+                            //System.out.println(this.popPlan.printActions());
                         }
                     }else{
                        System.out.println(" -- which is not atomic");
@@ -294,12 +263,12 @@ public class POPlanner implements Runnable { //  implements Runnable
                                 this.goal = this.goals.pop();
                             }
                        }else{
-                            popPlan = popPlan.insertPOPAt(popSubPlan, removeAction);
+                            this.popPlan = popPlan.insertPOPAt(popSubPlan, removeAction);
                             System.out.println("   Plans Merged:\n");
                             
-                            popPlan.printToConsole();
-                            this.plan = getTotalOrderPlan(popPlan, world);
-                            System.out.println("\nNew plan:\n" + this.plan + "\n");
+                            //this.popPlan.printToConsole();
+                            this.plan = getTotalOrderPlan(this.popPlan, this.world);
+                            //System.out.println("\nNew plan:\n" + this.plan + "\n");
                             //System.out.println("\n\n");
                             //lastAtomicOnSubPlan = subPlan.peepLast();
                             //subPlan.printSolution();
@@ -322,15 +291,14 @@ public class POPlanner implements Runnable { //  implements Runnable
                         this.goal = this.goals.pop();
                     }else{
                         //System.out.println("Pop Plan: \n");
-                        
                         //this.popPlan.printToConsole();
-                        System.out.println("\n\n");
-                        this.plan = getTotalOrderPlan(popPlan, world);
+                        System.out.println("\n");
+                        this.plan = getTotalOrderPlan(this.popPlan, world);
                         long time2 = System.currentTimeMillis();
-
+                        
                         System.out.println("Plan found in: " + (time2 - time1) + " ms");
                         
-                        //System.out.println("\nPlan: \n" + this.plan.toString());
+                        System.out.println("\nPlan: \n" + this.plan.toString());
                         //System.out.println("Done...");
                     }
                 }
@@ -430,19 +398,30 @@ public class POPlanner implements Runnable { //  implements Runnable
                 CausalLink link = pop.addAndGetCausalLink(A, B, oP.condition);
                 pop.addOrderingConstraint(A, B);
                 if(!pop.contains(A)) {
+                    pop.addAction(A);
                     pop.addOrderingConstraint(pop.getStart(), A);
                     pop.addOrderingConstraint(A, pop.getFinish());
                     newlyAdded = true;
-                
+                    
                     // Add new open preconditions
                     for(String P : A.openPreconditions) {
-
-                        //plan.appendAll(findPlan(p, openPrecondition));
-
-                        // Fix format to avoid prolog-collisions. 
-                        P = P.replaceAll("\\[\\s*([0-9]*)\\s*,\\s*([0-9]*)\\s*\\]", "[$1;$2]");
-                        //System.out.println("   Adding: " + P);
-                        pop.addOpenPrecondition(P, A);
+                        boolean fulfilled = false;
+                        for(Action act : pop.actions) {
+                            for(String effect : act.effects) {
+                                //System.out.println(         "is " + P.replace(" ", "") + " =?= " + effect.replace(" ", ""));
+                                if(P.replace(" ", "").equals(effect.replace(" ", ""))) {
+                                    pop.addOrderingConstraint(act, A);
+                                    pop.addCausalLink(act, A, effect);
+                                    fulfilled = true;
+                                }
+                            }
+                        }
+                        if(!fulfilled) {
+                            // Fix format to avoid prolog-collisions. 
+                            P = P.replaceAll("\\[\\s*([0-9]*)\\s*,\\s*([0-9]*)\\s*\\]", "[$1;$2]");
+                            //System.out.println("   Adding: " + P);
+                            pop.addOpenPrecondition(P, A);
+                        }
                     }
                 }
 
@@ -489,7 +468,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                             }
                         }
                     }
-                    pop.addAction(A);
+                    //pop.addAction(A);
                 }
             }
         } catch (InterruptedException ex) {

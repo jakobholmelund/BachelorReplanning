@@ -145,6 +145,30 @@ public class POP {
         actions.remove(A);
     }
     
+    public synchronized void safelyDeleteAction(Action A) {
+        actions.remove(A);
+        ArrayList<OrderingConstraint> deleteOrdering = new ArrayList<OrderingConstraint>();
+        ArrayList<CausalLink> deleteLinks = new ArrayList<CausalLink>();
+        for(OrderingConstraint order : this.orderingConstraints) {
+            if(order.A.equals(A) || order.B.equals(A)) {
+                deleteOrdering.add(order);
+            }
+        }
+        for(CausalLink link : this.causalLinks) {
+            if(link.A.equals(A) || link.B.equals(A)) {
+                deleteLinks.add(link);
+            }
+        }
+        
+        for(OrderingConstraint order : deleteOrdering) {
+            this.orderingConstraints.remove(order);
+        }
+        
+        for(CausalLink link : deleteLinks) {
+            this.causalLinks.remove(link);
+        }
+    }
+    
     private synchronized void addOrderingConstraint(OrderingConstraint order) {
         this.orderingConstraints.add(order);
     }
@@ -420,6 +444,14 @@ public class POP {
             this.addCausalLink(link);
         }
         return this;
+    }
+    
+    public String printActions() {
+        String ret = "";
+        for(Action a : actions) {
+            ret += a.getAction() + ", ";
+        }
+        return ret;
     }
 
 }
