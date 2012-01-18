@@ -209,7 +209,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                 }
                 
                 if(this.plan != null) {
-                    ReturnInfo retInfo = this.plan.planMonitoring(state);
+                    ReturnInfo retInfo = this.plan.monitorPlan(state);
                     int planSucceed = retInfo.info;
                     // Plan is good
                     if(planSucceed == -1) {
@@ -268,17 +268,18 @@ public class POPlanner implements Runnable { //  implements Runnable
                             popPlan = null;
                         }else{
                             plan.pop();
-                            if(next.equals(lastAtomicOnSubPlan)) {
-                                popPlan.actions.remove(next);
-                            }
+                            //if(next.equals(lastAtomicOnSubPlan)) {
+                                //popPlan.actions.remove(next);
+                            //}
                             System.out.println("Action succeeded: " + true);
                         }
                     }else{
                        System.out.println(" -- which is not atomic");
-                       plan.pop();
-                       popPlan.
+                       Action removedAction = plan.pop();
+                       
                        POP popSubPlan = routeFinder.findPlan(world,next.name);
                        TOPlan subPlan = popSubPlan.getLinearization(world);
+                       
                        if(subPlan == null || subPlan.list.isEmpty()) {
                             System.out.println("IMPOSSIBLE GOAL FOUND! SKIPPING");
                             if(this.goals.isEmpty()) {
@@ -290,7 +291,11 @@ public class POPlanner implements Runnable { //  implements Runnable
                                 this.goal = this.goals.pop();
                             }
                        }else{
-                            lastAtomicOnSubPlan = subPlan.peepLast();
+                            popPlan.insertPOPAt(popSubPlan, removedAction);
+                            System.out.println("   \nRemoved Action: " + removedAction.getAction() + "\nPlans Merged:\n");
+                            popPlan.printToConsole();
+                            System.out.println("\n\n");
+                            //lastAtomicOnSubPlan = subPlan.peepLast();
                             //subPlan.printSolution();
                             this.plan.prependAll(subPlan);
                             System.out.println("Sub-plan:\n" + this.plan);
