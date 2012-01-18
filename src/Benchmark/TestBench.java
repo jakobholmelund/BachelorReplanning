@@ -19,12 +19,8 @@ import worldmodel.World;
  * @author jakobchronos
  */
 public class TestBench {
-    public void nqueen(){
-        
-    }
     
-    public
-            void getPercepts(World world) throws PrologException {
+    public void getPercepts(World world) throws PrologException {
        long time1 = System.currentTimeMillis();
        String domain = "";
        //System.out.println("Get percepts --->");
@@ -100,39 +96,7 @@ public class TestBench {
                 }
             }
        }
-       /*
-       for(MapObject o : world.getObjects()) {
-           if(o instanceof MapAgent) {
-                //System.err.println("Agent found");
-                MapAgent agent = (MapAgent) o;
-                domain += "agentAt(" + agent.getNumber() + ",[" + agent.x + "," + agent.y + "]). ";
-                if(agent.getCarying() != null) {
-                    domain += "carries(" + agent.getNumber() + "," + agent.getCarying().getId() + "). ";
-                }
-            }else if(o instanceof MapBox) {
-                //System.err.println("Box found");
-                MapBox obs = (MapBox) o;
-                domain += "at(" + obs.getId() + ",[" + obs.x + "," + obs.y + "]). "; 
-                domain += "item(" + obs.getId() + "). ";
-            }else if(o instanceof Bomb) {
-                //System.err.println("Box found");
-                Bomb obs = (Bomb) o;
-                domain += "at(" + obs.getId() + ",[" + obs.x + "," + obs.y + "]). "; 
-                domain += "item(" + obs.getId() + "). ";
-            }else if(o instanceof Goal) {
-                //System.err.println("goal found");
-                Goal obs = (Goal) o;
-                domain += "goalAt(" + obs.getId() + ",[" + obs.x + "," + obs.y + "]). "; 
-            }else if(o instanceof Wall) {
-                //System.err.println("wall found");
-                Wall w = (Wall) o;
-                domain += "w([" + w.x + "," + w.y + "]). "; 
-                if(w.x == 2 && w.y == 3) {
-                    System.out.println("   At 2,3 THERE IS WALL");
-                }
-            }
-        }*/
-       
+      
         String theory = domain;
         //System.out.println("statics:\n " + statics);
         //System.out.println("objects:\n " + world.getObjects().toString());

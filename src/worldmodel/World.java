@@ -372,22 +372,19 @@ public class World {
         boolean matchFound = m.find();
         if (matchFound) {
             System.out.println("FOUND MATCH");
-            System.out.println(m.group(1));
-            System.out.println(m.group(2));
-            System.out.println(m.group(3));
             MapAgent agent = (MapAgent)objectMap.get(m.group(2));
             if(m.group(1).equals("moveAtomic")){
                 String amovedir = m.group(3);
                 if("n".equals(amovedir)){
-                    this.moveObject(agent, agent.x,agent.y-1);
+                    return this.moveObject(agent, agent.x,agent.y-1);
                 }else if("s".equals(amovedir)){
-                    this.moveObject(agent, agent.x, agent.y+1);
+                    return this.moveObject(agent, agent.x, agent.y+1);
                 }else if("e".equals(amovedir)){
-                    this.moveObject(agent, agent.x+1, agent.y);
+                    return this.moveObject(agent, agent.x+1, agent.y);
                 }else if("w".equals(amovedir)){
-                    this.moveObject(agent, agent.x-1, agent.y);
+                    return this.moveObject(agent, agent.x-1, agent.y);
                 }
-                return this.moveObject(agent,Integer.parseInt(m.group(6)),Integer.parseInt(m.group(7)));
+                return false;
             }else if(m.group(1).equals("pickUp")){
                 MapObject object = objectMap.get(m.group(3));
                 return this.pickUp(agent,object);
