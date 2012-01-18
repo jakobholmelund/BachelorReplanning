@@ -12,9 +12,9 @@ import java.util.ArrayList;
  */
 public class ReturnInfo {
     public int info;
-    public String precondition;
+    public ArrayList<String> precondition;
     
-    ReturnInfo(int info, String precondition) {
+    ReturnInfo(int info, ArrayList<String>  precondition) {
         this.info = info;
         this.precondition = precondition;        
     }

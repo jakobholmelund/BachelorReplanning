@@ -3,15 +3,10 @@ package Planner.POP;
 import Planner.*;
 import gui.RouteFinder.Astar;
 import jTrolog.errors.PrologException;
-import java.util.ArrayList;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import worldmodel.*;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -175,8 +170,8 @@ public class POPlanner implements Runnable { //  implements Runnable
 
     @Override
     public void run() {
-        this.goals = new LinkedList<String>();
-        this.goals.add("f([1,4])");
+        //this.goals = new LinkedList<String>();
+        //this.goals.add("agentAt(1,[1,7])");
         while(!this.done) {
             System.out.println("\n");
             iteration++;
@@ -185,10 +180,18 @@ public class POPlanner implements Runnable { //  implements Runnable
                 //get percepts and update current state description
                 getPercepts();
                 
-                if(this.goal == null || this.goal.equals("") && goals.size() > 0) {
-                    this.goal = goals.pop();
-                    this.plan = null;
-                    System.out.println("NEW GOAL: " + this.goal);
+                if(this.goal == null || this.goal.equals("") && !this.goals.isEmpty()) {
+                    try {
+                        this.goal = goals.pop();
+                        this.plan = null;
+                        System.out.println("NEW GOAL: " + this.goal);
+                    }
+                    catch(NoSuchElementException e) {
+                        this.done = true;
+                        System.err.println("DONE! ");
+                        Thread.currentThread().join();
+                        return;
+                    }
                 }
                 
                 //check if plan is still valid
@@ -206,7 +209,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                 }
                 
                 if(this.plan != null) {
-                    ReturnInfo retInfo = this.plan.valid(state);
+                    ReturnInfo retInfo = this.plan.planMonitoring(state);
                     int planSucceed = retInfo.info;
                     // Plan is good
                     if(planSucceed == -1) {
@@ -221,22 +224,23 @@ public class POPlanner implements Runnable { //  implements Runnable
                     }else{
                         // Plan is broken
                         Action failedAction = this.plan.list.get(planSucceed);
-                        System.out.println("   Recieved: " + planSucceed + " -> REPLAN -> Get new Linearization!");
+                        System.out.println("   Recieved: " + planSucceed + " -> REPLAN -> Try to repair plan!");
                         
                         // Try to start over, to 
                         this.plan = null; //getTotalOrderPlan(popPlan, world);
-                        
-                        if(this.plan == null) {
-                            this.popPlan = repairPlan(this.popPlan, failedAction, retInfo.precondition, this.state);
-                            if(this.popPlan == null || this.popPlan.isEmpty()) {
-                                System.out.println("      Could not repair plan!");
-                                valid = false;
-                                this.plan = null;
-                                this.popPlan = null;
-                            }else{
-                                System.out.println("      Plan repaired");
-                                this.plan = getTotalOrderPlan(popPlan, world);
-                            }
+
+                        this.popPlan = repairPlan(this.popPlan, failedAction, retInfo.precondition, this.state);
+                        this.popPlan.printToConsole();
+                        System.out.println("      Plan attempted repaired!");
+                        if(this.popPlan == null || this.popPlan.isEmpty()) {
+                            System.out.println("      Could not repair plan!");
+                            valid = false;
+                            this.plan = null;
+                            this.popPlan = null;
+                        }else{
+                            valid = true;
+                            System.out.println("      Plan repaired");
+                            this.plan = getTotalOrderPlan(popPlan, world);
                         }
                     }
                     //System.out.println("PLAN VALID: " + planSucceed + "  which is: " + valid);
@@ -272,11 +276,19 @@ public class POPlanner implements Runnable { //  implements Runnable
                     }else{
                        System.out.println(" -- which is not atomic");
                        plan.pop();
-                       
-                       TOPlan subPlan = routeFinder.findPlan(world,next.name);
+                       popPlan.
+                       POP popSubPlan = routeFinder.findPlan(world,next.name);
+                       TOPlan subPlan = popSubPlan.getLinearization(world);
                        if(subPlan == null || subPlan.list.isEmpty()) {
                             System.out.println("IMPOSSIBLE GOAL FOUND! SKIPPING");
-                            this.goal = this.goals.pop();
+                            if(this.goals.isEmpty()) {
+                                this.goal = "";
+                                //System.err.println("DONE! ");
+                                //Thread.currentThread().join();
+                                //return;
+                            }else{
+                                this.goal = this.goals.pop();
+                            }
                        }else{
                             lastAtomicOnSubPlan = subPlan.peepLast();
                             //subPlan.printSolution();
@@ -362,19 +374,17 @@ public class POPlanner implements Runnable { //  implements Runnable
         return refinePlan(pop);
     }
         
-    public POP repairPlan(POP pop, Action actionThatFailed, String preqThatFailed, State state) {
+    public POP repairPlan(POP pop, Action actionThatFailed, ArrayList<String> preqsThatFailed, State state) {
+        long time1 = System.nanoTime();
         
-        //if(actionThatFailed == null) {
-        //    return findPlan(pop.goal);
-        //}
+        for(String preqThatFailed : preqsThatFailed) {
+            pop.addOpenPrecondition(preqThatFailed, actionThatFailed);
+            System.out.println("   New OP: " + preqThatFailed + " for: " + actionThatFailed);
+        }
         
-        // MUST COME FROM PLAN INSTEAD ? 
-        
-        // Find the preconditions of the action that are not fulfilled.
+        long time2 = System.nanoTime();
 
-         pop.addOpenPrecondition(preqThatFailed, actionThatFailed);
-         System.out.println("   New OP: " + preqThatFailed + " " + actionThatFailed);
-
+        System.out.println("Plan repaired in: " + (time2 - time1) + " nanoseconds");
         return refinePlan(pop);
     }
     
@@ -467,7 +477,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                             }
                         }
                     }
-                    pop.addActions(A);
+                    pop.addAction(A);
                 }
             }
         } catch (InterruptedException ex) {
@@ -672,10 +682,11 @@ public class POPlanner implements Runnable { //  implements Runnable
 	argse2.add("Agent");
 	argse2.add("CurPos");
 	argse2.add("MovePos");
-	
+	argse2.add("MoveDir");
+        
 	ArrayList<String> prerequisites2 = new ArrayList<String>();
 	prerequisites2.add("agentAt(Agent,CurPos)");
-        prerequisites2.add("neighbour(CurPos, MovePos, _)");
+        prerequisites2.add("neighbour(CurPos, MovePos, MoveDir)");
 	prerequisites2.add("f(MovePos)");
 	
 	ArrayList<String> effects2 = new ArrayList<String>();
@@ -685,7 +696,7 @@ public class POPlanner implements Runnable { //  implements Runnable
 	//ArrayList<String> requirements2 = new ArrayList<String>();
 	//requirements2.add("f(MovePos)");
 
-	ActionSchema moveAtomic = new ActionSchema("moveAtomic", prerequisites2, "moveAtomic(Agent,MovePos)", argse2, effects2, true, true);
+	ActionSchema moveAtomic = new ActionSchema("moveAtomic", prerequisites2, "moveAtomic(Agent,MoveDir)", argse2, effects2, true, true);
 	
 	// object(Object) :- box(Object).
 	// object(Object) :- bomb(Object).	

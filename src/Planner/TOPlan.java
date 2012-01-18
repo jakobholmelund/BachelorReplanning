@@ -102,11 +102,11 @@ public class TOPlan {
     }
 
     public void printSolution() {
-        System.err.print("THIS: ");
+        System.out.print("THIS: ");
         for (Action a : list) {
-            System.err.print(a.toString() + " , ");
+            System.out.print(a.toString() + " \n");
         }
-        System.err.println("Is a solution");
+        System.out.println("Is a solution");
     }
 
     @Override
@@ -130,7 +130,7 @@ public class TOPlan {
      *  -1 if the plan is valid
      *  -2 if the plan is valid but does not fulfill the goal
      */
-    public ReturnInfo valid(State state) {
+    public ReturnInfo planMonitoring(State state) {
         Logic s = state.state.clone();
         //System.out.println("Initial check state: \n " + s.getTheoryAsString());
         long time1 = System.currentTimeMillis();
@@ -140,17 +140,21 @@ public class TOPlan {
             //System.out.println("   Action: " + action.toString());
             if(action.atomic) {
                 //System.out.println("   -> Atomic");
+                Boolean result = true;
+                ArrayList<String> openPreconditions = new ArrayList<String>();
                 for(String preq : action.preconditions) {
-                    Boolean result =  s.solveboolean(preq);
+                    Boolean limResult = s.solveboolean(preq);
+                    result = result && limResult;
+                    if(!limResult) {
+                        openPreconditions.add(preq);
+                    }
                     //System.out.println("      Checking for: " + preq + "  Result: " + result);
-                    
-                    if(!result) {
+                }
+                if(!result) {
                         //System.out.println("      >>> Plan failed at number " + i + "\n" + action.toString());
                         //System.out.println("State when fail: \n " + s.getTheoryAsString());
-                        return new ReturnInfo(i, preq);
-                    }
+                        return new ReturnInfo(i, openPreconditions);
                 }
-                
                 for (String effect : action.effects) {
                     try {
                         s.set(effect);
@@ -177,9 +181,9 @@ public class TOPlan {
         //System.out.println("Plan monitoring took: " + (time2-time1) + " ms  -- goal is: " + bol);
         //System.out.println("Goal: " + getGoal() + " - valid: " + bol);
         if(bol) {
-            return new ReturnInfo(-1, "");
+            return new ReturnInfo(-1, null);
         }else{
-            return new ReturnInfo(-2, "");
+            return new ReturnInfo(-2, null);
         }
     }
     /*
