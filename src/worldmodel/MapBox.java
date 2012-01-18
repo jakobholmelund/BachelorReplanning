@@ -22,8 +22,9 @@ public class MapBox extends MapObject {
     public MapBox(String name, int x, int y){
         super(x,y);
         setBackground(Color.GREEN);
-        this.name = name;
-        super.id=name;
+        this.name = name+name;
+        super.id = name+name;
+        
     }
     
     @Override
