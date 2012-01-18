@@ -6,6 +6,7 @@ package Benchmark;
 
 import Planner.State;
 import jTrolog.errors.PrologException;
+import java.util.ArrayList;
 import worldmodel.Bomb;
 import worldmodel.Goal;
 import worldmodel.MapAgent;
@@ -110,4 +111,7 @@ public class TestBench {
                 
        System.out.println("Percepts gotten in: " + (time2 - time1) + " ms for " + world.getX() + "," + world.getY());
     }
+    
+    
+    
 }

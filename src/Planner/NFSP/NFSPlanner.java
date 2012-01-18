@@ -211,6 +211,10 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
                 return makeSolution(n, p);
             }
             //System.out.println("# Actions: " + frontier.toString());
+            
+            long time1 = System.currentTimeMillis();
+            
+            
             ArrayList<Action> actionsGotten = p.actions(n.s);
             
             System.out.println("   Actions Gotten: " + actionsGotten.toString() + "\n");
@@ -219,7 +223,11 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
                 State s1 = p.result(n.s, a);
                 frontier.add(new Node(s1, n, a, n.g + p.cost(s1, a), p.heuristik(s1, a, n)));
                 states++;
+                long time2 = System.currentTimeMillis();
+                System.out.println("Got actions in: " + (time2-time1) + " ms");
             }
+            long time3 = System.currentTimeMillis();
+            System.out.println("Got actions in: " + (time3-time1) + " ms");
         }
     }
 
@@ -289,7 +297,7 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
     }
  
     
-    public ArrayList<ActionSchema> setActions() {
+  public ArrayList<ActionSchema> setActions() {
         /* Move  */
 	ArrayList<String> argse1 = new ArrayList<String>();
 	argse1.add("Agent");
@@ -307,17 +315,18 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
 	//ArrayList<String> requirements1 = new ArrayList<String>();
 	//requirements1.add("f(MovePos)");
         
-	ActionSchema move = new ActionSchema("move", prerequisites1, "move(Agent,MovePos)", argse1, effects1, false, false);
+	ActionSchema move = new ActionSchema("move", prerequisites1, "move(Agent,MovePos)", argse1, effects1, true, false);
 	//CurPos
 	/* MoveAtomic  */
 	ArrayList<String> argse2 = new ArrayList<String>();
 	argse2.add("Agent");
 	argse2.add("CurPos");
 	argse2.add("MovePos");
-	
+	argse2.add("MoveDir");
+        
 	ArrayList<String> prerequisites2 = new ArrayList<String>();
 	prerequisites2.add("agentAt(Agent,CurPos)");
-        prerequisites2.add("neighbour(CurPos, MovePos, _)");
+        prerequisites2.add("neighbour(CurPos, MovePos, MoveDir)");
 	prerequisites2.add("f(MovePos)");
 	
 	ArrayList<String> effects2 = new ArrayList<String>();
@@ -327,7 +336,7 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
 	//ArrayList<String> requirements2 = new ArrayList<String>();
 	//requirements2.add("f(MovePos)");
 
-	ActionSchema moveAtomic = new ActionSchema("moveAtomic", prerequisites2, "moveAtomic(Agent,MovePos)", argse2, effects2, true, true);
+	ActionSchema moveAtomic = new ActionSchema("moveAtomic", prerequisites2, "moveAtomic(Agent,MoveDir)", argse2, effects2, false, true);
 	
 	// object(Object) :- box(Object).
 	// object(Object) :- bomb(Object).	
@@ -398,7 +407,7 @@ public class NFSPlanner implements Runnable{ //  implements Runnable
 	effects5.add("!at(Object, BoxPosition)");
 	effects5.add("!box(Object)");
         
-	ActionSchema smash = new ActionSchema("smash", prerequisites5, "smash(Agent, Object)", argse5, effects5, false, true);
+	ActionSchema smash = new ActionSchema("smash", prerequisites5, "smash(Agent,Object)", argse5, effects5, false, true);
 
         ArrayList<ActionSchema> actions = new ArrayList<ActionSchema>();
         actions.add(move);
