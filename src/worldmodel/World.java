@@ -367,14 +367,26 @@ public class World {
     }
     
    public boolean act(String action){
-        Pattern typeP = Pattern.compile("(^\\w+)\\((\\w*)\\,\\s?((\\w+)|\\s\\[((\\d+)\\,(\\d+))\\])\\)");
+        Pattern typeP = Pattern.compile("(^\\w+)\\((\\w*)\\,\\s?((\\w+)|\\s\\(w+)\\)");
         Matcher m = typeP.matcher(action);
         boolean matchFound = m.find();
         if (matchFound) {
             System.out.println("FOUND MATCH");
-            //System.out.println(m.group(1));
+            System.out.println(m.group(1));
+            System.out.println(m.group(2));
+            System.out.println(m.group(3));
             MapAgent agent = (MapAgent)objectMap.get(m.group(2));
             if(m.group(1).equals("moveAtomic")){
+                String amovedir = m.group(3);
+                if("N".equals(amovedir)){
+                    this.moveObject(agent, agent.x,agent.y-1);
+                }else if("S".equals(amovedir)){
+                    this.moveObject(agent, agent.x, agent.y+1);
+                }else if("E".equals(amovedir)){
+                    this.moveObject(agent, agent.x+1, agent.y);
+                }else if("W".equals(amovedir)){
+                    this.moveObject(agent, agent.x-1, agent.y);
+                }
                 return this.moveObject(agent,Integer.parseInt(m.group(6)),Integer.parseInt(m.group(7)));
             }else if(m.group(1).equals("pickUp")){
                 MapObject object = objectMap.get(m.group(3));
@@ -491,6 +503,15 @@ public class World {
                 }
         }
         
+    }
+    
+    public void fillBlocks(){
+        for(int i = 0; i < cols; i++) {
+            for(int j = 0; j < rows; j++) {
+                this.addObject(new Wall(j,i));
+                
+            }
+        }
     }
 }
 

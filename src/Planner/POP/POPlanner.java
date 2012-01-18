@@ -276,7 +276,6 @@ public class POPlanner implements Runnable { //  implements Runnable
                     }else{
                        System.out.println(" -- which is not atomic");
                        plan.pop();
-                       popPlan.
                        POP popSubPlan = routeFinder.findPlan(world,next.name);
                        TOPlan subPlan = popSubPlan.getLinearization(world);
                        if(subPlan == null || subPlan.list.isEmpty()) {
