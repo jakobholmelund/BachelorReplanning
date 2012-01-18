@@ -160,7 +160,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         //System.out.println("Got these percepts: \n" + this.state.toString());
         long time2 = System.currentTimeMillis();
                 
-       //System.out.println("Percepts gotten in: " + (time2 - time1) + " ms");
+       System.out.println("Percepts gotten in: " + (time2 - time1) + " ms");
     }
 
     public String getStatics() {
@@ -275,8 +275,9 @@ public class POPlanner implements Runnable { //  implements Runnable
                         }
                     }else{
                        System.out.println(" -- which is not atomic");
+
                        Action removedAction = plan.pop();
-                       
+
                        POP popSubPlan = routeFinder.findPlan(world,next.name);
                        TOPlan subPlan = popSubPlan.getLinearization(world);
                        

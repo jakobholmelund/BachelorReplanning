@@ -192,6 +192,7 @@ public class World {
     public void removeObject(MapObject mo){
         map.removeObjects(mo.getPosition(), new MapObject[]{mo});
         objectMap.remove(mo.getId());
+        objects.remove(mo);
         this.hasChanged = true;
     }
     
@@ -344,8 +345,10 @@ public class World {
         this.removeObject(mo);
         return true;
     }
+    
     public boolean smash(MapAgent ma,MapObject mo){
         if(map.neighborsFor(ma.getPosition()).contains(mo)){
+            System.out.println("SMAAAAAAAAAAAAAAAAAAAAAAASH");
             this.removeObject(mo);
             return true;
         }
@@ -364,15 +367,24 @@ public class World {
     }
     
    public boolean act(String action){
-        Pattern typeP = Pattern.compile("(^\\w+)\\((\\w*)\\,((\\w+)|\\s\\[((\\d+)\\,(\\d+))\\])\\)");
+        Pattern typeP = Pattern.compile("(^\\w+)\\((\\w*)\\,\\s?((\\w+)|\\s\\(w+)\\)");
         Matcher m = typeP.matcher(action);
         boolean matchFound = m.find();
         if (matchFound) {
-            //System.out.println("FOUND MATCH");
-            //System.out.println(m.group(1));
+            System.out.println("FOUND MATCH");
             MapAgent agent = (MapAgent)objectMap.get(m.group(2));
             if(m.group(1).equals("moveAtomic")){
-                return this.moveObject(agent,Integer.parseInt(m.group(6)),Integer.parseInt(m.group(7)));
+                String amovedir = m.group(3);
+                if("n".equals(amovedir)){
+                    return this.moveObject(agent, agent.x,agent.y-1);
+                }else if("s".equals(amovedir)){
+                    return this.moveObject(agent, agent.x, agent.y+1);
+                }else if("e".equals(amovedir)){
+                    return this.moveObject(agent, agent.x+1, agent.y);
+                }else if("w".equals(amovedir)){
+                    return this.moveObject(agent, agent.x-1, agent.y);
+                }
+                return false;
             }else if(m.group(1).equals("pickUp")){
                 MapObject object = objectMap.get(m.group(3));
                 return this.pickUp(agent,object);
@@ -380,6 +392,7 @@ public class World {
                 //MapObject object = objectMap.get(m.group(3));
                return this.place(agent);
             }else if(m.group(1).equals("smash")){
+                System.out.println("smash1");
                 //MapObject object = objectMap.get(m.group(3));
                MapObject object = objectMap.get(m.group(3));
                return this.smash(agent,object);
@@ -487,6 +500,15 @@ public class World {
                 }
         }
         
+    }
+    
+    public void fillBlocks(){
+        for(int i = 0; i < cols; i++) {
+            for(int j = 0; j < rows; j++) {
+                this.addObject(new Wall(j,i));
+                
+            }
+        }
     }
 }
 

@@ -119,7 +119,6 @@ public class CoordinateMap<V> {
         if(vals1 != null){
             newlist.addAll(Arrays.asList(vals1));
         }
-        
         V[] vals2 = this.get(keyFor(x+1,y));
         if(vals2 != null){
             newlist.addAll(Arrays.asList(vals2));

@@ -5,6 +5,7 @@
 package bachelorreplanning;
 
 //import Planner.ReFSP.ReFSPlanner;
+import Benchmark.TestBench;
 import gui.MainWindow;
 import jTrolog.errors.PrologException;
 import worldmodel.World;
@@ -19,6 +20,30 @@ public class Main {
         World world = new World(20,20);
         MainWindow mainWindow = new MainWindow();
         mainWindow.loadNewWorld(world);
+        
+        //world.act("moveAtomic(1,E)");
+        
+        /*
+        TestBench bench = new TestBench();
+        
+        World world1 = new World(10,10);
+        World world2 = new World(50,50);
+        World world3 = new World(100,100);
+        World world4 = new World(200,200);
+        World world5 = new World(300,300);
+        
+        world1.fillBlocks();
+        world2.fillBlocks();
+        world3.fillBlocks();
+        world4.fillBlocks();
+        world5.fillBlocks();
+        
+        bench.getPercepts(world1);
+        bench.getPercepts(world2);
+        bench.getPercepts(world3);
+        bench.getPercepts(world4);
+        bench.getPercepts(world5);
+        */
         //world.parseAction("move(a,[1,1])");
         //LinkedList<String> goals = new LinkedList<String>();
         //world.addObject(new MapBox("a", 18,13));
