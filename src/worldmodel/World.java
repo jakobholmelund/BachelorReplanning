@@ -378,10 +378,6 @@ public class World {
         Matcher m = typeP.matcher(action);
         boolean matchFound = m.find();
         if (matchFound) {
-            System.out.println("FOUND MATCH");
-            System.out.println(m.group(1));
-            System.out.println(m.group(2));
-            System.out.println(m.group(3));
             MapAgent agent = (MapAgent)objectMap.get(m.group(2));
             if(m.group(1).equals("moveAtomic")){
                 String amovedir = m.group(3);
