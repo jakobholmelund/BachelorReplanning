@@ -15,6 +15,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
@@ -57,40 +58,46 @@ public class World {
         return this.rows;
     }
     
-    public void startAgents() throws InterruptedException{
+    public void startAgentsPOP() throws InterruptedException{
         synchronized(this){
-        LinkedList<String> goals = new LinkedList<String>();
-        int agentid = 0;
-        for(MapObject mo:objects){
-            if(mo instanceof MapAgent){
-                agentid = Integer.parseInt(mo.getId());
+            LinkedList<String> goals = new LinkedList<String>();
+            int agentid = 0;
+            for(MapObject mo:objects){
+                if(mo instanceof MapAgent){
+                    agentid = Integer.parseInt(mo.getId());
+                }
+                if(mo instanceof Goal){
+                    Goal g = (Goal)mo;
+                    int[] coords = map.coordsFor(g.getPosition());
+                    goals.add("at(" + g.getName() + ",["+coords[0]+","+coords[1]+"])");
+                }
             }
-            if(mo instanceof Goal){
-                Goal g = (Goal)mo;
-                int[] coords = map.coordsFor(g.getPosition());
-                goals.add("at(" + g.getName() + ",["+coords[0]+","+coords[1]+"])");
-            }
-        }
         
-                POPlanner planner = new POPlanner(this, agentid, goals);
-                Thread init = new Thread(planner);
-                init.start();
-                    //runningAgents.add(init);
+            POPlanner planner = new POPlanner(this, agentid, goals);
+            Thread init = new Thread(planner);
+            init.start();
         }
-        //for(Thread t:runningAgents){
-            //t.join();
-        //}
-        /*
-        while(!agent.done()) {
-            //if(agent.iteration == 3) {
-            //    world.addObject(new MapBox("b", 5,8));
-            //}
-            mainWindow.drawWorld();
-            init.run();
+    }
+    
+    public void startAgentsNFS() throws InterruptedException{
+        synchronized(this){
+            LinkedList<String> goals = new LinkedList<String>();
+            int agentid = 0;
+            for(MapObject mo:objects){
+                if(mo instanceof MapAgent){
+                    agentid = Integer.parseInt(mo.getId());
+                }
+                if(mo instanceof Goal){
+                    Goal g = (Goal)mo;
+                    int[] coords = map.coordsFor(g.getPosition());
+                    goals.add("at(" + g.getName() + ",["+coords[0]+", "+coords[1]+"])");
+                }
+            }
+        
+            NFSPlanner planner = new NFSPlanner(this, agentid, goals.getFirst(), "1");
+            Thread init = new Thread(planner);
+            init.start();
         }
-        init.join();
-         * 
-         */
     }
     
     public CoordinateMap<MapObject> getMap(){
@@ -290,8 +297,8 @@ public class World {
         
     }
    
-    public ArrayList<Long> simpleMap(){
-        ArrayList<Long> coords2value = new ArrayList<Long>();
+    public HashSet<Long> simpleMap(){
+        HashSet<Long> coords2value = new HashSet<Long>();
         for(int i = 0; i < cols; i++) {
             for(int j = 0; j < rows; j++) {
                 long key = map.keyFor(j, i);
@@ -367,11 +374,15 @@ public class World {
     }
     
    public boolean act(String action){
-        Pattern typeP = Pattern.compile("(^\\w+)\\((\\w*)\\,\\s?((\\w+)|\\s\\(w+)\\)");
+        Pattern typeP = Pattern.compile("(^\\w+)\\((\\w*)\\,\\s?(\\w+)\\)");
         Matcher m = typeP.matcher(action);
         boolean matchFound = m.find();
         if (matchFound) {
             //System.out.println("FOUND MATCH");
+            System.out.println(m.group(1));
+            System.out.println(m.group(2));
+            System.out.println(m.group(3));
+
             MapAgent agent = (MapAgent)objectMap.get(m.group(2));
             if(m.group(1).equals("moveAtomic")){
                 String amovedir = m.group(3);
@@ -389,11 +400,8 @@ public class World {
                 MapObject object = objectMap.get(m.group(3));
                 return this.pickUp(agent,object);
             }else if(m.group(1).equals("place")){
-                //MapObject object = objectMap.get(m.group(3));
                return this.place(agent);
             }else if(m.group(1).equals("smash")){
-                System.out.println("smash1");
-                //MapObject object = objectMap.get(m.group(3));
                MapObject object = objectMap.get(m.group(3));
                return this.smash(agent,object);
             }

@@ -26,19 +26,12 @@ public class Node implements Comparable<Node> {
             //System.err.println("COMPARE TO: 3");
             return Double.compare(this.h, other.h);
         }else if (this.curPosition != other.curPosition) { //!this.equals(other.h)){
-            //System.err.println("COMPARE TO: 3");
+            //Handle tie better.. Maybe with euclidian distance to see which way to take first ?
             return 1;
         }else{
            //System.err.println("PRUUUUUUUUUN");
            return 0; 
         }
-        
-        /*
-         *  else if(this.parent != null && other.parent != null && this.parent.equals(other.parent)) {
-            //System.err.println("ZERO ZERO ZERO ZERO!!!!!!!!!!!!!!!!!!!!!!!!");
-            return 0;
-         */
-        
     }
 
     @Override

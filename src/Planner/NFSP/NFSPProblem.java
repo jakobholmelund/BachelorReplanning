@@ -42,6 +42,7 @@ public class NFSPProblem {
 
     public boolean goalTest(State s) {
         setState(s);
+        System.out.println(getGoal());
         boolean bol = logic.solveboolean(getGoal());
         //System.out.println("Goal: " + getGoal() + " is: " + bol);
         return bol;
@@ -56,6 +57,7 @@ public class NFSPProblem {
     }
 
     public double heuristik(State s1, Action a, Node node) {
+        /*
         try {
             setState(s1);
             if(logic.solveboolean(getGoal())) {
@@ -85,6 +87,8 @@ public class NFSPProblem {
                 if(B.equals("null")) {
                     //System.err.println(s1.toString());
                 }
+                
+                System.out.println(B);
                 
                 B = B.replace("[", "");
                 B = B.replace("]", "");
@@ -129,8 +133,8 @@ public class NFSPProblem {
             //System.out.println(ex.);
             ex.printStackTrace();
             return 1;
-        }
-        //return 1;
+        }*/
+        return 1;
     }
 
     public double cost(State s1, Action a) {

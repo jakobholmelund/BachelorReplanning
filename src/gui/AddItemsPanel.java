@@ -34,20 +34,35 @@ public class AddItemsPanel extends JPanel{
         this.add(newBut);
         JButton newBut2 = new JButton(" LOAD ");
         this.add(newBut2);
-        JButton newBut3 = new JButton(" start ");
+        JButton newBut3 = new JButton(" start POP ");
         this.add(newBut3);
+        JButton newBut4 = new JButton(" start NFS");
+        this.add(newBut4);
         newBut3.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 try {
-                    world.startAgents();
+                    world.startAgentsPOP();
                 } catch (InterruptedException ex) {
                     Logger.getLogger(AddItemsPanel.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
+        newBut4.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                try {
+                    world.startAgentsNFS();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(AddItemsPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        
         newBut.addActionListener(new ActionListener() {
- 
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 try {
