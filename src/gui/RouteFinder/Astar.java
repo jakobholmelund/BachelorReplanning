@@ -107,13 +107,16 @@ public class Astar {
             action.addEffect("!agentAt(" + this.agent + ",[" + cordsParent[0] + "," + cordsParent[1] + "])");
             
             action.addPrecondition("f([" + cords[0] + "," + cords[1] + "])");
-            action.addPrecondition("agentAt(" + this.agent + ",[" + cordsParent[0] + "," + cordsParent[1] + "])");
+            //action.addPrecondition("agentAt(" + this.agent + ",[" + cordsParent[0] + "," + cordsParent[1] + "])");
             
             //p.add(node.curPosition);
             p.add(action);
             pop.addAction(action);
-            System.out.println("   Adding ordering: " + action.getAction() + " <<< " + laterAction.getAction());
+            //System.out.println("   Adding ordering: " + action.getAction() + " <<< " + laterAction.getAction());
             pop.addOrderingConstraint(action, laterAction);
+            
+            //pop.addCausalLink(action, laterAction, "agentAt(" + this.agent + ",[" + cords[0] + "," + cords[1] + "])");
+            //pop.addCausalLink(action, laterAction, direction);
             
             laterAction = action;
             firstAction = action;
@@ -122,7 +125,7 @@ public class Astar {
         
         pop.addOrderingConstraint(pop.getStart(), firstAction);
         //TOPlan top = pop.getLinearization(w);
-        
+        //System.out.println("Found route------>");
         //p.printSolution();
         //pop.printToConsole();
         //System.out.println("\n\n");

@@ -47,8 +47,9 @@ public class POP {
         this.addOrderingConstraint(startAction, finishAction);
         
         this.goal = goal;
-        this.addOpenPrecondition(goal, finishAction);
-        
+        if(!goal.equals("")) {
+            this.addOpenPrecondition(goal, finishAction);
+        }
         routeFinder = new Astar();
     }
     
@@ -144,6 +145,23 @@ public class POP {
         actions.remove(A);
     }
     
+    private synchronized void addOrderingConstraint(OrderingConstraint order) {
+        this.orderingConstraints.add(order);
+    }
+
+    private synchronized void deleteOrderingConstraint(OrderingConstraint order) {
+        this.orderingConstraints.remove(order);
+        
+    }
+
+    private synchronized void deleteCausalLink(CausalLink link) {
+        this.causalLinks.remove(link);
+    }
+    
+    private synchronized void addCausalLink(CausalLink link) {
+        this.causalLinks.add(link);
+    }
+    
     public synchronized boolean contains(Action a) {
         return actions.contains(a);
     }
@@ -154,7 +172,11 @@ public class POP {
     
     public TOPlan getLinearization(World world) {
         TOPlan plan = new TOPlan(this.goal);
-        final HashSet<OrderingConstraint> backup = this.orderingConstraints;
+        final HashSet<OrderingConstraint> backup = new HashSet<OrderingConstraint>();
+        
+        for(OrderingConstraint order : this.orderingConstraints) {
+            backup.add(order);
+        }
         
         TOPlan linearPlan = findLinearization(startAction, plan, world);
         
@@ -271,19 +293,32 @@ public class POP {
         return newPlan;
     }*/
 
-    public void insertPOPAt(POP popSubPlan, Action insertAtAction) {
+    public POP insertPOPAt(POP popSubPlan, Action insertAtAction) {
+        if(debug)
+            System.out.println("   Merging plans");
         // Clean up the plan to be inserted. This mean deleting start and delete actions
         ArrayList<Action> newStartList = new ArrayList<Action>();
         ArrayList<Action> newEndList = new ArrayList<Action>();
         ArrayList<OrderingConstraint> deleteOrderingConstraints = new ArrayList<OrderingConstraint>();
         for(OrderingConstraint order : popSubPlan.orderingConstraints) {
+            //System.out.println("   Checking A: " + order.A.getAction() + " =?= " + popSubPlan.startAction.getAction());
             if(order.A.equals(popSubPlan.startAction)) {
+                deleteOrderingConstraints.add(order);
                 newStartList.add(order.B);
             }
+            if(debug)
+                System.out.println("   Checking: " + order.B.getAction() + " =?= " + popSubPlan.finishAction.getAction());
             if(order.B.equals(popSubPlan.finishAction)) {
+                deleteOrderingConstraints.add(order);
                 newEndList.add(order.A);
             }
         }
+        newStartList.remove(popSubPlan.finishAction);
+        newEndList.remove(popSubPlan.startAction);
+        if(debug)
+            System.out.println("   startList: " + newStartList.toString());
+        if(debug)
+            System.out.println("   endList: " + newEndList.toString());
         
         popSubPlan.deleteAction(popSubPlan.startAction);
         popSubPlan.setStart(null);
@@ -332,47 +367,59 @@ public class POP {
             // Any that lead from action to be removed, must now lead from end of inserted plan
             if(link.A.equals(insertAtAction)) {
                 deleteCausalLinks.add(link);
-                for(Action action : newStartList) {
+                for(Action action : newEndList) {
+                    
                     CausalLink l = new CausalLink(action, link.B, link.p);
                     addCausalLinks.add(l);
                 }
             }
         }
-        
-        // Do the final adding an removal of elements        
-        for(Action action : popSubPlan.actions) {
-            this.addAction(action);
-        }
+       
+        // Do the final adding an removal of elements 
         
         for(OrderingConstraint order : deleteOrderingConstraints) {
+            if(debug)
+                System.out.println("      " + order + " deleted");
             this.deleteOrderingConstraint(order);
         }
         for(OrderingConstraint order : addOrderingConstraints) {
+            if(debug)
+                System.out.println("      " + order + " added");
             this.addOrderingConstraint(order);
         }
         
         for(CausalLink link : deleteCausalLinks) {
+            if(debug)
+                System.out.println("      " + link + " deleted");
             this.deleteCausalLink(link);
         }
         for(CausalLink link : addCausalLinks) {
+            if(debug)
+                System.out.println("      " + link + " added");
             this.addCausalLink(link);
         }
-    }
-
-    private void addOrderingConstraint(OrderingConstraint order) {
-        this.orderingConstraints.add(order);
-    }
-
-    private void deleteOrderingConstraint(OrderingConstraint order) {
-        this.orderingConstraints.remove(order);
+        popSubPlan.deleteAction(insertAtAction);
+        if(debug)
+            System.out.println("      " + insertAtAction + " deleted\n");
         
+        for(Action action : popSubPlan.actions) {
+            if(debug)
+                System.out.println("         " + action.getAction() + " added");
+            this.addAction(action);
+        }
+        
+        for(OrderingConstraint order : popSubPlan.orderingConstraints) {
+            if(debug)
+                System.out.println("         " + order + " added");
+            this.addOrderingConstraint(order);
+        }
+        
+        for(CausalLink link : popSubPlan.causalLinks) {
+            if(debug)
+                System.out.println("         " + link + " added");
+            this.addCausalLink(link);
+        }
+        return this;
     }
 
-    private void deleteCausalLink(CausalLink link) {
-        this.causalLinks.remove(link);
-    }
-    
-    private void addCausalLink(CausalLink link) {
-        this.causalLinks.add(link);
-    }    
 }
