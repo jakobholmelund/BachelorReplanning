@@ -61,10 +61,12 @@ public class World {
     public void startAgentsPOP() throws InterruptedException{
         synchronized(this){
             LinkedList<String> goals = new LinkedList<String>();
+            LinkedList<Integer> agents = new LinkedList<Integer>();
             int agentid = 0;
             for(MapObject mo:objects){
                 if(mo instanceof MapAgent){
                     agentid = Integer.parseInt(mo.getId());
+                    agents.add(agentid);
                 }
                 if(mo instanceof Goal){
                     Goal g = (Goal)mo;
@@ -72,10 +74,13 @@ public class World {
                     goals.add("at(" + g.getName() + ",["+coords[0]+","+coords[1]+"])");
                 }
             }
-        
-            POPlanner planner = new POPlanner(this, agentid, goals);
-            Thread init = new Thread(planner);
-            init.start();
+            //Thread[] threads = new Thread[agents.size()];
+            for(int id : agents){
+                POPlanner planner = new POPlanner(this, id, goals);
+                Thread init = new Thread(planner);
+                init.start();
+            }
+            
         }
     }
     
@@ -304,9 +309,11 @@ public class World {
                 long key = map.keyFor(j, i);
                 Object[] mapobjects = map.get(key);
                 if(mapobjects != null){
-                    if(!((MapObject)mapobjects[0] instanceof Wall)){
-                        coords2value.add(key);
-                    }
+                    for(Object mo:mapobjects){
+                            if(!((MapObject)mo instanceof MapAgent) && !((MapObject)mapobjects[0] instanceof Wall)){
+                                coords2value.add(key);
+                            }
+                        }
                 }else{
                     coords2value.add(key);
                 }
