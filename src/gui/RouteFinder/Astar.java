@@ -142,7 +142,7 @@ public class Astar {
         
         pop.addOrderingConstraint(pop.getStart(), firstAction);
         
-        pop.printToConsole();
+        //pop.printToConsole();
         //TOPlan top = pop.getLinearization(w);
         //System.out.println("Found route------>");
         //p.printSolution();

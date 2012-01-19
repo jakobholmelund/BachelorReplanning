@@ -190,16 +190,32 @@ public class POPlanner implements Runnable { //  implements Runnable
                         this.plan = null;
                         valid = false;
                     }else{
+                        System.out.println("   Recieved: " + planSucceed + " -> REPLAN -> Try to repair plan! (in reality, replan from ");
+                        this.plan = null;
+                        this.popPlan = null;
+                        valid = false;
+                        /*
                         // Plan is broken
-                        //Action failedAction = this.plan.list.get(planSucceed);
-                        System.out.println("   Recieved: " + planSucceed + " -> REPLAN -> Try to repair plan! (in reality, replan from scratch)");
+                        Action failedAction = this.plan.list.get(planSucceed);
+                        
                         System.out.println("   OP: " + retInfo.precondition.toString());
                         // Try to start over, to 
-                        this.plan = null; //getTotalOrderPlan(popPlan, world);
-                        this.popPlan = null; //repairPlan(this.popPlan, failedAction, retInfo.precondition, this.state);
-                        valid = false;
+                        //this.plan = getTotalOrderPlan(popPlan, world);
+                        
+                        System.out.println("Before drop: \n");
                         //this.popPlan.printToConsole();
-                        /*System.out.println("      Plan attempted repaired!");
+                        System.out.println("\n");
+                        this.plan.printSolution();
+                        this.popPlan = this.popPlan.dropAllActionsEarlierThan(failedAction);
+                        
+                        System.out.println("After drop: \n");
+                        this.popPlan.printToConsole();
+                        System.out.println("\n");
+                        
+                        this.popPlan = repairPlan(this.popPlan, failedAction, retInfo.precondition, this.state);
+                        //getTotalOrderPlan(this.popPlan, world).printSolution();
+                        //this.popPlan.printToConsole();
+                        System.out.println("      Plan attempted repaired!");
                         if(this.popPlan == null || this.popPlan.isEmpty()) {
                             System.out.println("      Could not repair plan!");
                             valid = false;
@@ -209,8 +225,10 @@ public class POPlanner implements Runnable { //  implements Runnable
                             valid = true;
                             System.out.println("      Plan repaired");
                             this.plan = getTotalOrderPlan(this.popPlan, world);
-                            System.out.println("      New Plan: " + this.plan + "\n");
-                        }*/
+                            System.out.println("      New Plan:\n   " + this.plan + "\n");
+                        }
+                        
+                        */
                     }
                     //System.out.println("PLAN VALID: " + planSucceed + "  which is: " + valid);
                 }
@@ -255,7 +273,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                        //TOPlan subPlan = getTotalOrderPlan(popSubPlan, world);
                        
                        if(popSubPlan == null || this.popPlan.isEmpty()) {
-                            System.out.println("IMPOSSIBLE GOAL FOUND! SKIPPING");
+                            //System.out.println("IMPOSSIBLE GOAL FOUND! SKIPPING");
                             if(this.goals.isEmpty()) {
                                 this.goal = "";
                                 //System.err.println("DONE! ");
@@ -265,12 +283,14 @@ public class POPlanner implements Runnable { //  implements Runnable
                                 this.goal = this.goals.pop();
                             }
                        }else{
+                            //System.out.println("\n   Before Merge:\n");
+                            //this.popPlan.printToConsole();
                             this.popPlan = popPlan.insertPOPAt(popSubPlan, removeAction);
-                            System.out.println("   Plans Merged:\n");
+                            //System.out.println("\n   Plans Merged:\n");
                             
                             //this.popPlan.printToConsole();
                             this.plan = getTotalOrderPlan(this.popPlan, this.world);
-                            System.out.println("\nNew plan:\n" + this.plan + "\n");
+                            //System.out.println("\nNew plan:\n" + this.plan + "\n");
                             //System.out.println("\n\n");
                             //lastAtomicOnSubPlan = subPlan.peepLast();
                             //subPlan.printSolution();
@@ -294,13 +314,13 @@ public class POPlanner implements Runnable { //  implements Runnable
                     }else{
                         //System.out.println("Pop Plan: \n");
                         //this.popPlan.printToConsole();
-                        System.out.println("\n");
+                        //System.out.println("\n");
                         this.plan = getTotalOrderPlan(this.popPlan, world);
                         long time2 = System.currentTimeMillis();
                         
-                        System.out.println("Plan found in: " + (time2 - time1) + " ms");
+                        //System.out.println("Plan found in: " + (time2 - time1) + " ms");
                         
-                        System.out.println("\nPlan: \n" + this.plan.toString());
+                        //System.out.println("\nPlan: \n" + this.plan.toString());
                         //System.out.println("Done...");
                     }
                 }
@@ -363,10 +383,9 @@ public class POPlanner implements Runnable { //  implements Runnable
             pop.addOpenPrecondition(preqThatFailed, actionThatFailed);
             System.out.println("   New OP: " + preqThatFailed + " for: " + actionThatFailed);
         }
-        
         long time2 = System.nanoTime();
 
-        System.out.println("Plan repaired in: " + (time2 - time1) + " nanoseconds");
+        System.out.println("   Plan repaired in: " + (time2 - time1) + " nanoseconds");
         return refinePlan(pop);
     }
     

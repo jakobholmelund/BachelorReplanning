@@ -422,7 +422,8 @@ public class POP {
                 System.out.println("      " + link + " added");
             this.addCausalLink(link);
         }
-        popSubPlan.deleteAction(insertAtAction);
+        //this.deleteAction(insertAtAction);
+        this.safelyDeleteAction(insertAtAction);
         if(debug)
             System.out.println("      " + insertAtAction + " deleted\n");
         
@@ -453,5 +454,55 @@ public class POP {
         }
         return ret;
     }
-
+    
+    public synchronized POP dropAllActionsEarlierThan(Action failedAction) {
+        ArrayList<Action> deletelist = new ArrayList<Action>();
+        for(OrderingConstraint order : this.orderingConstraints) {
+            if(order.B.equals(failedAction)) {
+                deletelist.add(order.A);
+            }
+        }
+        
+        for(Action act : deletelist) {
+            this.removeActionAndAncestors(act);
+        }
+        
+        return this;
+    }
+    
+    private synchronized void removeActionAndAncestors(Action A) {
+        System.out.println("Deleting: " + A.getAction());
+        if(A.equals(this.getStart()) || A.equals(this.getFinish())) {
+            return;
+        }
+        
+        actions.remove(A);
+        ArrayList<OrderingConstraint> deleteOrdering = new ArrayList<OrderingConstraint>();
+        ArrayList<CausalLink> deleteLinks = new ArrayList<CausalLink>();
+        
+        for(OrderingConstraint order : this.orderingConstraints) {
+            if(order.B.equals(A)) {
+                deleteOrdering.add(order);
+            }
+        }
+        
+        for(CausalLink link : this.causalLinks) {
+            if(link.A.equals(A)) {
+                deleteLinks.add(link);
+            }
+        }
+        
+        for(CausalLink link : deleteLinks) {
+            this.causalLinks.remove(link);
+            System.out.println("   Remove Causal Link: " + link.toString());
+            this.addOpenPrecondition(link.p, link.B);
+            System.out.println("   New OP: " + link.p + " for " + link.B);
+        }
+         
+        for(OrderingConstraint order : deleteOrdering) {
+            this.orderingConstraints.remove(order);
+            System.out.println("   Remove Ordering: " + order.toString());
+            removeActionAndAncestors(order.A);
+        }
+    }
 }

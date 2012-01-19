@@ -102,7 +102,7 @@ public class TOPlan {
     }
 
     public void printSolution() {
-        System.out.print("THIS: ");
+        System.out.print("THIS: \n");
         for (Action a : list) {
             System.out.print(a.toString() + " \n");
         }
