@@ -65,6 +65,74 @@ public class ActionSchema {
         //System.out.println(prerequsiteString);
     }
     
+    public ArrayList<Action> TRYOUTgetSpecificActions(Logic logic, HashMap<String,String> arguments) {
+        //System.out.println("Get specific action: " + this.name);
+        //System.out.println("Args: " + arguments.toString());
+        //System.out.println("STATE");
+        //System.out.println(logic.getTheoryAsString());
+        ArrayList<Action> possibleActions = new ArrayList<Action>();
+        ArrayList<String> openPreconditions = new ArrayList<String>();
+        ArrayList<HashMap<String,String>> argumentList = new ArrayList<HashMap<String,String>>();
+        argumentList.add(arguments);
+        boolean error = false;
+        
+        // For each preconditions
+        for(int i = preconditions.size()-1; i >= 0; i--) {
+            for(HashMap<String,String> argument : argumentList) {
+                String s = preconditions.get(i);
+                for(String arg : argument.keySet()) {
+                    s = s.replaceAll(arg, argument.get(arg));
+                }
+                ArrayList<Solution> solutions = new ArrayList<Solution>();
+                try {
+                    solutions = logic.solveAll(s);
+                }catch(Exception e) {
+                    error = true;
+                }
+                if(error || solutions.isEmpty()) {
+                    openPreconditions.add(s);
+                }else{
+                    if(solutions.size() == 1 && solutions.get(0).success()) {
+                        // If yes - for each solution append them to arguments and search onwards from there.
+                        Map bindings = solutions.get(0).getBindings();    
+                        
+                        //System.out.println("Query: " + s + "  Bindings: " + bindings.toString());
+                        for(Object o : bindings.keySet()) {
+                            String key = (String) o;
+                            //System.out.println("   key: " + key);
+                            if(!arguments.containsKey(key)) {
+                                Object bindedKey = bindings.get(key);
+                                if(bindedKey != null) {
+                                    arguments.put(key, bindedKey.toString());
+                                }
+                            }
+                        }
+                        synchronized(this) {
+                            
+                        } 
+                    }else{
+                        for(Solution sol : solutions) {
+                            if(sol.success()) {
+                                synchronized(this) {
+                                    
+                                } 
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Action a = createInstance(arguments);
+        for(String s : openPreconditions) {
+            s = s.replace('\\', ' ');
+            s = s.replace('+', '!');
+            s.trim();
+            a.addOpenPrecondition(s);
+        }
+        possibleActions.add(a);
+        return possibleActions;
+    }
+        
     public ArrayList<Action> getSpecificActions(Logic logic, HashMap<String,String> arguments) {
         //System.out.println("Get specific action: " + this.name);
         //System.out.println("Args: " + arguments.toString());
