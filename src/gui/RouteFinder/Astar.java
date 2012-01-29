@@ -76,7 +76,7 @@ public class Astar {
         TreeSet<Node> frontier = new TreeSet<Node>();
         Node init = makeInitialNode(current);
         frontier.add(init);
-        System.out.println(frontier);
+        //System.out.println(frontier);
         
         int states = 0;
         while (true) {
