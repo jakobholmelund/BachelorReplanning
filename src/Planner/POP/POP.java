@@ -192,13 +192,13 @@ public class POP {
     }
     
     public boolean isSolution(State state) {
-        if(!openPreconditions.isEmpty()) {
-            return false;
-        }
-        TOPlan top = this.getLinearization();
-        ReturnInfo ret = top.monitorPlan(state);
-        return (ret.info == -1);
-        //return openPreconditions.isEmpty();
+        //if(!openPreconditions.isEmpty()) {
+        //    return false;
+        //}
+        //TOPlan top = this.getLinearization();
+        //ReturnInfo ret = top.monitorPlan(state);
+        //return (ret.info == -1);
+        return openPreconditions.isEmpty();
     }
     
     public TOPlan getLinearization() {

@@ -185,7 +185,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                     }else if(planSucceed == -2) {
                         // Plan is good but goal is not fulfilled
                         System.out.println("REPLAN -> From Scratch");
-
+                        
                         this.popPlan = null;  
                         this.plan = null;
                         valid = false;
@@ -321,7 +321,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                     long time1 = System.nanoTime();
                     this.popPlan = findPlan(this.goal);
                     if(this.popPlan == null || this.popPlan.isEmpty()) {
-                        //System.out.println("IMPOSSIBLE GOAL FOUND! SKIPPING");
+                        System.out.println("IMPOSSIBLE GOAL FOUND! SKIPPING");
                         try {
                             this.goal = this.goals.pop();
                         }
@@ -330,7 +330,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                         }
                     }else{
                         //System.out.println("Pop Plan: \n");
-                        this.popPlan.printToConsole();
+                        //this.popPlan.printToConsole();
                         //System.out.println("\n");
                         this.plan = getTotalOrderPlan(this.popPlan);
                         long time2 = System.nanoTime();
