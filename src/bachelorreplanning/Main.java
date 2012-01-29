@@ -7,7 +7,9 @@ package bachelorreplanning;
 //import Planner.ReFSP.ReFSPlanner;
 import Benchmark.TestBench;
 import gui.MainWindow;
+import gui.RouteFinder.Astar;
 import jTrolog.errors.PrologException;
+import worldmodel.Wall;
 import worldmodel.World;
 
 /**
@@ -17,10 +19,37 @@ import worldmodel.World;
 public class Main {
     
     public static void main(String[] args) throws PrologException, InterruptedException  {
+        
+        //for(int i=0;i<10;i++){
+        //    world.addObject(new Wall(i,0));
+        //    world.addObject(new Wall(0,i));
+        //    world.addObject(new Wall(i,9));
+        //    world.addObject(new Wall(9,i));
+        //}
+        
         World world = new World(20,20);
         MainWindow mainWindow = new MainWindow();
         mainWindow.loadNewWorld(world);
-        
+        /*
+        Astar bench = new Astar();
+        World world = new World(10,10);
+        bench.findPlanBench(world.simpleMap(), world.getMap().keyFor(0, 0), world.getMap().keyFor(9, 9));
+        world = new World(20,20);
+        bench.findPlanBench(world.simpleMap(), world.getMap().keyFor(0, 0), world.getMap().keyFor(19, 19));
+        world = new World(40,40);
+        bench.findPlanBench(world.simpleMap(), world.getMap().keyFor(0, 0), world.getMap().keyFor(39, 39));
+        world = new World(80,80);
+        bench.findPlanBench(world.simpleMap(), world.getMap().keyFor(0, 0), world.getMap().keyFor(79, 79));
+        world = new World(160,160);
+        bench.findPlanBench(world.simpleMap(), world.getMap().keyFor(0, 0), world.getMap().keyFor(159, 159));
+        world = new World(320,320);
+        bench.findPlanBench(world.simpleMap(), world.getMap().keyFor(0, 0), world.getMap().keyFor(319, 319));
+        world = new World(640,640);
+        bench.findPlanBench(world.simpleMap(), world.getMap().keyFor(0, 0), world.getMap().keyFor(639, 639));
+        world = new World(1280,1280);
+        bench.findPlanBench(world.simpleMap(), world.getMap().keyFor(0, 0), world.getMap().keyFor(1279, 1279));
+        //mainWindow.loadNewWorld(world);
+        */
         //world.act("moveAtomic(1,E)");
         
         /*

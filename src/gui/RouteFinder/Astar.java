@@ -22,6 +22,50 @@ public class Astar {
     private HashSet<Long> map;
     private long agent;
     
+    public POP findPlanBench(HashSet<Long> map,long start,long end) throws InterruptedException {
+        
+        this.map = map;
+        //long[] startogoal = w.parseAction(action);
+        long current = start;//w.getAgentPos(agent);
+        long goal = end;//w.getAgentPos(agent);
+        //agent = startogoal[2];
+        TreeSet<Node> frontier = new TreeSet<Node>();
+        Node init = makeInitialNode(current);
+        frontier.add(init);
+        System.out.println(frontier);
+        int states = 0;
+        long time1 = System.currentTimeMillis();
+        while (true) {
+            //System.out.println(frontier.size());
+            if (frontier.isEmpty()) {
+                return null;
+            }
+            
+            Node n = frontier.pollFirst();
+            if (n.curPosition == goal) {
+                //return true;
+                int planlength = 0;
+                Node goalnode = n;
+                while(goalnode != null){
+                    planlength++;
+                    goalnode = goalnode.parent;
+                }
+                long time2 = System.currentTimeMillis();
+                System.out.println("Goal reached by expanding " + states + " states Plan length: " + planlength + "  in: " + (time2 - time1) + " ms");
+                return null;
+            }else if(n.f > map.size()){
+                return null;
+            }
+            
+            for (long position : actions(n.curPosition)) {
+                long s1 = position;
+                frontier.add(new Node(s1, n, n.g + movecost, heuristik(s1,goal)));
+                states++;
+            }
+          
+        }
+    }
+    
     public POP findPlan(World w,String action) throws InterruptedException {
         map = w.simpleMap();
         long[] startogoal = w.parseAction(action);
@@ -61,7 +105,7 @@ public class Astar {
             int[] c = coordsFor(cp);
             int[] g = coordsFor(goal);
             double h = (Math.abs(c[0] - g[0]) + Math.abs(c[1] - g[1]));
-            return h;
+            return 1;
     }
     
     public ArrayList<Long> actions(long cp) {
