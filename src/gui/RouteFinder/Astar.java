@@ -105,7 +105,7 @@ public class Astar {
             int[] c = coordsFor(cp);
             int[] g = coordsFor(goal);
             double h = (Math.abs(c[0] - g[0]) + Math.abs(c[1] - g[1]));
-            return 1;
+            return h;
     }
     
     public ArrayList<Long> actions(long cp) {
