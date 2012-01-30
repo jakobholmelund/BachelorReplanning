@@ -40,7 +40,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         this.goals = goals;
         routeFinder = new Astar();
         actions = this.setActions();
-        this.planRepair = true;
+        this.planRepair = false;
     }
     
     private void getPercepts() throws PrologException {
@@ -332,7 +332,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                         long time2 = System.nanoTime();
                         
                         System.out.println("Plan found in: " + (time2 - time1) + " nanoseconds / " + (float)(time2 - time1)/1000000 + " ms");
-                        this.popPlan.printToConsole();
+                        //this.popPlan.printToConsole();
                         System.out.println("\nPlan: \n" + this.plan.toString());
                         //System.out.println("Done...");
                     }
