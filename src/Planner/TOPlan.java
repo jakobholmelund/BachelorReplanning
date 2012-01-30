@@ -133,7 +133,7 @@ public class TOPlan {
     public ReturnInfo monitorPlan(State state) {
         Logic s = state.state.clone();
         //System.out.println("Initial check state: \n " + s.getTheoryAsString());
-        long time1 = System.currentTimeMillis();
+        long time1 = System.nanoTime();
 
         for(int i = 0; i < list.size(); i++) {
             Action action = list.get(i);
@@ -177,8 +177,8 @@ public class TOPlan {
         }
         boolean bol = s.solveboolean(getGoal());
         
-        long time2 = System.currentTimeMillis();
-        //System.out.println("Plan monitoring took: " + (time2-time1) + " ms  -- goal is: " + bol);
+        long time2 = System.nanoTime();
+        System.out.println("      Plan monitorint took: " + (time2 - time1) + " nanoseconds / " + (float)(time2 - time1)/1000000 + " ms");
         //System.out.println("Goal: " + getGoal() + " - valid: " + bol);
         if(bol) {
             return new ReturnInfo(-1, null);
