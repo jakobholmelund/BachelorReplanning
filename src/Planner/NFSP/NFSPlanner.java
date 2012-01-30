@@ -219,7 +219,7 @@ private void getPercepts() throws PrologException {
                     //world.agentActionParse(next.name);
                 }else{
                    POP popSubPlan = routeFinder.findPlan(world,next.name);
-                   TOPlan subPlan = popSubPlan.getLinearization(world);
+                   TOPlan subPlan = popSubPlan.getLinearization();
                    //subPlan.printSolution();
                    this.plan.prependAll(subPlan);
                 }

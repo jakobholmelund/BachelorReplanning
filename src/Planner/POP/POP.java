@@ -5,15 +5,11 @@
 package Planner.POP;
 
 import Planner.Action;
+import Planner.ReturnInfo;
+import Planner.State;
 import Planner.TOPlan;
 import gui.RouteFinder.Astar;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import worldmodel.World;
@@ -119,10 +115,15 @@ public class POP {
      
      public OpenPrecondition pollOpenPreconditions() {
          //System.out.println("Before: " + openPreconditions.toString());
+         try{
          OpenPrecondition returner =  openPreconditions.iterator().next();
          openPreconditions.remove(returner);
          //System.out.println("After: " + openPreconditions.toString());
          return returner;
+         }
+         catch(NoSuchElementException e) {
+             return null;
+         }
      }
     
     public void clearOpenPreconditions() {
@@ -190,30 +191,36 @@ public class POP {
         return actions.contains(a);
     }
     
-    public boolean isSolution() {
+    public boolean isSolution(State state) {
+        //if(!openPreconditions.isEmpty()) {
+        //    return false;
+        //}
+        //TOPlan top = this.getLinearization();
+        //ReturnInfo ret = top.monitorPlan(state);
+        //return (ret.info == -1);
         return openPreconditions.isEmpty();
     }
     
-    public TOPlan getLinearization(World world) {
+    public TOPlan getLinearization() {
         TOPlan plan = new TOPlan(this.goal);
-        final HashSet<OrderingConstraint> backup = new HashSet<OrderingConstraint>();
+        HashSet<OrderingConstraint> backup = new HashSet<OrderingConstraint>();
         
         for(OrderingConstraint order : this.orderingConstraints) {
             backup.add(order);
         }
         
-        TOPlan linearPlan = findLinearization(startAction, plan, world);
+        TOPlan linearPlan = findLinearization(startAction, plan);
         
         this.orderingConstraints = backup;
         return linearPlan;
     }
     
-    private TOPlan findLinearization(Action action, TOPlan plan, World world) {
+    private TOPlan findLinearization(Action action, TOPlan plan) {
         TOPlan newPlan = plan;
         for(Action a : expand(action)) {
             if(this.debug)
                 System.out.println("Adding expanded: " + a.name);
-            plan = findLinearization(a, plan.append(a), world);
+            plan = findLinearization(a, plan.append(a));
             //System.out.println("PREQ ADDED: " + a.preqToString());
         }
         
@@ -221,6 +228,7 @@ public class POP {
     }
     
     private ArrayList<Action> expand(Action A) {
+        //this.debug = true;
         ArrayList<Action> actionsRet = new ArrayList<Action>();
         ArrayList<OrderingConstraint> removers = new ArrayList<OrderingConstraint>();
         if(this.debug)
@@ -234,6 +242,9 @@ public class POP {
                     if((!o.A.equals(l.A)) && o.B.equals(l.B)) {
                         if(this.debug)
                             System.out.println("         Found " + l.A.getAction() + " < " + l.B.getAction() + " violating: " + o.A.getAction() + " < " + o.B.getAction());
+                        if(this.debug)
+                            System.out.println("         Found " + l.A + " < " + l.B + " violating: " + o.A + " < " + o.B);
+           
                         foundOther = true;
                         break;
                     }
@@ -248,7 +259,7 @@ public class POP {
                 }
             }
         }
-        
+        this.debug = false;
         this.orderingConstraints.removeAll(removers);
         return actionsRet;
     }
@@ -471,12 +482,13 @@ public class POP {
     }
     
     private synchronized void removeActionAndAncestors(Action A) {
-        System.out.println("Deleting: " + A.getAction());
+        if(debug)
+            System.out.println("Deleting: " + A.getAction());
         if(A.equals(this.getStart()) || A.equals(this.getFinish())) {
             return;
         }
         
-        actions.remove(A);
+        //actions.remove(A);
         ArrayList<OrderingConstraint> deleteOrdering = new ArrayList<OrderingConstraint>();
         ArrayList<CausalLink> deleteLinks = new ArrayList<CausalLink>();
         
@@ -494,15 +506,19 @@ public class POP {
         
         for(CausalLink link : deleteLinks) {
             this.causalLinks.remove(link);
-            System.out.println("   Remove Causal Link: " + link.toString());
+            if(debug)
+                System.out.println("   Remove Causal Link: " + link.toString());
             this.addOpenPrecondition(link.p, link.B);
-            System.out.println("   New OP: " + link.p + " for " + link.B);
+            if(debug)
+                System.out.println("   New OP: " + link.p + " for " + link.B);
         }
          
         for(OrderingConstraint order : deleteOrdering) {
             this.orderingConstraints.remove(order);
-            System.out.println("   Remove Ordering: " + order.toString());
+            if(debug)
+                System.out.println("   Remove Ordering: " + order.toString());
             removeActionAndAncestors(order.A);
         }
+        actions.remove(A);
     }
 }

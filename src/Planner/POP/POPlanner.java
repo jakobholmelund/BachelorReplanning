@@ -126,7 +126,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         this.state = new State(theory);
         //System.out.println("\n\n" + this.state.toString() + "\n\n");
         //System.out.println("Got these percepts: \n" + this.state.toString());
-        long time2 = System.currentTimeMillis();
+        //long time2 = System.currentTimeMillis();
                 
        //System.out.println("Percepts gotten in: " + (time2 - time1) + " ms");
     }
@@ -141,7 +141,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         //this.goals = new LinkedList<String>();
         //this.goals.add("agentAt(1,[1,7])");
         while(!this.done) {
-            System.out.println("\n");
+            //System.out.println("\n");
             iteration++;
 
             try {
@@ -152,11 +152,11 @@ public class POPlanner implements Runnable { //  implements Runnable
                     try {
                         this.goal = goals.pop();
                         this.plan = null;
-                        System.out.println("NEW GOAL: " + this.goal);
+                        //System.out.println("NEW GOAL: " + this.goal);
                     }
                     catch(NoSuchElementException e) {
                         this.done = true;
-                        System.err.println("DONE! ");
+                        //System.err.println("DONE! ");
                         Thread.currentThread().join();
                         return;
                     }
@@ -185,7 +185,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                     }else if(planSucceed == -2) {
                         // Plan is good but goal is not fulfilled
                         System.out.println("REPLAN -> From Scratch");
-
+                        
                         this.popPlan = null;  
                         this.plan = null;
                         valid = false;
@@ -198,24 +198,32 @@ public class POPlanner implements Runnable { //  implements Runnable
                         // Plan is broken
                         Action failedAction = this.plan.list.get(planSucceed);
                         
-                        System.out.println("   OP: " + retInfo.precondition.toString());
+                        //System.out.println("   OP: " + retInfo.precondition.toString());
                         // Try to start over, to 
                         //this.plan = getTotalOrderPlan(popPlan, world);
                         
-                        System.out.println("Before drop: \n");
+                        //System.out.println("Before drop: \n");
                         //this.popPlan.printToConsole();
-                        System.out.println("\n");
-                        this.plan.printSolution();
+                        //System.out.println("\n");
+                        
+                        //System.out.println(this.popPlan.printActions());
+                        //System.out.println("\n");
+                        long time1 = System.nanoTime();
                         this.popPlan = this.popPlan.dropAllActionsEarlierThan(failedAction);
-                        
-                        System.out.println("After drop: \n");
-                        this.popPlan.printToConsole();
-                        System.out.println("\n");
-                        
+                        //System.out.println(this.popPlan.printActions());
+                        //System.out.println("\n");
+                        this.plan = getTotalOrderPlan(this.popPlan);
+                        //this.plan.printSolution();
+                        //System.out.println("\n");
+                        //System.out.println("\n");
+                        //System.out.println("After drop: \n");
+                        //this.popPlan.printToConsole();
+                        //System.out.println("\n");
+                       
                         this.popPlan = repairPlan(this.popPlan, failedAction, retInfo.precondition, this.state);
                         //getTotalOrderPlan(this.popPlan, world).printSolution();
                         //this.popPlan.printToConsole();
-                        System.out.println("      Plan attempted repaired!");
+                        //System.out.println("      Plan attempted repaired!");
                         if(this.popPlan == null || this.popPlan.isEmpty()) {
                             System.out.println("      Could not repair plan!");
                             valid = false;
@@ -224,10 +232,14 @@ public class POPlanner implements Runnable { //  implements Runnable
                         }else{
                             valid = true;
                             System.out.println("      Plan repaired");
-                            this.plan = getTotalOrderPlan(this.popPlan, world);
-                            System.out.println("      New Plan:\n   " + this.plan + "\n");
+                            this.popPlan.printToConsole();
+                            this.plan = getTotalOrderPlan(this.popPlan);
+                            long time2 = System.nanoTime();
+                            System.out.println("Plan repaired in: " + (time2 - time1) + " nanoseconds / " + (time2 - time1)/1000000 + " ms");
+                            //this.popPlan.printToConsole();
+                            this.plan.printSolution();
+                            //System.out.println("      New Plan:\n   " + this.plan + "\n");
                         }
-                        
                         */
                     }
                     //System.out.println("PLAN VALID: " + planSucceed + "  which is: " + valid);
@@ -243,13 +255,13 @@ public class POPlanner implements Runnable { //  implements Runnable
                     
                     // Apply next - act() ?
                     if(next.atomic) {
-                        System.out.println(" -- which is atomic");
+                        //System.out.println(" -- which is atomic");
                         
                         // If action succeeded
                         //boolean result = world.act(next.name);
                         
                         if(!world.act(next.name)) {
-                            System.out.println("Action " + next.name + " succeeded: " + false);
+                            //System.out.println("Action " + next.name + " succeeded: " + false);
                             // Replan. Later on, try to introduce new open preconditions to popPlan instead and refine it further.
                             this.plan = null; 
                             this.popPlan = null;
@@ -261,11 +273,11 @@ public class POPlanner implements Runnable { //  implements Runnable
                             //if(next.equals(lastAtomicOnSubPlan)) {
                                 //popPlan.actions.remove(next);
                             //}
-                            System.out.println("Action " + next.name + " succeeded: " + true);
+                            //System.out.println("Action " + next.name + " succeeded: " + true);
                             //System.out.println(this.popPlan.printActions());
                         }
                     }else{
-                       System.out.println(" -- which is not atomic");
+                       //System.out.println(" -- which is not atomic");
 
                        Action removeAction = plan.pop();
                        
@@ -289,7 +301,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                             //System.out.println("\n   Plans Merged:\n");
                             
                             //this.popPlan.printToConsole();
-                            this.plan = getTotalOrderPlan(this.popPlan, this.world);
+                            this.plan = getTotalOrderPlan(this.popPlan);
                             //System.out.println("\nNew plan:\n" + this.plan + "\n");
                             //System.out.println("\n\n");
                             //lastAtomicOnSubPlan = subPlan.peepLast();
@@ -300,27 +312,32 @@ public class POPlanner implements Runnable { //  implements Runnable
                     }
                 }else{
                     if(this.plan != null) {
-                        System.out.println("Replan: " + !valid);
+                        //System.out.println("Replan: " + !valid);
                     }else{
                         System.out.println("Started planning for goal: " + this.goal + " -->");
                     }
                     // Else, make a new plan ( and perform the first action ? )
 
-                    long time1 = System.currentTimeMillis();
+                    long time1 = System.nanoTime();
                     this.popPlan = findPlan(this.goal);
                     if(this.popPlan == null || this.popPlan.isEmpty()) {
                         System.out.println("IMPOSSIBLE GOAL FOUND! SKIPPING");
-                        this.goal = this.goals.pop();
+                        try {
+                            this.goal = this.goals.pop();
+                        }
+                        catch(NoSuchElementException e) {
+                            this.goal = null;
+                        }
                     }else{
                         //System.out.println("Pop Plan: \n");
                         //this.popPlan.printToConsole();
                         //System.out.println("\n");
-                        this.plan = getTotalOrderPlan(this.popPlan, world);
-                        long time2 = System.currentTimeMillis();
+                        this.plan = getTotalOrderPlan(this.popPlan);
+                        long time2 = System.nanoTime();
                         
-                        //System.out.println("Plan found in: " + (time2 - time1) + " ms");
+                        System.out.println("Plan found in: " + (time2 - time1) + " nanoseconds / " + (time2 - time1)/1000000 + " ms");
                         
-                        //System.out.println("\nPlan: \n" + this.plan.toString());
+                        System.out.println("\nPlan: \n" + this.plan.toString());
                         //System.out.println("Done...");
                     }
                 }
@@ -365,8 +382,8 @@ public class POPlanner implements Runnable { //  implements Runnable
         return null;
     }
     
-    public TOPlan getTotalOrderPlan(POP pop, World world) { 
-        return pop.getLinearization(world);
+    public TOPlan getTotalOrderPlan(POP pop) { 
+        return pop.getLinearization();
     }
     
     public POP findPlan(String goal) { 
@@ -377,15 +394,13 @@ public class POPlanner implements Runnable { //  implements Runnable
     }
         
     public POP repairPlan(POP pop, Action actionThatFailed, ArrayList<String> preqsThatFailed, State state) {
-        long time1 = System.nanoTime();
+        
         
         for(String preqThatFailed : preqsThatFailed) {
             pop.addOpenPrecondition(preqThatFailed, actionThatFailed);
             System.out.println("   New OP: " + preqThatFailed + " for: " + actionThatFailed);
         }
-        long time2 = System.nanoTime();
-
-        System.out.println("   Plan repaired in: " + (time2 - time1) + " nanoseconds");
+        
         return refinePlan(pop);
     }
     
@@ -399,14 +414,15 @@ public class POPlanner implements Runnable { //  implements Runnable
             return null;
         }
         
-        if(pop.isSolution()) {
+        if(pop.isSolution(state)) {
             //pop.printToConsole();
             return pop;
         }
         
-        
         OpenPrecondition oP = pop.pollOpenPreconditions();
-        
+        if(oP == null) {
+            return null;
+        }
         //System.out.println("OP: " + oP.toString());
         try {
             ArrayList<Action> gottenActions = findAction(oP.condition);
@@ -448,7 +464,12 @@ public class POPlanner implements Runnable { //  implements Runnable
 
                 // Resolve conflicts
                 // Between the new causal link and all existing actions
+                // copy actions to avoid concurrency
+                Collection<Action> actionbackup = new ArrayList<Action>();//Collections.synchronizedSet(new HashSet<Action>());
                 for(Action C : pop.actions) {
+                    actionbackup.add(C);
+                }
+                for(Action C : actionbackup) {
                     // If there is a (potential?) conclict between oA and link, resolve it:
                     if(conflict(link, C, pop)) {
 
@@ -683,12 +704,9 @@ public class POPlanner implements Runnable { //  implements Runnable
 	ArrayList<String> effects1 = new ArrayList<String>();
 	effects1.add("agentAt(Agent,MovePos)");
 	effects1.add("!agentAt(Agent,CurPos)");
-	
-	//ArrayList<String> requirements1 = new ArrayList<String>();
-	//requirements1.add("f(MovePos)");
         
 	ActionSchema move = new ActionSchema("move", prerequisites1, "move(Agent,MovePos)", argse1, effects1, false, false);
-	//CurPos
+
 	/* MoveAtomic  */
 	ArrayList<String> argse2 = new ArrayList<String>();
 	argse2.add("Agent");
@@ -704,26 +722,18 @@ public class POPlanner implements Runnable { //  implements Runnable
 	ArrayList<String> effects2 = new ArrayList<String>();
 	effects2.add("agentAt(Agent,MovePos)");
 	effects2.add("!agentAt(Agent,CurPos)");
-	
-	//ArrayList<String> requirements2 = new ArrayList<String>();
-	//requirements2.add("f(MovePos)");
 
 	ActionSchema moveAtomic = new ActionSchema("moveAtomic", prerequisites2, "moveAtomic(Agent,MoveDir)", argse2, effects2, true, true);
-	
-	// object(Object) :- box(Object).
-	// object(Object) :- bomb(Object).	
 	
 	/* PickUp  */
 	ArrayList<String> argse3 = new ArrayList<String>();
 	argse3.add("Agent");
-	//argse3.add("AgPos");
 	argse3.add("CurPos");
 	argse3.add("Item");
 	
 	ArrayList<String> prerequisites3 = new ArrayList<String>();
 	prerequisites3.add("\\+carries(Agent, _)");
 	prerequisites3.add("agentAt(Agent,CurPos)"); // agentAt(Agent, AgPos)
-	//prerequisites3.add("equals(ObjPos,AgPos)");
 	prerequisites3.add("at(Item,CurPos)");
 	prerequisites3.add("item(Item)");
 	
@@ -731,33 +741,23 @@ public class POPlanner implements Runnable { //  implements Runnable
 	effects3.add("!at(Item,CurPos)");
 	effects3.add("carries(Agent,Item)");
 	
-	//ArrayList<String> requirements3 = new ArrayList<String>();
-	//requirements3.add("at(Object,ObjPos)");
-	
 	ActionSchema pickUp = new ActionSchema("pickUp", prerequisites3, "pickUp(Agent,Item)", argse3, effects3, false, true);
 	
 	/* Place  */
 	ArrayList<String> argse4 = new ArrayList<String>();
 	argse4.add("Agent");
 	argse4.add("CurPos");
-	//argse4.add("ObjPos");
 	argse4.add("Item");
 	
 	ArrayList<String> prerequisites4 = new ArrayList<String>();
 	prerequisites4.add("agentAt(Agent,CurPos)");
-	//prerequisites4.add("equals(ObjPos, AgPos)");
 	prerequisites4.add("carries(Agent,Item)");
 	
 	ArrayList<String> effects4 = new ArrayList<String>();
 	effects4.add("at(Item,CurPos)");
 	effects4.add("!carries(Agent,Item)");
-	
-	//ArrayList<String> requirements4 = new ArrayList<String>();
-	//requirements4.add("f(AgPos)");
-	//requirements4.add("carries(Agent,Object)");
-	
+
 	ActionSchema place = new ActionSchema("place", prerequisites4, "place(Agent,Item)", argse4, effects4, false, true);
-        
         
         /* Smash  */
 	ArrayList<String> argse5 = new ArrayList<String>();

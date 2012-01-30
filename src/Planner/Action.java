@@ -73,6 +73,6 @@ public class Action implements Comparable<Action>{
     }
     
     public boolean equals(Action a) {
-        return name.equals(a.name) && effects.equals(a.effects) && preconditions.equals(a.preconditions);
+        return this.name.equals(a.name) && this.effects.equals(a.effects) && this.preconditions.equals(a.preconditions);
     }
 }

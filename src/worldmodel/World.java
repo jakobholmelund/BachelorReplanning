@@ -165,7 +165,7 @@ public class World {
                     
                     //Check if oilpud
                     if(mobject instanceof Oil){
-                        System.out.println("OILPUUUUUUUUD");
+                        //System.out.println("OILPUUUUUUUUD");
                         ArrayList<Long> neighbors = map.emptyNeighborsKeysFor(key);
                         Random random = new Random();
                         int test = random.nextInt(neighbors.size());
@@ -362,7 +362,7 @@ public class World {
     
     public boolean smash(MapAgent ma,MapObject mo){
         if(map.neighborsFor(ma.getPosition()).contains(mo)){
-            System.out.println("SMAAAAAAAAAAAAAAAAAAAAAAASH");
+            //System.out.println("SMAAAAAAAAAAAAAAAAAAAAAAASH");
             this.removeObject(mo);
             return true;
         }
