@@ -26,6 +26,7 @@ public class POPlanner implements Runnable { //  implements Runnable
     Astar routeFinder;
     private ArrayList<ActionSchema> actions;
     Action lastAtomicOnSubPlan = null;
+    boolean init = true;
     
     public POPlanner(World world, int aid, LinkedList<String> goals) { //String mid
         iteration = 0;
@@ -115,6 +116,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                     }
                 }
             }
+       
        }
      
         String theory = getStatics() + domain;
@@ -126,8 +128,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         this.state = new State(theory);
         //System.out.println("\n\n" + this.state.toString() + "\n\n");
         //System.out.println("Got these percepts: \n" + this.state.toString());
-        //long time2 = System.currentTimeMillis();
-                
+        //long time2 = System.currentTimeMillis();       
        //System.out.println("Percepts gotten in: " + (time2 - time1) + " ms");
     }
 
@@ -140,13 +141,19 @@ public class POPlanner implements Runnable { //  implements Runnable
     public void run() {
         //this.goals = new LinkedList<String>();
         //this.goals.add("agentAt(1,[1,7])");
+        
         while(!this.done) {
+            long timeTest1 = System.nanoTime();
             //System.out.println("\n");
             iteration++;
 
             try {
                 //get percepts and update current state description
                 getPercepts();
+                long timeTest3 = System.nanoTime();
+                System.out.println("from start to after percepts: " + (timeTest3 - timeTest1) + " nanoseconds / " + (timeTest3 - timeTest1)/1000000 + " ms");
+                    
+                
                 
                 if(this.goal == null || this.goal.equals("") && !this.goals.isEmpty()) {
                     try {
@@ -178,6 +185,8 @@ public class POPlanner implements Runnable { //  implements Runnable
                 
                 if(this.plan != null) {
                     ReturnInfo retInfo = this.plan.monitorPlan(state);
+                    long timeTest2 = System.nanoTime();
+                    System.out.println("from start to after monitor: " + (timeTest2 - timeTest1) + " nanoseconds / " + (timeTest2 - timeTest1)/1000000 + " ms");
                     int planSucceed = retInfo.info;
                     // Plan is good
                     if(planSucceed == -1) {
@@ -269,6 +278,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                         }else{
                             this.plan.pop();
                             this.popPlan.safelyDeleteAction(next);
+                    
                             //this.popPlan.printToConsole();
                             //if(next.equals(lastAtomicOnSubPlan)) {
                                 //popPlan.actions.remove(next);
@@ -283,7 +293,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                        
                        POP popSubPlan = routeFinder.findPlan(world,next.name);
                        //TOPlan subPlan = getTotalOrderPlan(popSubPlan, world);
-                       
+            
                        if(popSubPlan == null || this.popPlan.isEmpty()) {
                             //System.out.println("IMPOSSIBLE GOAL FOUND! SKIPPING");
                             if(this.goals.isEmpty()) {
@@ -348,12 +358,14 @@ public class POPlanner implements Runnable { //  implements Runnable
             }
             try {
                 world.draw();
-                Thread.sleep(75);
+                Thread.sleep(5);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             } catch(NullPointerException e) {
                 
             }
+            long timeTest2 = System.nanoTime();
+            System.out.println("Loop Took: " + (timeTest2 - timeTest1) + " nanoseconds / " + (timeTest2 - timeTest1)/1000000 + " ms");
         }
     }
     

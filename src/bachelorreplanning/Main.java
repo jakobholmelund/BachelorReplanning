@@ -27,7 +27,7 @@ public class Main {
         //    world.addObject(new Wall(9,i));
         //}
         
-        World world = new World(20,20);
+        World world = new World(80,80);
         MainWindow mainWindow = new MainWindow();
         mainWindow.loadNewWorld(world);
         /*
