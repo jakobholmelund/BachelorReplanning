@@ -346,7 +346,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                         long time2 = System.nanoTime();
                         
                         System.out.println("Plan found in: " + (time2 - time1) + " nanoseconds / " + (float)(time2 - time1)/1000000 + " ms");
-                        
+                        this.popPlan.printToConsole();
                         System.out.println("\nPlan: \n" + this.plan.toString());
                         //System.out.println("Done...");
                     }
@@ -524,6 +524,10 @@ public class POPlanner implements Runnable { //  implements Runnable
                         }
                     }
                     //pop.addAction(A);
+                    POP newPlan3 = refinePlan(pop);
+                    if(newPlan3 != null) {
+                        return newPlan3;
+                    }
                 }
             }
         } catch (InterruptedException ex) {
@@ -720,7 +724,7 @@ public class POPlanner implements Runnable { //  implements Runnable
 	effects1.add("agentAt(Agent,MovePos)");
 	effects1.add("!agentAt(Agent,CurPos)");
         
-	ActionSchema move1 = new ActionSchema("move", prerequisites1, "move(Agent,MovePos)", argse1, effects1, false, false);
+	ActionSchema move1 = new ActionSchema("move1", prerequisites1, "move(Agent,MovePos)", argse1, effects1, false, false);
 
  	/* Move  */
 	ArrayList<String> argse12 = new ArrayList<String>();
