@@ -517,7 +517,6 @@ public class POP {
         }
          
         for(OrderingConstraint order : deleteOrdering) {
-            System.out.println("      Remove Ordering: " + order.A + " < " + order.B);
             this.orderingConstraints.remove(order);
             if(debug)
                 System.out.println("   Remove Ordering: " + order.toString());
