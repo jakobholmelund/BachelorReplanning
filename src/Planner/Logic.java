@@ -312,13 +312,14 @@ public class Logic {
     public Logic clone() {
         Logic logic;
         try {
+            
             String theory = this.engine.getTheory();
-            long time1 = System.currentTimeMillis();
+            long time1 = System.nanoTime();
             logic = new Logic(theory);
             //logic = new Logic();
             //logic.engine = this.engine.clone();
-            long time2 = System.currentTimeMillis();
-            //System.out.println("Cloned in: " + (time2 - time1) + " ms. Length: \n" + theory.length());
+            long time2 = System.nanoTime();
+            System.out.println("      Cloning a state took: " + (time2 - time1) + " nanoseconds / " + (float)(time2 - time1)/1000000 + " ms");
             
             return logic;
         } catch (PrologException ex) {

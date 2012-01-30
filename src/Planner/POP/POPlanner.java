@@ -244,7 +244,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                             this.popPlan.printToConsole();
                             this.plan = getTotalOrderPlan(this.popPlan);
                             long time2 = System.nanoTime();
-                            System.out.println("Plan repaired in: " + (time2 - time1) + " nanoseconds / " + (time2 - time1)/1000000 + " ms");
+                            System.out.println("Plan repaired in: " + (time2 - time1) + " nanoseconds / " + (float)(time2 - time1)/1000000 + " ms");
                             //this.popPlan.printToConsole();
                             this.plan.printSolution();
                             //System.out.println("      New Plan:\n   " + this.plan + "\n");
@@ -345,7 +345,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                         this.plan = getTotalOrderPlan(this.popPlan);
                         long time2 = System.nanoTime();
                         
-                        System.out.println("Plan found in: " + (time2 - time1) + " nanoseconds / " + (time2 - time1)/1000000 + " ms");
+                        System.out.println("Plan found in: " + (time2 - time1) + " nanoseconds / " + (float)(time2 - time1)/1000000 + " ms");
                         
                         System.out.println("\nPlan: \n" + this.plan.toString());
                         //System.out.println("Done...");
@@ -430,6 +430,7 @@ public class POPlanner implements Runnable { //  implements Runnable
             //pop.printToConsole();
             return pop;
         }
+        long time1 = System.nanoTime();
         
         OpenPrecondition oP = pop.pollOpenPreconditions();
         if(oP == null) {
@@ -529,7 +530,9 @@ public class POPlanner implements Runnable { //  implements Runnable
             //Logger.getLogger(BSPlanner.class.getName()).log(Level.SEVERE, null, ex);
         }
         //System.out.println("Time spent so far: " + (System.currentTimeMillis() - time) + " ms. Is solution?= " + pop.isSolution() + "\n\n");
-
+        long time2 = System.nanoTime();
+                        
+        System.out.println("   Open Precondition closed in : " + (time2 - time1) + " nanoseconds / " + (float)(time2 - time1)/1000000 + " ms");
         return refinePlan(pop);
         
     }
