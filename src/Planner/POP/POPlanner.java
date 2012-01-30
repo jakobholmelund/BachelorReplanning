@@ -27,6 +27,7 @@ public class POPlanner implements Runnable { //  implements Runnable
     private ArrayList<ActionSchema> actions;
     Action lastAtomicOnSubPlan = null;
     boolean init = true;
+    private boolean planRepair;
     
     public POPlanner(World world, int aid, LinkedList<String> goals) { //String mid
         iteration = 0;
@@ -39,6 +40,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         this.goals = goals;
         routeFinder = new Astar();
         actions = this.setActions();
+        this.planRepair = true;
     }
     
     private void getPercepts() throws PrologException {
@@ -151,7 +153,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                 //get percepts and update current state description
                 getPercepts();
                 long timeTest3 = System.nanoTime();
-                System.out.println("from start to after percepts: " + (timeTest3 - timeTest1) + " nanoseconds / " + (timeTest3 - timeTest1)/1000000 + " ms");
+                //System.out.println("from start to after percepts: " + (timeTest3 - timeTest1) + " nanoseconds / " + (timeTest3 - timeTest1)/1000000 + " ms");
                     
                 
                 
@@ -186,7 +188,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                 if(this.plan != null) {
                     ReturnInfo retInfo = this.plan.monitorPlan(state);
                     long timeTest2 = System.nanoTime();
-                    System.out.println("from start to after monitor: " + (timeTest2 - timeTest1) + " nanoseconds / " + (timeTest2 - timeTest1)/1000000 + " ms");
+                    //System.out.println("from start to after monitor: " + (timeTest2 - timeTest1) + " nanoseconds / " + (timeTest2 - timeTest1)/1000000 + " ms");
                     int planSucceed = retInfo.info;
                     // Plan is good
                     if(planSucceed == -1) {
@@ -200,56 +202,40 @@ public class POPlanner implements Runnable { //  implements Runnable
                         valid = false;
                     }else{
                         System.out.println("   Recieved: " + planSucceed + " -> REPLAN -> Try to repair plan! (in reality, replan from ");
-                        this.plan = null;
-                        this.popPlan = null;
-                        valid = false;
-                        /*
-                        // Plan is broken
-                        Action failedAction = this.plan.list.get(planSucceed);
-                        
-                        //System.out.println("   OP: " + retInfo.precondition.toString());
-                        // Try to start over, to 
-                        //this.plan = getTotalOrderPlan(popPlan, world);
-                        
-                        //System.out.println("Before drop: \n");
-                        //this.popPlan.printToConsole();
-                        //System.out.println("\n");
-                        
-                        //System.out.println(this.popPlan.printActions());
-                        //System.out.println("\n");
-                        long time1 = System.nanoTime();
-                        this.popPlan = this.popPlan.dropAllActionsEarlierThan(failedAction);
-                        //System.out.println(this.popPlan.printActions());
-                        //System.out.println("\n");
-                        this.plan = getTotalOrderPlan(this.popPlan);
-                        //this.plan.printSolution();
-                        //System.out.println("\n");
-                        //System.out.println("\n");
-                        //System.out.println("After drop: \n");
-                        //this.popPlan.printToConsole();
-                        //System.out.println("\n");
-                       
-                        this.popPlan = repairPlan(this.popPlan, failedAction, retInfo.precondition, this.state);
-                        //getTotalOrderPlan(this.popPlan, world).printSolution();
-                        //this.popPlan.printToConsole();
-                        //System.out.println("      Plan attempted repaired!");
-                        if(this.popPlan == null || this.popPlan.isEmpty()) {
-                            System.out.println("      Could not repair plan!");
-                            valid = false;
+
+                        if(this.planRepair) { 
+                            // Plan is broken
+                            Action failedAction = this.plan.list.get(planSucceed);
+
+                            long time1 = System.nanoTime();
+                            this.popPlan = this.popPlan.dropAllActionsEarlierThan(failedAction);
+                            this.plan = getTotalOrderPlan(this.popPlan);
+
+                            this.popPlan = repairPlan(this.popPlan, failedAction, retInfo.precondition, this.state);
+                            //getTotalOrderPlan(this.popPlan, world).printSolution();
+                            //this.popPlan.printToConsole();
+                            //System.out.println("      Plan attempted repaired!");
+                            if(this.popPlan == null || this.popPlan.isEmpty()) {
+                                System.out.println("      Could not repair plan!");
+                                valid = false;
+                                this.plan = null;
+                                this.popPlan = null;
+                            }else{
+                                valid = true;
+                                System.out.println("      Plan repaired");
+                                this.popPlan.printToConsole();
+                                this.plan = getTotalOrderPlan(this.popPlan);
+                                long time2 = System.nanoTime();
+                                System.out.println("Plan repaired in: " + (time2 - time1) + " nanoseconds / " + (float)(time2 - time1)/1000000 + " ms");
+                                //this.popPlan.printToConsole();
+                                this.plan.printSolution();
+                                //System.out.println("      New Plan:\n   " + this.plan + "\n");
+                            }
+                        }else{
                             this.plan = null;
                             this.popPlan = null;
-                        }else{
-                            valid = true;
-                            System.out.println("      Plan repaired");
-                            this.popPlan.printToConsole();
-                            this.plan = getTotalOrderPlan(this.popPlan);
-                            long time2 = System.nanoTime();
-                            System.out.println("Plan repaired in: " + (time2 - time1) + " nanoseconds / " + (float)(time2 - time1)/1000000 + " ms");
-                            //this.popPlan.printToConsole();
-                            this.plan.printSolution();
-                            //System.out.println("      New Plan:\n   " + this.plan + "\n");
+                            valid = false;
                         }
-                        */
                     }
                     //System.out.println("PLAN VALID: " + planSucceed + "  which is: " + valid);
                 }
@@ -358,14 +344,15 @@ public class POPlanner implements Runnable { //  implements Runnable
             }
             try {
                 world.draw();
-                Thread.sleep(5);
+                //Thread.sleep(5);
+                Thread.sleep(100);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             } catch(NullPointerException e) {
                 
             }
             long timeTest2 = System.nanoTime();
-            System.out.println("Loop Took: " + (timeTest2 - timeTest1) + " nanoseconds / " + (timeTest2 - timeTest1)/1000000 + " ms");
+            //System.out.println("Loop Took: " + (timeTest2 - timeTest1) + " nanoseconds / " + (timeTest2 - timeTest1)/1000000 + " ms");
         }
     }
     
@@ -438,6 +425,20 @@ public class POPlanner implements Runnable { //  implements Runnable
         }
         //System.out.println("OP: " + oP.toString());
         try {
+            /*boolean found = false;
+            ArrayList<Action> gottenActions = new ArrayList<>();
+            for(Action bP : pop.actions) {
+                for(String effect : bP.effects) {
+                    if(oP.condition.trim().equals(effect.trim())) {
+                        found = true;
+                        gottenActions.add(bP);
+                        break;
+                    }
+                }
+            }
+            if(!found) {
+                gottenActions = findAction(oP.condition);
+            }*/
             ArrayList<Action> gottenActions = findAction(oP.condition);
             //System.out.println("p:");
             //System.out.println("   " + actions.toString());
@@ -446,60 +447,49 @@ public class POPlanner implements Runnable { //  implements Runnable
                 // Enforce Consistency 
                 Action B = oP.action;
                 CausalLink link = pop.addAndGetCausalLink(A, B, oP.condition);
+                //System.out.println("      Adding ordering-1: " + A + " < " + B);
                 pop.addOrderingConstraint(A, B);
                 if(!pop.contains(A)) {
                     pop.addAction(A);
+                    //System.out.println("      Adding ordering-2: " + pop.getStart() + " < " + A);
                     pop.addOrderingConstraint(pop.getStart(), A);
-                    pop.addOrderingConstraint(A, pop.getFinish());
+                    //pop.addOrderingConstraint(A, pop.getFinish());
                     newlyAdded = true;
                     
                     // Add new open preconditions
                     for(String P : A.openPreconditions) {
-                        //boolean fulfilled = false;
-                        /*for(Action act : pop.actions) {
-                            for(String effect : act.effects) {
-                                //System.out.println(         "is " + P.replace(" ", "") + " =?= " + effect.replace(" ", ""));
-                                if(P.replace(" ", "").equals(effect.replace(" ", ""))) {
-                                    pop.addOrderingConstraint(act, A);
-                                    pop.addCausalLink(act, A, effect);
-                                    fulfilled = true;
-                                }
-                            }
-                        }*/
-                        //if(!fulfilled) {
                         // Fix format to avoid prolog-collisions. 
                         P = P.replaceAll("\\[\\s*([0-9]*)\\s*,\\s*([0-9]*)\\s*\\]", "[$1;$2]");
-                        //System.out.println("   Adding: " + P);
                         pop.addOpenPrecondition(P, A);
-                        //}
                     }
                 }
-
+                
                 // Resolve conflicts
                 // Between the new causal link and all existing actions
                 // copy actions to avoid concurrency
-                Collection<Action> actionbackup = new ArrayList<Action>();//Collections.synchronizedSet(new HashSet<Action>());
+                Collection<Action> actionbackup = new ArrayList<Action>();
                 for(Action C : pop.actions) {
                     actionbackup.add(C);
                 }
                 for(Action C : actionbackup) {
                     // If there is a (potential?) conclict between oA and link, resolve it:
                     if(conflict(link, C, pop)) {
-
+                        
                         // CONFLICT! Solve it
-
+                        //System.out.println("      link: " + link);
+                        //System.out.println("      Adding ordering-3: " + B + " < " + C);
                         POP newPlan1 = refinePlan(pop.addOrderingConstraint(B, C));
                         if(newPlan1 != null) {
                             return newPlan1;
                         }
-
+                        //System.out.println("      Adding ordering-4: " + C + " < " + A);
                         POP newPlan2 = refinePlan(pop.addOrderingConstraint(C, A));
                         if(newPlan2 != null) {
                             return newPlan2;
                         }
                     }
                 }
-             
+                
                 if(newlyAdded) {
                     // Between action A and all existing causal links      
                     //System.out.println("\nResolve - Between action A and all existing causal links");
@@ -512,11 +502,12 @@ public class POPlanner implements Runnable { //  implements Runnable
                             // CONFLICT! Solve it
                             Action C = oL.A;
                             //pop.addOrderingConstraint(C, A);
+                            //System.out.println("      Adding ordering-5: " + B + " < " + C);
                             POP newPlan1 = refinePlan(pop.addOrderingConstraint(B, C));
                             if(newPlan1 != null) {
                                 return newPlan1;
                             }
-
+                            //System.out.println("      Adding ordering-6: " + C + " < " + A);
                             POP newPlan2 = refinePlan(pop.addOrderingConstraint(C, A));
                             if(newPlan2 != null) {
                                 return newPlan2;
@@ -536,7 +527,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         //System.out.println("Time spent so far: " + (System.currentTimeMillis() - time) + " ms. Is solution?= " + pop.isSolution() + "\n\n");
         long time2 = System.nanoTime();
                         
-        System.out.println("   Open Precondition closed in : " + (time2 - time1) + " nanoseconds / " + (float)(time2 - time1)/1000000 + " ms");
+        //System.out.println("   Open Precondition closed in : " + (time2 - time1) + " nanoseconds / " + (float)(time2 - time1)/1000000 + " ms");
         return refinePlan(pop);
         
     }

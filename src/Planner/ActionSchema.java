@@ -62,7 +62,7 @@ public class ActionSchema {
         }
         
         prerequsiteString += ". ";
-        System.out.println(prerequsiteString);
+        //System.out.println(prerequsiteString);
     }
     
     public ArrayList<Action> TRYOUTgetSpecificActions(Logic logic, HashMap<String,String> arguments) {

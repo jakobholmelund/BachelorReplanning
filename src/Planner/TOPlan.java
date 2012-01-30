@@ -178,7 +178,7 @@ public class TOPlan {
         boolean bol = s.solveboolean(getGoal());
         
         long time2 = System.nanoTime();
-        System.out.println("      Plan monitorint took: " + (time2 - time1) + " nanoseconds / " + (float)(time2 - time1)/1000000 + " ms");
+        //System.out.println("      Plan monitorint took: " + (time2 - time1) + " nanoseconds / " + (float)(time2 - time1)/1000000 + " ms");
         //System.out.println("Goal: " + getGoal() + " - valid: " + bol);
         if(bol) {
             return new ReturnInfo(-1, null);

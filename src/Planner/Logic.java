@@ -319,7 +319,7 @@ public class Logic {
             //logic = new Logic();
             //logic.engine = this.engine.clone();
             long time2 = System.nanoTime();
-            System.out.println("      Cloning a state took: " + (time2 - time1) + " nanoseconds / " + (float)(time2 - time1)/1000000 + " ms");
+            //System.out.println("      Cloning a state took: " + (time2 - time1) + " nanoseconds / " + (float)(time2 - time1)/1000000 + " ms");
             
             return logic;
         } catch (PrologException ex) {
