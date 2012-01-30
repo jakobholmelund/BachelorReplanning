@@ -40,7 +40,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         this.goals = goals;
         routeFinder = new Astar();
         actions = this.setActions();
-        this.planRepair = false;
+        this.planRepair = true;
     }
     
     private void getPercepts() throws PrologException {
