@@ -705,7 +705,7 @@ public class POPlanner implements Runnable { //  implements Runnable
         return done;
     }
     
-    public ArrayList<ActionSchema> setActions() {
+        public ArrayList<ActionSchema> setActions() {
         /* Move  */
 	ArrayList<String> argse1 = new ArrayList<String>();
 	argse1.add("Agent");
@@ -720,7 +720,72 @@ public class POPlanner implements Runnable { //  implements Runnable
 	effects1.add("agentAt(Agent,MovePos)");
 	effects1.add("!agentAt(Agent,CurPos)");
         
-	ActionSchema move = new ActionSchema("move", prerequisites1, "move(Agent,MovePos)", argse1, effects1, false, false);
+	ActionSchema move1 = new ActionSchema("move", prerequisites1, "move(Agent,MovePos)", argse1, effects1, false, false);
+
+ 	/* Move  */
+	ArrayList<String> argse12 = new ArrayList<String>();
+	argse12.add("Agent");
+	argse12.add("CurPos");
+	argse12.add("MovePos");
+	
+	ArrayList<String> prerequisites12 = new ArrayList<String>();
+	prerequisites12.add("agentAt(Agent,CurPos)");
+	prerequisites12.add("f(MovePos)");
+	
+	ArrayList<String> effects12 = new ArrayList<String>();
+	effects12.add("agentAt(Agent,MovePos)");
+	effects12.add("!agentAt(Agent,CurPos)");
+        
+	ActionSchema move2 = new ActionSchema("move2", prerequisites12, "move(Agent,MovePos)", argse12, effects12, false, false);
+
+	/* Move  */
+	ArrayList<String> argse13 = new ArrayList<String>();
+	argse13.add("Agent");
+	argse13.add("CurPos");
+	argse13.add("MovePos");
+	
+	ArrayList<String> prerequisites13 = new ArrayList<String>();
+	prerequisites13.add("agentAt(Agent,CurPos)");
+	prerequisites13.add("f(MovePos)");
+	
+	ArrayList<String> effects13 = new ArrayList<String>();
+	effects13.add("agentAt(Agent,MovePos)");
+	effects13.add("!agentAt(Agent,CurPos)");
+        
+	ActionSchema move3 = new ActionSchema("move3", prerequisites13, "move(Agent,MovePos)", argse13, effects13, false, false);
+	
+	/* Move  */
+	ArrayList<String> argse14 = new ArrayList<String>();
+	argse14.add("Agent");
+	argse14.add("CurPos");
+	argse14.add("MovePos");
+	
+	ArrayList<String> prerequisites14 = new ArrayList<String>();
+	prerequisites14.add("agentAt(Agent,CurPos)");
+	prerequisites14.add("f(MovePos)");
+	
+	ArrayList<String> effects14 = new ArrayList<String>();
+	effects14.add("agentAt(Agent,MovePos)");
+	effects14.add("!agentAt(Agent,CurPos)");
+        
+	ActionSchema move4 = new ActionSchema("move4", prerequisites14, "move(Agent,MovePos)", argse14, effects14, false, false);
+	
+	/* Move  */
+	ArrayList<String> argse15 = new ArrayList<String>();
+	argse15.add("Agent");
+	argse15.add("CurPos");
+	argse15.add("MovePos");
+	
+	ArrayList<String> prerequisites15 = new ArrayList<String>();
+	prerequisites15.add("agentAt(Agent,CurPos)");
+	prerequisites15.add("f(MovePos)");
+	
+	ArrayList<String> effects15 = new ArrayList<String>();
+	effects15.add("agentAt(Agent,MovePos)");
+	effects15.add("!agentAt(Agent,CurPos)");
+        
+	ActionSchema move5 = new ActionSchema("move5", prerequisites15, "move(Agent,MovePos)", argse15, effects15, false, false);
+
 
 	/* MoveAtomic  */
 	ArrayList<String> argse2 = new ArrayList<String>();
@@ -756,8 +821,81 @@ public class POPlanner implements Runnable { //  implements Runnable
 	effects3.add("!at(Item,CurPos)");
 	effects3.add("carries(Agent,Item)");
 	
-	ActionSchema pickUp = new ActionSchema("pickUp", prerequisites3, "pickUp(Agent,Item)", argse3, effects3, false, true);
+	ActionSchema pickUp1 = new ActionSchema("pickUp", prerequisites3, "pickUp(Agent,Item)", argse3, effects3, false, true);
 	
+	/* PickUp  */
+	ArrayList<String> argse32 = new ArrayList<String>();
+	argse32.add("Agent");
+	argse32.add("CurPos");
+	argse32.add("Item");
+	
+	ArrayList<String> prerequisites32 = new ArrayList<String>();
+	prerequisites32.add("\\+carries(Agent, _)");
+	prerequisites32.add("agentAt(Agent,CurPos)"); // agentAt(Agent, AgPos)
+	prerequisites32.add("at(Item,CurPos)");
+	prerequisites32.add("item(Item)");
+	
+	ArrayList<String> effects32 = new ArrayList<String>();
+	effects32.add("!at(Item,CurPos)");
+	effects32.add("carries(Agent,Item)");
+	
+	ActionSchema pickUp2 = new ActionSchema("pickUp2", prerequisites32, "pickUp(Agent,Item)", argse32, effects32, false, true);
+	
+	/* PickUp  */
+	ArrayList<String> argse33 = new ArrayList<String>();
+	argse33.add("Agent");
+	argse33.add("CurPos");
+	argse33.add("Item");
+	
+	ArrayList<String> prerequisites33 = new ArrayList<String>();
+	prerequisites33.add("\\+carries(Agent, _)");
+	prerequisites33.add("agentAt(Agent,CurPos)"); // agentAt(Agent, AgPos)
+	prerequisites33.add("at(Item,CurPos)");
+	prerequisites33.add("item(Item)");
+	
+	ArrayList<String> effects33 = new ArrayList<String>();
+	effects33.add("!at(Item,CurPos)");
+	effects33.add("carries(Agent,Item)");
+	
+	ActionSchema pickUp3 = new ActionSchema("pickUp3", prerequisites33, "pickUp(Agent,Item)", argse33, effects33, false, true);
+		
+	/* PickUp  */
+	ArrayList<String> argse34 = new ArrayList<String>();
+	argse34.add("Agent");
+	argse34.add("CurPos");
+	argse34.add("Item");
+	
+	ArrayList<String> prerequisites34 = new ArrayList<String>();
+	prerequisites34.add("\\+carries(Agent, _)");
+	prerequisites34.add("agentAt(Agent,CurPos)"); // agentAt(Agent, AgPos)
+	prerequisites34.add("at(Item,CurPos)");
+	prerequisites34.add("item(Item)");
+	
+	ArrayList<String> effects34 = new ArrayList<String>();
+	effects34.add("!at(Item,CurPos)");
+	effects34.add("carries(Agent,Item)");
+	
+	ActionSchema pickUp4 = new ActionSchema("pickUp4", prerequisites34, "pickUp(Agent,Item)", argse34, effects34, false, true);
+	
+	/* PickUp  */
+	ArrayList<String> argse35 = new ArrayList<String>();
+	argse35.add("Agent");
+	argse35.add("CurPos");
+	argse35.add("Item");
+	
+	ArrayList<String> prerequisites35 = new ArrayList<String>();
+	prerequisites35.add("\\+carries(Agent, _)");
+	prerequisites35.add("agentAt(Agent,CurPos)"); // agentAt(Agent, AgPos)
+	prerequisites35.add("at(Item,CurPos)");
+	prerequisites35.add("item(Item)");
+	
+	ArrayList<String> effects35 = new ArrayList<String>();
+	effects35.add("!at(Item,CurPos)");
+	effects35.add("carries(Agent,Item)");
+	
+	ActionSchema pickUp5 = new ActionSchema("pickUp5", prerequisites35, "pickUp(Agent,Item)", argse35, effects35, false, true);
+	
+
 	/* Place  */
 	ArrayList<String> argse4 = new ArrayList<String>();
 	argse4.add("Agent");
@@ -772,9 +910,74 @@ public class POPlanner implements Runnable { //  implements Runnable
 	effects4.add("at(Item,CurPos)");
 	effects4.add("!carries(Agent,Item)");
 
-	ActionSchema place = new ActionSchema("place", prerequisites4, "place(Agent,Item)", argse4, effects4, false, true);
+	ActionSchema place1 = new ActionSchema("place", prerequisites4, "place(Agent,Item)", argse4, effects4, false, true);
         
-        /* Smash  */
+	/* Place  */
+	ArrayList<String> argse42 = new ArrayList<String>();
+	argse42.add("Agent");
+	argse42.add("CurPos");
+	argse42.add("Item");
+	
+	ArrayList<String> prerequisites42 = new ArrayList<String>();
+	prerequisites42.add("agentAt(Agent,CurPos)");
+	prerequisites42.add("carries(Agent,Item)");
+	
+	ArrayList<String> effects42 = new ArrayList<String>();
+	effects42.add("at(Item,CurPos)");
+	effects42.add("!carries(Agent,Item)");
+
+	ActionSchema place2 = new ActionSchema("place2", prerequisites42, "place(Agent,Item)", argse42, effects42, false, true);
+
+
+	/* Place  */
+	ArrayList<String> argse43 = new ArrayList<String>();
+	argse43.add("Agent");
+	argse43.add("CurPos");
+	argse43.add("Item");
+	
+	ArrayList<String> prerequisites43 = new ArrayList<String>();
+	prerequisites43.add("agentAt(Agent,CurPos)");
+	prerequisites43.add("carries(Agent,Item)");
+	
+	ArrayList<String> effects43 = new ArrayList<String>();
+	effects43.add("at(Item,CurPos)");
+	effects43.add("!carries(Agent,Item)");
+
+	ActionSchema place3 = new ActionSchema("place3", prerequisites43, "place(Agent,Item)", argse43, effects43, false, true);
+                
+	/* Place  */
+	ArrayList<String> argse44 = new ArrayList<String>();
+	argse44.add("Agent");
+	argse44.add("CurPos");
+	argse44.add("Item");
+	
+	ArrayList<String> prerequisites44 = new ArrayList<String>();
+	prerequisites44.add("agentAt(Agent,CurPos)");
+	prerequisites44.add("carries(Agent,Item)");
+	
+	ArrayList<String> effects44 = new ArrayList<String>();
+	effects44.add("at(Item,CurPos)");
+	effects44.add("!carries(Agent,Item)");
+
+	ActionSchema place4 = new ActionSchema("place4", prerequisites44, "place(Agent,Item)", argse44, effects44, false, true);
+        
+	/* Place  */
+	ArrayList<String> argse45 = new ArrayList<String>();
+	argse45.add("Agent");
+	argse45.add("CurPos");
+	argse45.add("Item");
+	
+	ArrayList<String> prerequisites45 = new ArrayList<String>();
+	prerequisites45.add("agentAt(Agent,CurPos)");
+	prerequisites45.add("carries(Agent,Item)");
+	
+	ArrayList<String> effects45 = new ArrayList<String>();
+	effects45.add("at(Item,CurPos)");
+	effects45.add("!carries(Agent,Item)");
+
+	ActionSchema place5 = new ActionSchema("place5", prerequisites45, "place(Agent,Item)", argse45, effects45, false, true);
+        
+    /* Smash  */
 	ArrayList<String> argse5 = new ArrayList<String>();
 	argse5.add("Agent");
 	argse5.add("AgPosition");
@@ -794,15 +997,149 @@ public class POPlanner implements Runnable { //  implements Runnable
 	effects5.add("!at(Object, BoxPosition)");
 	effects5.add("!box(Object)");
         
-	ActionSchema smash = new ActionSchema("smash", prerequisites5, "smash(Agent,Object)", argse5, effects5, false, true);
+	ActionSchema smash1 = new ActionSchema("smash1", prerequisites5, "smash(Agent,Object)", argse5, effects5, false, true);
 
-        ArrayList<ActionSchema> actions = new ArrayList<ActionSchema>();
-        actions.add(move);
-        actions.add(moveAtomic);
-        actions.add(pickUp);
-        actions.add(place);
-        actions.add(smash);
+	ArrayList<String> argse52 = new ArrayList<String>();
+	argse52.add("Agent");
+	argse52.add("AgPosition");
+	argse52.add("Object");
+        argse52.add("BoxPosition");
+        argse52.add("AnyDirection");
+	
+	ArrayList<String> prerequisites52 = new ArrayList<String>();
+        prerequisites52.add("agentAt(Agent,AgPosition)");
+        prerequisites52.add("f(AgPosition)");
+        prerequisites52.add("neighbour(AgPosition, BoxPosition, AnyDirection)");
+	prerequisites52.add("box(Object)");
+        prerequisites52.add("at(Object,BoxPosition)");
+	
+        ArrayList<String> effects52 = new ArrayList<String>();
+	effects52.add("f(BoxPosition)");
+	effects52.add("!at(Object, BoxPosition)");
+	effects52.add("!box(Object)");
         
-        return actions;
+	ActionSchema smash2 = new ActionSchema("smash2", prerequisites52, "smash(Agent,Object)", argse52, effects52, false, true);
+
+	ArrayList<String> argse53 = new ArrayList<String>();
+	argse53.add("Agent");
+	argse53.add("AgPosition");
+	argse53.add("Object");
+        argse53.add("BoxPosition");
+        argse53.add("AnyDirection");
+	
+	ArrayList<String> prerequisites53 = new ArrayList<String>();
+        prerequisites53.add("agentAt(Agent,AgPosition)");
+        prerequisites53.add("f(AgPosition)");
+        prerequisites53.add("neighbour(AgPosition, BoxPosition, AnyDirection)");
+	prerequisites53.add("box(Object)");
+        prerequisites53.add("at(Object,BoxPosition)");
+	
+        ArrayList<String> effects53 = new ArrayList<String>();
+	effects53.add("f(BoxPosition)");
+	effects53.add("!at(Object, BoxPosition)");
+	effects53.add("!box(Object)");
+        
+	ActionSchema smash3 = new ActionSchema("smash3", prerequisites53, "smash(Agent,Object)", argse53, effects53, false, true);
+	
+	
+	ArrayList<String> argse54 = new ArrayList<String>();
+	argse54.add("Agent");
+	argse54.add("AgPosition");
+	argse54.add("Object");
+        argse54.add("BoxPosition");
+        argse54.add("AnyDirection");
+	
+	ArrayList<String> prerequisites54 = new ArrayList<String>();
+        prerequisites54.add("agentAt(Agent,AgPosition)");
+        prerequisites54.add("f(AgPosition)");
+        prerequisites54.add("neighbour(AgPosition, BoxPosition, AnyDirection)");
+	prerequisites54.add("box(Object)");
+        prerequisites54.add("at(Object,BoxPosition)");
+	
+        ArrayList<String> effects54 = new ArrayList<String>();
+	effects54.add("f(BoxPosition)");
+	effects54.add("!at(Object, BoxPosition)");
+	effects54.add("!box(Object)");
+        
+	ActionSchema smash4 = new ActionSchema("smash4", prerequisites54, "smash(Agent,Object)", argse54, effects54, false, true);
+
+	ArrayList<String> argse55 = new ArrayList<String>();
+	argse55.add("Agent");
+	argse55.add("AgPosition");
+	argse55.add("Object");
+        argse55.add("BoxPosition");
+        argse55.add("AnyDirection");
+	
+	ArrayList<String> prerequisites55 = new ArrayList<String>();
+        prerequisites55.add("agentAt(Agent,AgPosition)");
+        prerequisites55.add("f(AgPosition)");
+        prerequisites55.add("neighbour(AgPosition, BoxPosition, AnyDirection)");
+	prerequisites55.add("box(Object)");
+        prerequisites55.add("at(Object,BoxPosition)");
+	
+        ArrayList<String> effects55 = new ArrayList<String>();
+	effects55.add("f(BoxPosition)");
+	effects55.add("!at(Object, BoxPosition)");
+	effects55.add("!box(Object)");
+        
+	ActionSchema smash5 = new ActionSchema("smash5", prerequisites55, "smash(Agent,Object)", argse55, effects55, false, true);	
+	
+	ArrayList<ActionSchema> actions = new ArrayList<ActionSchema>();
+	actions.add(move1);
+	actions.add(move2);
+	actions.add(move3);
+	actions.add(move4);
+	actions.add(move5);
+	//actions.add(move6);
+	//actions.add(move7);
+	//actions.add(move8);
+	//actions.add(move9);
+	//actions.add(move10);
+	
+	actions.add(moveAtomic);
+	//actions.add(moveAtomic2);
+	//actions.add(moveAtomic3);
+	//actions.add(moveAtomic4);
+	//actions.add(moveAtomic5);
+	//actions.add(moveAtomic6);
+	//actions.add(moveAtomic7);
+	//actions.add(moveAtomic8);
+	//actions.add(moveAtomic9);
+	//actions.add(moveAtomic10);
+
+	actions.add(pickUp1);
+	actions.add(pickUp2);
+	actions.add(pickUp3);
+	actions.add(pickUp4);
+	actions.add(pickUp5);
+	//actions.add(pickUp6);
+	//actions.add(pickUp7);
+	//actions.add(pickUp8);
+	//actions.add(pickUp9);
+	//actions.add(pickUp10);
+
+	actions.add(place1);
+	actions.add(place2);
+	actions.add(place3);
+	actions.add(place4);
+	actions.add(place5);
+	//actions.add(place6);
+	//actions.add(place7);
+	//actions.add(place8);
+	//actions.add(place9);
+	//actions.add(place10);
+
+	actions.add(smash1);
+	actions.add(smash2);
+	actions.add(smash3);
+	actions.add(smash4);
+	actions.add(smash5);
+	//actions.add(smash6);
+	//actions.add(smash7);
+	//actions.add(smash8);
+	//actions.add(smash9);
+	//actions.add(smash10);
+	
+	return actions;
     }
 }
