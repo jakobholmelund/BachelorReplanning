@@ -110,10 +110,10 @@ public class POPlanner implements Runnable { //  implements Runnable
                             //    System.out.println("   At 2,3 THERE IS WALL");
                             //}
                         }else{
-                            domain += "f([" + i + "," + j + "]). ";
-                            if(i == 3 && j == 2) {
-                                System.out.println("   At 2,3 THERE IS FREE 1");
-                            }
+                            domain += "f([" + j + "," + i + "]). ";
+                            //if(i == 3 && j == 2) {
+                            //    System.out.println("   At 2,3 THERE IS FREE 1");
+                            //}
                         }
                     }
                 }
@@ -201,7 +201,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                         this.plan = null;
                         valid = false;
                     }else{
-                        System.out.println("   Recieved: " + planSucceed + " -> REPLAN -> Try to repair plan! (in reality, replan from ");
+                        System.out.println("   Recieved: " + planSucceed + " -> REPLAN -> Try to repair plan!");
 
                         if(this.planRepair) { 
                             // Plan is broken
@@ -230,6 +230,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                                 //this.popPlan.printToConsole();
                                 this.plan.printSolution();
                                 //System.out.println("      New Plan:\n   " + this.plan + "\n");
+                                continue;
                             }
                         }else{
                             this.plan = null;

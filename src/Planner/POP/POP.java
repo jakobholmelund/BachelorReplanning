@@ -188,6 +188,16 @@ public class POP {
     }
     
     public synchronized boolean contains(Action a) {
+        /*System.out.println("      Contains: ");
+        System.out.println("         " + a);
+        for(Action A : this.actions) {
+            
+            System.out.println("            " + A);
+        }
+        boolean val = actions.contains(a);
+        System.out.println("            " + val);
+        
+        */
         return actions.contains(a);
     }
     
