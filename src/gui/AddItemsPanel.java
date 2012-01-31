@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import javax.swing.JButton;
 import worldmodel.Bomb;
 import worldmodel.Goal;
+import worldmodel.Oil;
 import worldmodel.Wall;
 /**
  *
@@ -102,6 +103,17 @@ public class AddItemsPanel extends JPanel{
                          {
                             world.removeMovableObject();
                             world.setMoveAbleObject(world.createNewAgent());
+                         }
+                      });
+        Oil oil = new Oil(0,0);
+        this.add(oil);
+        oil.addMouseListener(new MouseAdapter()
+                      {
+                        @Override
+                       public void mouseClicked(MouseEvent me)
+                         {
+                             world.removeMovableObject();
+                             world.setMoveAbleObject(new Oil(0,0));
                          }
                       });
         
