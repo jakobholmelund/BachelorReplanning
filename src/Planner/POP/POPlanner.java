@@ -201,9 +201,8 @@ public class POPlanner implements Runnable { //  implements Runnable
                         this.plan = null;
                         valid = false;
                     }else{
-                        System.out.println("   Recieved: " + planSucceed + " -> REPLAN -> Try to repair plan!");
-
                         if(this.planRepair) { 
+                            System.out.println("   Recieved: " + planSucceed + " -> REPLAN -> Try to repair plan!");
                             // Plan is broken
                             Action failedAction = this.plan.list.get(planSucceed);
 
@@ -233,6 +232,7 @@ public class POPlanner implements Runnable { //  implements Runnable
                                 continue;
                             }
                         }else{
+                            System.out.println("REPLAN -> From Scratch");
                             this.plan = null;
                             this.popPlan = null;
                             valid = false;
