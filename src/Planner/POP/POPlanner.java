@@ -346,7 +346,7 @@ public class POPlanner implements Runnable { //  implements Runnable
             try {
                 world.draw();
                 //Thread.sleep(5);
-                Thread.sleep(100);
+                Thread.sleep(1);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             } catch(NullPointerException e) {

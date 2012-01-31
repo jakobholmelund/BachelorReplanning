@@ -355,9 +355,12 @@ public class World {
     }*/
     
     public boolean pickUp(MapAgent ma,MapObject mo){
-        ma.pickUp(mo);
-        this.removeObject(mo);
-        return true;
+        if(mo != null){
+            ma.pickUp(mo);
+            this.removeObject(mo);
+            return true;
+        }
+        return false;
     }
     
     public boolean smash(MapAgent ma,MapObject mo){
