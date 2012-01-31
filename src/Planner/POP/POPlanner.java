@@ -110,10 +110,10 @@ public class POPlanner implements Runnable { //  implements Runnable
                             //    System.out.println("   At 2,3 THERE IS WALL");
                             //}
                         }else{
-                            domain += "f([" + i + "," + j + "]). ";
-                            if(i == 3 && j == 2) {
-                                System.out.println("   At 2,3 THERE IS FREE 1");
-                            }
+                            domain += "f([" + j + "," + i + "]). ";
+                            //if(i == 3 && j == 2) {
+                            //    System.out.println("   At 2,3 THERE IS FREE 1");
+                            //}
                         }
                     }
                 }
